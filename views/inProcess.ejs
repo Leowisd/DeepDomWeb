@@ -1,0 +1,52 @@
+<% include partials/header %>
+
+<nav class="navbar navbar-expand-md navbar-light bg-light">     
+        <a class="navbar-brand" href="/">DeepDom</a>
+        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item" >
+                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search"><i class="fas fa-folder"></i> Status</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- <div class="container"> -->
+            <div class="jumbotron jumbotron-fluid text-center">
+                <div class="container">
+                    <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+                    <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+                </div>
+            </div>
+    <!-- </div> -->
+
+    <div class="container">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status" id="processLogo">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <h1 class="display-4 text-center mt-3" > In Process </h1>
+    </div>
+
+    <div class="container mt-5">
+        <p class="text-center">
+            The job ID is:
+        </p>
+        <!-- <div class="alert alert-success text-center" role="alert">
+                2019090901        
+        </div> -->
+        <h3 class="text-center " id="jobIDOutput">
+            2019090901
+        </h3>
+        <center><button class="btn btn-primary mt-2" id="copyBtn"> Copy </button></center>
+
+    </div>
+
+<% include partials/footer %>
