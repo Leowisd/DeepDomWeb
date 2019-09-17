@@ -1,6 +1,6 @@
 <% include partials/header %>
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">     
+    <nav class="navbar navbar-expand-md navbar-light bg-light">     
             <a class="navbar-brand" href="/">DeepDom</a>
             <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -12,7 +12,10 @@
                         <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/search"><i class="fas fa-folder"></i> Status</a>
+                        <a class="nav-link" href="/search"><i class="fas fa-search"></i> Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/status"><i class="fas fa-list"></i> Status </a>
                     </li>
                 </ul>
             </div>
@@ -45,7 +48,7 @@
                         <div class="form-group col-12 col-lg-6">
                             <label for="sequenceInput">Sequence</label>
                             <textarea class="form-control" id="sequenceInput" name="sequenceInput" rows="6" aria-describedby="sequenceHelp" required></textarea>
-                            <small id="sequenceHelp" class="form-text text-muted">The sequence must in FASTA format, length ≥ 80.</small>                        
+                            <small id="sequenceHelp" class="form-text text-muted">The sequence must in FASTA format. </small>                        
                         </div>
                     </div>
                     <div class="form-row">

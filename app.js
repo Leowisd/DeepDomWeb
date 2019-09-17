@@ -24,6 +24,10 @@ app.get("/inProcess", function(req, res){
 	res.render("inProcess");
 });
 
+app.get("/status", function(req, res){
+	res.render("status");
+});
+
 //Deal with sequence post
 app.post("/inSequenceProcess", function(req, res){
 	var sequence = req.body.sequenceInput;
