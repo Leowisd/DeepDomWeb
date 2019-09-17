@@ -50,4 +50,5 @@ app.post("/inFileProcess", function(req, res){
 
 app.listen(3000, process.env.IP, function(){
 	console.log("The DeepDom Server Has Started!");
+	console.log("http://localhost:3000/");
 })
