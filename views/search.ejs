@@ -1,6 +1,6 @@
 <% include partials/header %>
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">     
+    <nav class="navbar navbar-expand-md navbar-light bg-light">     
         <a class="navbar-brand" href="/">DeepDom</a>
         <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -44,7 +44,7 @@
         </ul>
         <div class="tab-content pb-3" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-SearchID" role="tabpanel" aria-labelledby="pills-SearchID-tab">
-                <form>
+                <form action="/result" method="POST">
                     <div class="form-row">
                         <div class="form-group col-12 col-lg-6">
                             <label for="JobIDInput">Input JobID</label>

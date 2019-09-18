@@ -37,6 +37,26 @@ app.get("/status", function(req, res){
 	res.render("status");
 });
 
+app.get("/showResult", function(req, res){
+	var results = [];
+	var arr = [];
+	fs.readFile('data/results/casp9_2domain.fasta', function(err, data){
+		if (err){
+			return console.log(err);
+		}
+		arr = data.toString().split('\r\n');
+		for (var i = 0; i < arr.length; i++)
+		if (i%2 == 0)
+		{
+			var result = {name: arr[i], score: arr[i+1]}
+			results.push(result);
+		}
+		// console.log(results);
+		res.render("showResult", {results: results});
+	});
+});
+
+
 //Deal with sequence post
 app.post("/inSequenceProcess", function(req, res){
 	var sequence = req.body.sequenceInput;
@@ -83,7 +103,7 @@ app.post("/inSequenceProcess", function(req, res){
 		console.log('predict child process exit，exit code: '+code);
 	});
 
-	res.redirect("/inProcess");
+	res.redirect("inProcess");
 });
 
 //Deal with file post
@@ -131,11 +151,15 @@ app.post("/inFileProcess", function(req, res){
 		console.log('predict child process exit，exit code: '+code);
 	});
 
-	res.redirect("/inProcess");
+	res.redirect("inProcess");
+});
+
+app.post("/result", function(req, res){
+	res.redirect("showResult");
 });
 
 
 app.listen(3000, process.env.IP, function(){
-	console.log("The DeepDom Server Has Started At: http://localhost:3000/!");
+	console.log("The DeepDom Server Has Started At: http://localhost:3000/");
 	console.log("");
 })

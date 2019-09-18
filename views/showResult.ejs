@@ -1,0 +1,92 @@
+<% include partials/header %>
+
+    <nav class="navbar navbar-expand-md navbar-light bg-light">     
+        <a class="navbar-brand" href="/">DeepDom</a>
+        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item" >
+                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search"><i class="fas fa-search"></i> Search </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/status"><i class="fas fa-list"></i> Status </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- <div class="container"> -->
+        <div class="jumbotron jumbotron-fluid text-center">
+            <div class="container">
+                <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+                <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+            </div>
+        </div>
+    <!-- </div> -->
+
+    <div  class='d-none' id= 'name'>
+        <% results.forEach(function(element){ %>
+            <%= element.name%>,
+        <% }) %>
+     </div>
+    <p  class='d-none' id= 'score'>
+        <% results.forEach(function(element){ %>
+            <%= element.score %>,
+        <% }) %>
+    </p>
+
+    <div class="container-border"></div>
+
+    <script>
+        window.onload = function(){            
+            var container = document.querySelector('.container-border');
+
+            var name = document.getElementById('name').textContent.replace(/\ +/g,"").replace(/[\r\n]/g,"").split(',');
+            name.length -= 2;
+            // console.log(name);
+            
+            var score = document.getElementById('score').textContent.replace(/[\r\n]/g,"").split(',');
+            for (var i = 0; i< score.length; i++){
+                score[i] = score[i].trim().split(' ');
+                for (var j = 0; j < score[i].length; j++){
+                    score[i][j] = parseFloat(score[i][j]);
+                }
+            }
+            score.length -= 2;
+            // console.log(score);
+            
+            for (var i = 0; i < score.length; i++){
+
+                var div = document.createElement("div");
+                div.classList.add('chart-container');
+
+                var canvas = document.createElement("canvas");
+                div.appendChild(canvas);
+                container.appendChild(div);
+                
+                var xAxis = [];
+                for (var j = 1; j <= score[i].length; j++) xAxis[j] = j;
+                var ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+		            type: 'bar',
+		            data: {
+			            labels: xAxis,
+			            datasets: [{
+				            label: name[i],
+				            backgroundColor: 'rgb(255, 99, 132)',
+				            borderColor: 'rgb(255, 99, 132)',
+				            data: score[i]
+			            }]
+		            }
+                })
+            }
+        };
+    </script>
+
+<% include partials/footer%>
