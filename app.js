@@ -1,14 +1,14 @@
 var express 	= require("express"),
 	app 		= express(),
 	bodyParser 	= require("body-parser"),
-// 	mongoose 	= require("mongoose"),
+	mongoose 	= require("mongoose"),
 	multer = require('multer'),
 	fs = require("fs"),
 	exec = require('child_process').exec; 
 
 
 
-// mongoose.connect("mongodb://localhost/deepdom");
+mongoose.connect("mongodb://localhost/deepdom");
 
 const upload = multer({
 	dest: 'data/upload'
@@ -20,10 +20,8 @@ app.set("view engine","ejs");
 // SCHEMA SETUP
 var jobInfoSchema = new mongoose.Schema({
 	nickName: String,
-	uploadSequence: String,
-	uploadFile: String,
-	inputFile: String,
-	resultFile: String,
+	sequence: String,
+	file: String,
 	email: String,
 	status: String,
 	finishedTime: Date
@@ -48,8 +46,10 @@ app.get("/jobs", function(req, res){
 });
 
 // JOBINFO: show the current job info
-app.get("/inProcess", function(req, res){
-	res.render("JOBINFO");
+app.get("/upload/:id", function(req, res){
+	var jobId = req.params.id;
+	jobId = jobId.substr(1); // delete the ':'
+	res.render("JOBINFO",{jobId: jobId});
 });
 
 // JOBSLIST: show all jos
@@ -58,14 +58,19 @@ app.get("/jobs/all", function(req, res){
 });
 
 // SHOW: show result
-app.get("/showResult", function(req, res){
+app.get("/jobs/:id", function(req, res){
+	var jobId = req.params.id;
+	jobId = jobId.substr(1);
+
+
 	var results = [];
 	var arr = [];
-	fs.readFile('data/results/casp9_2domain.fasta', function(err, data){
+	var file = jobId + '.txt';
+	fs.readFile('data/results/' + file, function(err, data){
 		if (err){
 			return console.log(err);
 		}
-		arr = data.toString().split('\r\n');
+		arr = data.toString().split('\n');
 		for (var i = 0; i < arr.length; i++)
 		if (i%2 == 0)
 		{
@@ -80,104 +85,212 @@ app.get("/showResult", function(req, res){
 
 //Deal with sequence post
 app.post("/upload/sequence", function(req, res){
-	var sequence = req.body.sequenceInput;
+	var sequence = req.body.sequenceInput.trim();
 	if (sequence !== undefined){
 		//console.log(sequence);
 		var email = req.body.emailInput1;	
 	} 	
-	if (email !== undefined){
-		console.log(email);
-	}
-	
+	// if (email !== undefined){
+	// 	console.log(email);
+	// }
+
+	var job = new jobInfo({
+		// nickName : nickName,
+		sequence: sequence,
+		email: email,
+		status: "uploading"
+	});
+	job.file = job.id+'.txt';
+
 	// Create a new file and write the sequence in
-	console.log("Data written ready");
-	fs.writeFile('data/upload/uploadtest.txt', sequence,  function(err) {
-		if (err) {
-			return console.error(err);
-		}
-		console.log("Data written success!");
-	 });
+	console.log("Data written ready...");
+	// fs.writeFile('data/upload/'+job.file, sequence,  function(err) {
+	// 	if (err) {
+	// 		return console.error(err);
+	// 	}
+	// 	console.log("Data written success!");
+	// });
+	fs.writeFileSync('data/upload/'+job.file, sequence);
+	console.log("Data written success!");
+	console.log("======================================");
+
 
 	// run the convert file script
-	var arg1 = 'data/upload/uploadtest.txt';
-	var arg2 = 'data/input/inputtest.txt';
+	console.log("Data convert ready...");
+	var arg1 = 'data/upload/' + job.file;
+	var arg2 = 'data/input/' + job.file;
 	var workprecessor = exec("perl DeepDom/dataprocess.pl -input_seq "+ arg1+' -output_seq '+arg2 +' ',function(error,stdout,stderr){
     	if(error) {
-        	console.info('stderr : '+stderr);
+			console.info('stderr : '+stderr);
+			job.status = 'error';	
+			return;		
 		}
 	});
 	workprecessor.on('exit', function (code) {
-		console.info('convert success!');
-		console.log('convert child process exit，exit code: '+code);
-	});
-	
-	//after convert, run the predict script
-	var arg3 = 'data/input/inputtest.txt';
-	var arg4 = 'data/results/resulttest.txt';
-	var workprecessor2 = exec("python DeepDom/predict.py -input "+arg3 + ' -output ' + arg4, function(error,stdout,stderr){
-		if(error) {
-			console.info('stderr : '+stderr);
-		}
-	}); 
-	workprecessor2.on('exit', function (code) {
-		console.info('predic done!');
-		console.log('predict child process exit，exit code: '+code);
+		console.info('Data convert success!');
+		// console.log('convert child process exit，exit code: '+code);
+		
+		job.status = 'Processing';
+		job.save(function(err, job){
+			if (err){
+				console.log("SOMETHING WENT WRONG!");
+			}
+			else{
+				console.log("Job was saved!");
+				console.log("======================================");
+				// console.log(job);
+			}
+		});
+
+		//after convert, run the predict script
+		console.log("Predict ready...");
+		var arg3 = 'data/input/' + job.file;
+		var arg4 = 'data/results/' + job.file;
+		var workprecessor2 = exec("python DeepDom/predict.py -input "+arg3 + ' -output ' + arg4, function(error,stdout,stderr){
+			if(error) {
+				console.info('stderr : '+stderr);
+
+				var updates = {$set: {status: 'error'}};
+				job.updateOne(updates,function(err, job){
+					if (err){
+						console.log(err);
+					}
+					else{
+						console.log("SOMETHING WENT WRONG!");
+						// console.log(job);
+					}
+				});
+				return;
+			}
+		});
+
+		workprecessor2.on('exit', function (code) {
+			console.info('Predict done!');
+			// console.log('predict child process exit，exit code: '+code);		
+			var updates = {$set: {status: 'Done'}};
+			job.updateOne(updates,function(err, job){
+				if (err){
+					console.log(err);
+				}
+				else{
+					console.log("Job was updated!");
+					console.log("======================================");
+					// console.log(job);
+				}
+			});
+		});
+
 	});
 
-	res.redirect("/inProcess");
+	res.redirect("/upload/:"+job.id);
 });
 
 //Deal with file post
 app.post("/upload/file", function(req, res){
-	// console.log(req.body);
+
 	var email = req.body.emailInput2;
-	if (email !== undefined)
-		console.log('email: ' + email);
-	// console.log(req.files);
-	var des_file = 'data/upload/' + req.files[0].originalname;
-	fs.readFile(req.files[0].path, function(err, data){
-		fs.writeFile(des_file, data, function(err){
-			if (err){
-				console.log(err);
-			}else{
-				console.log('File: ' + req.files[0].originalname + ' uploaded successfully');
-			}
-		});
+	// if (email !== undefined)
+	// 	console.log('email: ' + email);
+
+	var job = new jobInfo({
+		// nickName : nickName,
+		email: email,
+		status: "uploading"
 	});
+	job.file = job.id+'.txt';
+
+	var data = fs.readFileSync(req.files[0].path);
+	fs.writeFileSync('data/upload/' + job.file, data);
+	console.log('File: ' + req.files[0].originalname + ' uploaded successfully');
+	console.log("======================================");
+	// var des_file = 'data/upload/' + job.file;
+	// fs.readFile(req.files[0].path, function(err, data){
+	// 	fs.writeFile(des_file, data, function(err){
+	// 		if (err){
+	// 			console.log(err);
+	// 			return;
+
+	// 		}else{
+	// 			console.log('File: ' + req.files[0].originalname + ' uploaded successfully');
+	// 			console.log("======================================");
+	// 		}
+	// 	});
+	// });
 	fs.unlinkSync(req.files[0].path); //delete the original file
 
+
 	// run the convert file script
-	var arg1 = des_file;
-	var arg2 = 'data/input/' + req.files[0].originalname;
+	console.log("Data convert ready...");
+	var arg1 = 'data/upload/' + job.file;
+	var arg2 = 'data/input/' + job.file;
 	var workprecessor = exec("perl DeepDom/dataprocess.pl -input_seq "+ arg1+' -output_seq '+arg2 +' ',function(error,stdout,stderr){
     	if(error) {
-        	console.info('stderr : '+stderr);
+			console.info('stderr : '+stderr);
+			job.status = 'error';
+			return;
 		}
 	});
 	workprecessor.on('exit', function (code) {
 		console.info('convert success!');
-		console.log('convert child process exit，exit code: '+code);
-	});
-	
-	//after convert, run the predict script
-	var arg3 = 'data/input/' + req.files[0].originalname;
-	var arg4 = 'data/results/' + req.files[0].originalname;
-	var workprecessor2 = exec("python DeepDom/predict.py -input "+arg3 + ' -output ' + arg4, function(error,stdout,stderr){
-		if(error) {
-			console.info('stderr : '+stderr);
-		}
-	}); 
-	workprecessor2.on('exit', function (code) {
-		console.info('predic done!');
-		console.log('predict child process exit，exit code: '+code);
+		// console.log('convert child process exit，exit code: '+code);
+
+		job.status = 'Processing';
+		job.save(function(err, job){
+			if (err){
+				console.log("SOMETHING WENT WRONG!");
+			}
+			else{
+				console.log("Job was saved!");
+				console.log("======================================");
+				// console.log(job);
+			}
+		});
+		
+		//after convert, run the predict script
+		var arg3 = 'data/input/' + job.file;
+		var arg4 = 'data/results/' + job.file;
+		var workprecessor2 = exec("python DeepDom/predict.py -input "+arg3 + ' -output ' + arg4, function(error,stdout,stderr){
+			if(error) {
+				console.info('stderr : '+stderr);
+				var updates = {$set: {status: 'error'}};
+				job.updateOne(updates,function(err, job){
+					if (err){
+						console.log(err);
+					}
+					else{
+						console.log("SOMETHING WENT WRONG!");
+						console.log("======================================");
+						// console.log(job);
+					}
+				});
+				return;
+			}
+		}); 
+		workprecessor2.on('exit', function (code) {
+			console.info('Predict done!');
+			// console.log('predict child process exit，exit code: '+code);		
+			var updates = {$set: {status: 'Done'}};
+			job.updateOne(updates,function(err, job){
+				if (err){
+					console.log(err);
+				}
+				else{
+					console.log("Job was updated!");
+					console.log("======================================");
+					// console.log(job);
+				}
+			});
+		});
+
 	});
 
-	res.redirect("/inProcess");
+	res.redirect("/upload/:"+job.id);
 });
 
 
 app.post("/result", function(req, res){
-	res.redirect("/showResult");
+	var jobId = req.body.JobIDInput.trim();
+	res.redirect("/jobs/:" + jobId);
 });
 
 
