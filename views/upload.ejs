@@ -12,10 +12,10 @@
                         <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/search"><i class="fas fa-search"></i> Search</a>
+                        <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/status"><i class="fas fa-list"></i> Status </a>
+                        <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
                     </li>
                 </ul>
             </div>
@@ -43,7 +43,7 @@
             </ul>
             <div class="tab-content pb-3" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-Sequence" role="tabpanel" aria-labelledby="pills-Sequence-tab">
-                <form class="prediction" action="/inSequenceProcess" method="POST">
+                <form class="prediction" action="/upload/sequence" method="POST">
                     <div class="form-row">
                         <div class="form-group col-12 col-lg-6">
                             <label for="sequenceInput">Sequence</label>
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="tab-pane fade" id="pills-File" role="tabpanel" aria-labelledby="pills-File-tab">
-                    <form class="prediction" action="/inFileProcess" method="POST" enctype="multipart/form-data">
+                    <form class="prediction" action="/upload/file" method="POST" enctype="multipart/form-data">
                         <div class="form-row">
                             <div class="form-group col-12 col-lg-6">
                                 <p>Upload file</p>

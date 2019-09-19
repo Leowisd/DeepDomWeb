@@ -9,34 +9,55 @@ var express 	= require("express"),
 
 
 // mongoose.connect("mongodb://localhost/deepdom");
+
 const upload = multer({
 	dest: 'data/upload'
 });
-app.use(upload.any());
+app.use(upload.any()); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine","ejs");
 
+// SCHEMA SETUP
+var jobInfoSchema = new mongoose.Schema({
+	nickName: String,
+	uploadSequence: String,
+	uploadFile: String,
+	inputFile: String,
+	resultFile: String,
+	email: String,
+	status: String,
+	finishedTime: Date
+});
+
+var jobInfo = mongoose.model("jobInfo", jobInfoSchema);
+
+
+// INDEX: show the landing page
 app.get("/", function(req, res){
-	res.render("landing");
+	res.render("INDEX");
 });
 
+// UPLOAD: show the upload page
 app.get("/upload", function(req, res){
-	res.render("upload");
+	res.render("UPLOAD");
 });
 
-app.get("/search", function(req, res){
-	res.render("search");
+// SEARCH: show the search page
+app.get("/jobs", function(req, res){
+	res.render("SEARCH");
 });
 
-//Get inprocess page
+// JOBINFO: show the current job info
 app.get("/inProcess", function(req, res){
-	res.render("inProcess");
+	res.render("JOBINFO");
 });
 
-app.get("/status", function(req, res){
-	res.render("status");
+// JOBSLIST: show all jos
+app.get("/jobs/all", function(req, res){
+	res.render("JOBSLIST");
 });
 
+// SHOW: show result
 app.get("/showResult", function(req, res){
 	var results = [];
 	var arr = [];
@@ -52,13 +73,13 @@ app.get("/showResult", function(req, res){
 			results.push(result);
 		}
 		// console.log(results);
-		res.render("showResult", {results: results});
+		res.render("SHOW", {results: results});
 	});
 });
 
 
 //Deal with sequence post
-app.post("/inSequenceProcess", function(req, res){
+app.post("/upload/sequence", function(req, res){
 	var sequence = req.body.sequenceInput;
 	if (sequence !== undefined){
 		//console.log(sequence);
@@ -103,11 +124,11 @@ app.post("/inSequenceProcess", function(req, res){
 		console.log('predict child process exit，exit code: '+code);
 	});
 
-	res.redirect("inProcess");
+	res.redirect("/inProcess");
 });
 
 //Deal with file post
-app.post("/inFileProcess", function(req, res){
+app.post("/upload/file", function(req, res){
 	// console.log(req.body);
 	var email = req.body.emailInput2;
 	if (email !== undefined)
@@ -151,11 +172,12 @@ app.post("/inFileProcess", function(req, res){
 		console.log('predict child process exit，exit code: '+code);
 	});
 
-	res.redirect("inProcess");
+	res.redirect("/inProcess");
 });
 
+
 app.post("/result", function(req, res){
-	res.redirect("showResult");
+	res.redirect("/showResult");
 });
 
 

@@ -15,3 +15,18 @@ todo: 解决两个子进程的顺序问题
 ### step 3
 * status显示任务信息
 * search 数据库
+
+
+RESTFUL ROUTES
+
+name                 url                  verb            desc.
+==========================================================================
+INDEX               /                     GET         show the landing page
+UPLOAD              /upload               GET         show the upload page
+SEQPROCESS          /upload/sequence      POST        deal with sequence, then redirect
+FILEPROCESS         /upload/file          POST        deal with uploaded file, then redirect
+JOBINFO             /upload/:id           GET         show the current job info to user
+SEARCH              /jobs                 GET         show the page to search jobs
+DRAW                /jobs/:id             POST        get job from database, then rediredct
+SHOW                /jobs/:id             GET         show the result
+JOBSLIST            /jobs/all             GET         show all tasks info
