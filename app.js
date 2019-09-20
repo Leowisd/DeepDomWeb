@@ -5,6 +5,7 @@ var express = require("express"),
 	multer = require('multer'),
 	fs = require("fs"),
 	nodemailer = require("nodemailer"),
+	sd = require("silly-datetime"),
 	exec = require('child_process').exec;
 
 
@@ -37,7 +38,7 @@ var jobInfoSchema = new mongoose.Schema({
 	file: String,
 	email: String,
 	status: String,
-	finishedTime: Date
+	submittedTime: String
 });
 
 var jobInfo = mongoose.model("jobInfo", jobInfoSchema);
@@ -100,19 +101,18 @@ app.get("/jobs/:id", function (req, res) {
 //Deal with sequence post
 app.post("/upload/sequence", function (req, res) {
 	var sequence = req.body.sequenceInput.trim();
-	if (sequence !== undefined) {
-		//console.log(sequence);
-		var email = req.body.emailInput1;
-	}
+	var email = req.body.emailInput1;
+	var nickName = req.body.nickName1;
 	// if (email !== undefined){
 	// 	console.log(email);
 	// }
 
 	var job = new jobInfo({
-		// nickName : nickName,
+		nickName : nickName,
 		sequence: sequence,
 		email: email,
-		status: "uploading"
+		status: "uploading",
+		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss')
 	});
 	job.file = job.id + '.txt';
 
@@ -232,13 +232,15 @@ app.post("/upload/sequence", function (req, res) {
 app.post("/upload/file", function (req, res) {
 
 	var email = req.body.emailInput2;
+	var nickName = req.body.nickName2;
 	// if (email !== undefined)
 	// 	console.log('email: ' + email);
 
 	var job = new jobInfo({
-		// nickName : nickName,
+		nickName : nickName,
 		email: email,
-		status: "uploading"
+		status: "uploading",
+		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss')
 	});
 	job.file = job.id + '.txt';
 
