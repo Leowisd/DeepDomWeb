@@ -75,6 +75,23 @@
                 <td>21:36:12 9/16/2019</td>
                 <td>Error <i class="fas fa-times"></i></td>
               </tr>
+              <% docs.forEach(function(element){ %>
+                <tr class="table-success">
+                  <th scope="row"><%= element.id %></th>
+                  <td><%= element.nickName%></td>
+                  <td><%= element.finishedTime%></td>
+                  <td><%= element.status%> 
+                    <% if (element.status === 'Done'){%>
+                      <i class="fas fa-check"></i></td>
+                    <% } else if (element.status === 'Processing') {%>
+                      <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    <%} else if (element.status === 'error'){%>
+                      <i class="fas fa-times"></i>
+                    <%}%>
+                </tr>
+              <% })%>
             </tbody>
           </table>
         </div>

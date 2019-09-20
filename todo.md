@@ -10,7 +10,7 @@ todo: ~~解决两个子进程的顺序问题~~
 ### step 2
 
 * ~~将job信息添加至数据库~~
-* eamil发送jobID， job完成后发送email
+* ~~eamil发送jobID， job完成后发送email~~
   
 ### step 3
 * status显示任务信息
