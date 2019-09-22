@@ -21,6 +21,8 @@ app.set("view engine", "ejs");
 
 
 // SMTP CONFIG
+// deepdom.service@gamil.com
+// deepdom@2019
 var config = {
 	host: 'smtp.gmail.com',
 	port: 465,

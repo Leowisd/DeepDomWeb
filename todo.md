@@ -13,7 +13,7 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~eamil发送jobID， job完成后发送email~~
   
 ### step 3
-* status显示任务信息
+* ~~status显示任务信息~~
 * search 数据库 （完成按id）
 * 完成prediction后页面变化
 
