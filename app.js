@@ -81,9 +81,18 @@ app.get("/jobs/:id", function (req, res) {
 	jobId = jobId.substr(1);
 
 
+	var file = jobId + '.txt';
+	// var ele = [];
+	var data = fs.readFileSync('data/input/' + file).toString().split('\n');
+	var seq = [];
+	for (var i = 0; i < data.length; i++){
+		if (i % 2 == 0){
+			seq.push(data[i+1]);
+		}
+	}
+
 	var results = [];
 	var arr = [];
-	var file = jobId + '.txt';
 	fs.readFile('data/results/' + file, function (err, data) {
 		if (err) {
 			return console.log(err);
@@ -91,11 +100,11 @@ app.get("/jobs/:id", function (req, res) {
 		arr = data.toString().split('\n');
 		for (var i = 0; i < arr.length; i++)
 			if (i % 2 == 0) {
-				var result = { name: arr[i], score: arr[i + 1] }
+				var result = { name: arr[i], score: arr[i + 1]}
 				results.push(result);
 			}
 		// console.log(results);
-		res.render("SHOW", { results: results });
+		res.render("SHOW", { results: results, seq: seq });
 	});
 });
 

@@ -16,6 +16,8 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~status显示任务信息~~
 * search 数据库 （完成按id）
 * 完成prediction后页面变化
+* ~~chart 加虚线，超过部分变色, 隐藏X轴下标~~
+* chart 改按button显示
 
 RESTFUL ROUTES
 

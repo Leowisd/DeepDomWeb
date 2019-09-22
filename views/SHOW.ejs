@@ -40,6 +40,11 @@
             <%= element.score %>,
         <% }) %>
     </p>
+    <p  class='d-none' id= 'seq'>
+        <% seq.forEach(function(element){ %>
+            <%= element%>,
+        <% }) %>
+    </p>
 
     <div class="container-border"></div>
 
@@ -60,6 +65,10 @@
             }
             score.length -= 2;
             console.log(score);
+
+            var seq = document.getElementById('seq').textContent.replace(/\ +/g,"").replace(/[\r\n]/g,"").split(',');
+            seq.length -= 2;
+            console.log(seq);
             
             for (var i = 0; i < score.length; i++){
 
@@ -72,47 +81,66 @@
                 container.appendChild(div);
                 
                 var xAxis = [];
-                for (var j = 1; j <= score[i].length; j++) xAxis[j] = j;
+                for (var j = 0; j <= score[i].length; j++) xAxis[j] = j + " : " + seq[i][j];
                 var gap = [];
-                for (var j = 1; j <= score[i].length; j++) gap = 0.45;
+                for (var j = 0; j <= score[i].length; j++) gap[j] = 0.45;
+                var overScore = [];
+                var belowScore = [];
+                for (var j = 0; j <= score[i].length; j++){
+                    if (score[i][j] <= gap[j]){
+                        overScore[j] = 0;
+                        belowScore[j] = score[i][j];
+                    } 
+                    else {
+                        overScore[j] = score[i][j] - gap[j];
+                        belowScore[j] = gap[j];
+                    }
+                }
+
                 var chartData = {
                     labels: xAxis,
                     datasets: [{
                         type: 'line',
-                        // label: '',
-                        borderColor: window.chartColors.blue,
+                        label: 'Score Gap',
+                        backgroundColor: 'rgb(0, 0, 0)',
+                        borderColor: 'rgb(0, 0, 0)',
                         borderWidth: 2,
                         fill: false,
-                        borderDash: [5, 5],
+                        borderDash: [3, 3],
+                        pointRadius: 1,
+                        pointHoverRadius: 5,
                         data: gap
                     },{
                         type: 'bar',
-                        // label: '',
-                        backgroundColor: window.chartColorss.red,
-                        borderColor: 'White',
-                        borderWidth: 2,
-                        data: score[i]
+                        label: 'Score',
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        data: belowScore
+                    },{
+                        type: 'bar',
+                        label: 'Over Score',
+                        backgroundColor: 'rgb(100, 100, 100)',
+                        data: overScore
                     }]
                 }
 
                 var ctx = canvas.getContext('2d');
                 new Chart(ctx, {
 		            type: 'bar',
-		            // data: {
-			        //     labels: xAxis,
-			        //     datasets: [{
-				    //         label: name[i],
-				    //         backgroundColor: 'rgb(255, 99, 132)',
-				    //         borderColor: 'rgb(255, 99, 132)',
-				    //         data: score[i]
-			        //     }]
-                    // }
                     data: chartData,
                     options:{
                         responsive: true,
                         title: {
                             display: true,
                             text: name[i]
+                        },
+                        scales:{
+                            xAxes: [{
+                                stacked: true,
+                                display: false
+                            }],
+                            yAxes: [{
+                                stacked: true
+                            }]
                         }
                     }
                 })
