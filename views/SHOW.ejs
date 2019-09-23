@@ -1,151 +1,170 @@
 <% include partials/header %>
 
-    <nav class="navbar navbar-expand-md navbar-light bg-light">     
-        <a class="navbar-brand" href="/">DeepDom</a>
-        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <a class="navbar-brand" href="/">DeepDom</a>
+    <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- <div class="container"> -->
+<div class="jumbotron jumbotron-fluid text-center">
+    <div class="container">
+        <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+        <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+    </div>
+</div>
+<!-- </div> -->
+
+<div class='d-none' id='name'>
+    <% results.forEach(function(element){ %>
+    <%= element.name%>,
+    <% }) %>
+</div>
+<p class='d-none' id='score'>
+    <% results.forEach(function(element){ %>
+    <%= element.score %>,
+    <% }) %>
+</p>
+<p class='d-none' id='seq'>
+    <% seq.forEach(function(element){ %>
+    <%= element%>,
+    <% }) %>
+</p>
+
+<div class="btn-group dropright">
+        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Choose one result to show!
         </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item" >
-                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
-                </li>
-            </ul>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenu">
+            <% var i = 0;%>
+            <% results.forEach(function(element){ %>
+            <button class="dropdown-item" type="button" id="<%= i %>"> <%= element.name.trim()%></button>
+            <% i = i + 1;%>
+            <% }) %>
         </div>
-    </nav>
+    </div>
+<div class="container-border"></div>
 
-    <!-- <div class="container"> -->
-        <div class="jumbotron jumbotron-fluid text-center">
-            <div class="container">
-                <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
-                <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
-            </div>
-        </div>
-    <!-- </div> -->
+<script>
+    window.onload = function () {
+    };
 
-    <div  class='d-none' id= 'name'>
-        <% results.forEach(function(element){ %>
-            <%= element.name%>,
-        <% }) %>
-     </div>
-    <p  class='d-none' id= 'score'>
-        <% results.forEach(function(element){ %>
-            <%= element.score %>,
-        <% }) %>
-    </p>
-    <p  class='d-none' id= 'seq'>
-        <% seq.forEach(function(element){ %>
-            <%= element%>,
-        <% }) %>
-    </p>
 
-    <div class="container-border"></div>
+    var names = document.getElementById('name').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
+    names.length -= 2;
+    // console.log(names);
 
-    <script>
-        window.onload = function(){            
-            var container = document.querySelector('.container-border');
+    var score = document.getElementById('score').textContent.replace(/[\r\n]/g, "").split(',');
+    for (var i = 0; i < score.length; i++) {
+        score[i] = score[i].trim().split(' ');
+        for (var j = 0; j < score[i].length; j++) {
+            score[i][j] = parseFloat(score[i][j]);
+        }
+    }
+    score.length -= 2;
+    // console.log(score);
 
-            var name = document.getElementById('name').textContent.replace(/\ +/g,"").replace(/[\r\n]/g,"").split(',');
-            name.length -= 2;
-            console.log(name);
-            
-            var score = document.getElementById('score').textContent.replace(/[\r\n]/g,"").split(',');
-            for (var i = 0; i< score.length; i++){
-                score[i] = score[i].trim().split(' ');
-                for (var j = 0; j < score[i].length; j++){
-                    score[i][j] = parseFloat(score[i][j]);
+    var seq = document.getElementById('seq').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
+    seq.length -= 2;
+    // console.log(seq);
+
+    var container = document.querySelector('.container-border');
+
+    for (var i = 0; i < score.length; i++) {
+        document.getElementById(i).onclick = function () {
+            container.innerHTML = "";
+            var div = document.createElement("div");
+            div.classList.add('chart-container');
+
+            var canvas = document.createElement("canvas");
+            div.appendChild(canvas);
+            container.appendChild(div);
+
+            var xAxis = [];
+            for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j + " : " + seq[this.id][j];
+            var gap = [];
+            for (var j = 0; j <= score[this.id].length; j++) gap[j] = 0.45;
+            var overScore = [];
+            var belowScore = [];
+            for (var j = 0; j <= score[this.id].length; j++) {
+                if (score[this.id][j] <= gap[j]) {
+                    overScore[j] = 0;
+                    belowScore[j] = score[this.id][j];
+                }
+                else {
+                    overScore[j] = score[this.id][j] - gap[j];
+                    belowScore[j] = gap[j];
                 }
             }
-            score.length -= 2;
-            console.log(score);
 
-            var seq = document.getElementById('seq').textContent.replace(/\ +/g,"").replace(/[\r\n]/g,"").split(',');
-            seq.length -= 2;
-            console.log(seq);
-            
-            for (var i = 0; i < score.length; i++){
-
-                var div = document.createElement("div");
-                // div.setAttribute("class.style", "none");
-                div.classList.add('chart-container');
-
-                var canvas = document.createElement("canvas");
-                div.appendChild(canvas);
-                container.appendChild(div);
-                
-                var xAxis = [];
-                for (var j = 0; j <= score[i].length; j++) xAxis[j] = j + " : " + seq[i][j];
-                var gap = [];
-                for (var j = 0; j <= score[i].length; j++) gap[j] = 0.45;
-                var overScore = [];
-                var belowScore = [];
-                for (var j = 0; j <= score[i].length; j++){
-                    if (score[i][j] <= gap[j]){
-                        overScore[j] = 0;
-                        belowScore[j] = score[i][j];
-                    } 
-                    else {
-                        overScore[j] = score[i][j] - gap[j];
-                        belowScore[j] = gap[j];
-                    }
-                }
-
-                var chartData = {
-                    labels: xAxis,
-                    datasets: [{
-                        type: 'line',
-                        label: 'Score Gap',
-                        backgroundColor: 'rgb(0, 0, 0)',
-                        borderColor: 'rgb(0, 0, 0)',
-                        borderWidth: 2,
-                        fill: false,
-                        borderDash: [3, 3],
-                        pointRadius: 1,
-                        pointHoverRadius: 5,
-                        data: gap
-                    },{
-                        type: 'bar',
-                        label: 'Score',
-                        backgroundColor: 'rgb(255, 99, 132)',
-                        data: belowScore
-                    },{
-                        type: 'bar',
-                        label: 'Over Score',
-                        backgroundColor: 'rgb(100, 100, 100)',
-                        data: overScore
-                    }]
-                }
-
-                var ctx = canvas.getContext('2d');
-                new Chart(ctx, {
-		            type: 'bar',
-                    data: chartData,
-                    options:{
-                        responsive: true,
-                        title: {
-                            display: true,
-                            text: name[i]
-                        },
-                        scales:{
-                            xAxes: [{
-                                stacked: true,
-                                display: false
-                            }],
-                            yAxes: [{
-                                stacked: true
-                            }]
-                        }
-                    }
-                })
+            var chartData = {
+                labels: xAxis,
+                datasets: [{
+                    type: 'line',
+                    label: 'Score Gap',
+                    backgroundColor: 'rgb(0, 0, 0)',
+                    borderColor: 'rgb(0, 0, 0)',
+                    borderWidth: 2,
+                    fill: false,
+                    borderDash: [3, 3],
+                    pointRadius: 1,
+                    pointHoverRadius: 5,
+                    data: gap
+                }, {
+                    type: 'bar',
+                    label: 'Score',
+                    backgroundColor: 'rgb(255, 255, 0)',
+                    data: belowScore
+                }, {
+                    type: 'bar',
+                    label: 'Over Score',
+                    backgroundColor: 'rgb(255, 0, 0)',
+                    data: overScore
+                }]
             }
+
+            var ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: names[this.id]
+                    },
+                    scales: {
+                        xAxes: [{
+                            stacked: true,
+                            display: false
+                        }],
+                        yAxes: [{
+                            stacked: true
+                        }]
+                    }
+                }
+            })
         };
-    </script>
+    };
+
+
+</script>
 
 <% include partials/footer%>
