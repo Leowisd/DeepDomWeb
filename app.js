@@ -104,8 +104,15 @@ app.get("/jobs/:id", function (req, res) {
 				results.push(result);
 			}
 		// console.log(results);
-		res.render("SHOW", { results: results, seq: seq });
+		res.render("SHOW", { results: results, seq: seq, file: file});
 	});
+});
+
+
+// DOWNLOAD: download the result file
+app.get("/jobs/download/:id",function(req, res){
+	var file = req.params.id.substr(1);
+	res.download("data/results/" + file);
 });
 
 

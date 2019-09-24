@@ -47,20 +47,32 @@
     <% }) %>
 </p>
 
-<div class="btn-group dropright">
-        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Choose one result to show!
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenu">
-            <% var i = 0;%>
-            <% results.forEach(function(element){ %>
-            <button class="dropdown-item" type="button" id="<%= i %>"> <%= element.name.trim()%></button>
-            <% i = i + 1;%>
-            <% }) %>
+<div class="container">
+    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button group">
+        <div class="btn-group-lg mr-4" role="group" aria-label="First group">
+            <% var address = "/jobs/download/:" + file%>
+            <a class="btn btn-primary" href="<%= address%>">
+                Download Result
+            </a>
+        </div>
+
+        <div class="btn-group-lg dropright  mt-4 mt-sm-0" role="group" aria-label="Second group">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Choose one result to show
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu">
+                <% var i = 0;%>
+                <% results.forEach(function(element){ %>
+                <button class="dropdown-item" type="button" id="<%= i %>"> <%= element.name.trim()%></button>
+                <% i = i + 1;%>
+                <% }) %>
+            </div>
         </div>
     </div>
-<div class="container-border"></div>
+</div>
+
+<div class="container-border mt-4 mx-auto col-12 col-xl-6"></div>
 
 <script>
     window.onload = function () {
@@ -79,17 +91,52 @@
         }
     }
     score.length -= 2;
-    // console.log(score);
+    console.log(score);
 
     var seq = document.getElementById('seq').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
     seq.length -= 2;
-    // console.log(seq);
+    console.log(seq);
 
     var container = document.querySelector('.container-border');
-
     for (var i = 0; i < score.length; i++) {
         document.getElementById(i).onclick = function () {
             container.innerHTML = "";
+
+            //Add a Button to show a collapse with sequence
+            var d = document.createElement('div');
+            d.classList.add("row");
+            d.classList.add("d-flex");
+            d.classList.add("justify-content-center");
+
+            var btn = document.createElement("button");
+            btn.classList.add("btn");
+            btn.classList.add("btn-primary");
+            btn.classList.add("btn-lg");
+            btn.textContent = "Show Current Sequence";
+            btn.setAttribute("data-target", "#collapseExample");
+            btn.setAttribute("type", "button");
+            btn.setAttribute("data-toggle", "collapse");
+            btn.setAttribute("aria-expanded", "false");
+            btn.setAttribute("aria-controls", "collapseExample");
+            d.appendChild(btn);
+
+            var collapse = document.createElement("div");
+            collapse.classList.add("collapse");
+            collapse.setAttribute("id", "collapseExample");
+            var card = document.createElement("div");
+            card.classList.add("card");
+            card.classList.add("card-body");
+            card.classList.add("text-center");
+            for (var k = 0; k < score[this.id].length; k++) 
+                if (seq[this.id][k] !== '-')    
+                    card.textContent += seq[this.id][k];
+            collapse.appendChild(card);
+
+            container.appendChild(d);
+            container.appendChild(collapse);
+            //////////////////////////////////////////////////
+
+            // draw chart
             var div = document.createElement("div");
             div.classList.add('chart-container');
 
@@ -163,7 +210,6 @@
             })
         };
     };
-
 
 </script>
 
