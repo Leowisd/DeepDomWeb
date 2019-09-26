@@ -65,13 +65,21 @@ app.get("/jobs", function (req, res) {
 app.get("/upload/:id", function (req, res) {
 	var jobId = req.params.id;
 	jobId = jobId.substr(1); // delete the ':'
-	res.render("JOBINFO", { jobId: jobId });
+
+	var flag = 0;
+	jobInfo.find({ _id: jobId }, function (err, docs) {
+		if (docs.length > 0)
+			if (docs[0].status === 'Done') {
+				flag = 1;
+			}
+		res.render("JOBINFO", { jobId: jobId, flag: flag });
+	});
 });
 
 // JOBSLIST: show all jos
 app.get("/jobs/all", function (req, res) {
-	jobInfo.find({}, function(err, docs){
-		res.render("JOBSLIST", {docs: docs});		
+	jobInfo.find({}, function (err, docs) {
+		res.render("JOBSLIST", { docs: docs });
 	});
 });
 
@@ -85,9 +93,9 @@ app.get("/jobs/:id", function (req, res) {
 	// var ele = [];
 	var data = fs.readFileSync('data/input/' + file).toString().split('\n');
 	var seq = [];
-	for (var i = 0; i < data.length; i++){
-		if (i % 2 == 0){
-			seq.push(data[i+1]);
+	for (var i = 0; i < data.length; i++) {
+		if (i % 2 == 0) {
+			seq.push(data[i + 1]);
 		}
 	}
 
@@ -100,17 +108,17 @@ app.get("/jobs/:id", function (req, res) {
 		arr = data.toString().split('\n');
 		for (var i = 0; i < arr.length; i++)
 			if (i % 2 == 0) {
-				var result = { name: arr[i], score: arr[i + 1]}
+				var result = { name: arr[i], score: arr[i + 1] }
 				results.push(result);
 			}
 		// console.log(results);
-		res.render("SHOW", { results: results, seq: seq, file: file});
+		res.render("SHOW", { results: results, seq: seq, file: file });
 	});
 });
 
 
 // DOWNLOAD: download the result file
-app.get("/jobs/download/:id",function(req, res){
+app.get("/jobs/download/:id", function (req, res) {
 	var file = req.params.id.substr(1);
 	res.download("data/results/" + file);
 });
@@ -126,7 +134,7 @@ app.post("/upload/sequence", function (req, res) {
 	// }
 
 	var job = new jobInfo({
-		nickName : nickName,
+		nickName: nickName,
 		sequence: sequence,
 		email: email,
 		status: "uploading",
@@ -255,7 +263,7 @@ app.post("/upload/file", function (req, res) {
 	// 	console.log('email: ' + email);
 
 	var job = new jobInfo({
-		nickName : nickName,
+		nickName: nickName,
 		email: email,
 		status: "uploading",
 		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss')

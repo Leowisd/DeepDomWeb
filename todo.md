@@ -18,10 +18,14 @@ todo: ~~解决两个子进程的顺序问题~~
 ### step 3
 * ~~status显示任务信息~~
 * search 数据库 （完成按id）
-* 完成prediction后页面变化
+* ~~完成prediction后Jobinfo页面变化~~
 * ~~chart 加虚线，超过部分变色, 隐藏X轴下标~~
 * ~~chart size 适应话改变， 增加下载功能，增加显示序列功能~~
-* chart 改按button显示
+* ~~chart 改按button显示~~
+
+### step 4
+* 实现点击任务列表跳转结果显示界面
+* 添加404页面
 
 RESTFUL ROUTES
 

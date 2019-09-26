@@ -1,52 +1,72 @@
 <% include partials/header %>
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">     
-        <a class="navbar-brand" href="/">DeepDom</a>
-        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item" >
-                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <a class="navbar-brand" href="/">DeepDom</a>
+    <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-    <!-- <div class="container"> -->
-            <div class="jumbotron jumbotron-fluid text-center">
-                <div class="container">
-                    <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
-                    <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
-                </div>
-            </div>
-    <!-- </div> -->
-
+<!-- <div class="container"> -->
+<div class="jumbotron jumbotron-fluid text-center">
     <div class="container">
-            <div class="d-flex justify-content-center">
-                <div class="spinner-border" role="status" id="processLogo">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-            <h1 class="display-4 text-center mt-3" > In Process </h1>
+        <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+        <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
     </div>
+</div>
+<!-- </div> -->
 
-    <div class="container mt-5">
-        <p class="text-center">
-            The job ID is:
-        </p>
-        <h3 class="text-center " id="jobIDOutput">
-            <%= jobId %>
-        </h3>
-        <center><button class="btn btn-primary mt-2" id="copyBtn"> Copy </button></center>
-
+<div class="container">
+    <% if (flag == 0){%>
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border"  style="width: 5rem; height: 5rem; color: green;" role="status" id="processLogo">
+            <span class="sr-only"> Loading...</span>
+        </div>
     </div>
+    <h1 class="display-4 text-center mt-3"> In Process </h1>
+    <%} else if (flag == 1){%>
+    <div class="d-flex justify-content-center">
+        <span style="font-size: 5rem; color: green;">
+            <i class="fas fa-check"></i>
+        </span>
+    </div>
+    <h1 class="display-4 text-center"> Completed! </h1>
+    <%}%>
+</div>
+
+<div class="container mt-5">
+    <p class="text-center">
+        The job ID is:
+    </p>
+    <h3 class="text-center " id="jobIDOutput">
+        <%= jobId %>
+    </h3>
+    <center><button class="btn btn-primary mt-2" id="copyBtn"> Copy </button></center>
+
+</div>
+
+<!-- auto fresh -->
+<script language="JavaScript">
+    if ("<%= flag%>" == 0) {
+        function myrefresh() {
+            window.location.reload();
+        }
+        setTimeout('myrefresh()', 2000); //20s refresh
+    }
+</script>
 
 <% include partials/footer %>
