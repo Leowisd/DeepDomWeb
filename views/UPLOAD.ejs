@@ -112,5 +112,17 @@
         </p>
     </div>
 
+    <script>
+    // custom-file-input displays the name of uploaded
+    $('.custom-file-input').on('change', function() { 
+        let fileName = $(this).val().split('\\').pop(); 
+        $(this).next('.custom-file-label').addClass("selected").html(fileName); 
+    });
+
+    // reset button clears the file name 
+    $('#reset').click(function(){
+        $('#fileLabel').text('Choose file');
+    })
+    </script>
 
 <% include partials/footer %>
