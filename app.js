@@ -18,7 +18,7 @@ const upload = multer({
 app.use(upload.any());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
-
+app.use(express.static('assets'))
 
 // SMTP CONFIG
 // deepdom.service@gamil.com

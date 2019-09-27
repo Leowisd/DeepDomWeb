@@ -49,14 +49,14 @@
 
 <div class="container">
     <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button group">
-        <div class="btn-group-lg mr-4" role="group" aria-label="First group">
+        <div class="btn-group mr-4" role="group" aria-label="First group">
             <% var address = "/jobs/download/:" + file%>
             <a class="btn btn-primary" href="<%= address%>">
                 Download Result
             </a>
         </div>
 
-        <div class="btn-group-lg dropright  mt-4 mt-sm-0" role="group" aria-label="Second group">
+        <div class="btn-group dropright  mt-4 mt-sm-0" role="group" aria-label="Second group">
             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 Choose one result to show
@@ -111,7 +111,7 @@
             var btn = document.createElement("button");
             btn.classList.add("btn");
             btn.classList.add("btn-primary");
-            btn.classList.add("btn-lg");
+            btn.classList.add("btn");
             btn.textContent = "Show Current Sequence";
             btn.setAttribute("data-target", "#collapseExample");
             btn.setAttribute("type", "button");

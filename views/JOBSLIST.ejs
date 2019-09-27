@@ -1,109 +1,258 @@
 <% include partials/header %>
 
-    <nav class="navbar navbar-expand-md navbar-light bg-light">     
-        <a class="navbar-brand" href="/">DeepDom</a>
-        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item " >
-                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status <span class="sr-only">(current)</span></a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <a class="navbar-brand" href="/">DeepDom</a>
+  <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <!-- <div class="container"> -->
-        <div class="jumbotron jumbotron-fluid text-center">
-            <div class="container">
-                <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
-                <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
-                <p class="d-none d-lg-block"></p>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item ">
+        <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status <span
+            class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- <div class="container"> -->
+<div class="jumbotron jumbotron-fluid text-center">
+  <div class="container">
+    <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+    <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+    <p class="d-none d-lg-block"></p>
+  </div>
+</div>
+<!-- </div> -->
+
+<div class="container">
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Attention:</strong> The information will auto refresh every 20 seconds!
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+</div>
+
+
+
+<style type="text/css">
+  table.dataTable thead {
+  cursor: pointer; }
+  table.dataTable thead > tr > th:active,
+  table.dataTable thead > tr > td:active {
+    outline: none; }
+
+div.dataTables_wrapper div.dataTables_length.d-flex.flex-row label {
+  margin-top: 1.2rem;
+  margin-right: 1rem; }
+
+div.dataTables_wrapper div.dataTables_length.d-flex.flex-row .select-wrapper.mdb-select span,
+div.dataTables_wrapper div.dataTables_length.d-flex.flex-row .select-wrapper.mdb-select .select-dropdown {
+  margin-top: 1rem; }
+
+div.dataTables_wrapper div.dataTables_length label, div.dataTables_wrapper div.dataTables_filter label {
+  text-align: left;
+  font-weight: normal;
+  padding-top: .5rem;
+  padding-bottom: .5rem; }
+
+div.dataTables_wrapper div.dataTables_length select,
+div.dataTables_wrapper div.dataTables_length input {
+  width: auto; }
+
+div.dataTables_wrapper div.dataTables_filter {
+  text-align: right; }
+  div.dataTables_wrapper div.dataTables_filter select,
+  div.dataTables_wrapper div.dataTables_filter input {
+    width: auto; }
+  div.dataTables_wrapper div.dataTables_filter input {
+    margin-left: .5rem;
+    display: inline-block; }
+
+div.dataTables_wrapper div.dataTables_info, div.dataTables_wrapper div.dataTables_paginate {
+  font-weight: normal;
+  padding-top: 1rem;
+  padding-bottom: 1rem; }
+
+div.dataTables_wrapper div.dataTables_paginate {
+  text-align: right;
+  margin: 0; }
+  div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
+    justify-content: flex-end; }
+    div.dataTables_wrapper div.dataTables_paginate ul.pagination .page-item.active .page-link:focus {
+      background-color: #4285f4; }
+    div.dataTables_wrapper div.dataTables_paginate ul.pagination .page-item .page-link:focus {
+      -webkit-box-shadow: none;
+      box-shadow: none; }
+
+@media (max-width: 767px) {
+  div.dataTables_wrapper div .dataTables_length,
+  div.dataTables_wrapper div .dataTables_filter,
+  div.dataTables_wrapper div .dataTables_info,
+  div.dataTables_wrapper div .dataTables_paginate ul.pagination {
+    text-align: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center; } }
+
+.bs-select select {
+  display: inline-block !important; }
+
+table.dataTable thead > tr > th.sorting_asc, table.dataTable thead > tr > th.sorting_desc, table.dataTable thead > tr > th.sorting,
+table.dataTable thead > tr > td.sorting_asc,
+table.dataTable thead > tr > td.sorting_desc,
+table.dataTable thead > tr > td.sorting {
+  padding-right: 30px; }
+
+table.dataTable thead > tr > th:active,
+table.dataTable thead > tr > td:active {
+  outline: none; }
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+  cursor: pointer;
+  position: relative; }
+
+table.dataTable thead .sorting:before, table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:after {
+  position: absolute;
+  bottom: 0.9em;
+  display: block;
+  opacity: 0.3; }
+
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:before {
+  right: 1em;
+  content: "\f0de"; }
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:after {
+  content: "\f0dd";
+  right: 16px; }
+
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:before,
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:after {
+  font-family: 'Font Awesome\ 5 Free';
+  font-weight: 900;
+  font-size: 1rem; }
+
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:after {
+  opacity: 1; }
+
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:after {
+  opacity: 0; }
+</style>
+
+<div class="container border ">
+  <div class="table-responsive-md">
+    <table class="table table-striped table-hover text-center" id="table">
+      <thead class="thead-black thead-dark">
+        <tr>
+          <th class="th-sm" scope="col">Job ID</th>
+          <th class="th-sm" scope="col">Job Nickname</th>
+          <th class="th-sm" scope="col">Submitted Time</th>
+          <th class="th-sm" scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-active">
+          <th scope="row">123456789ABCDEFG</th>
+          <td>Mark</td>
+          <td>2019-09-16 21:36:12</td>
+          <td>
+            Processing
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="sr-only">Loading...</span>
             </div>
-        </div>
-    <!-- </div> -->
-  
-    <div class="container">
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Attention:</strong> The information will auto refresh every 20 seconds!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    </div>
-    
-    <div class="container border ">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover text-center">
-            <thead class="thead-black">
-              <tr>
-                <th scope="col" >Job ID</th>
-                <th scope="col" >Job Nickname</th>
-                <th scope="col" >Submitted Time</th>
-                <th scope="col" >Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="table-active">
-                <th scope="row">123456789ABCDEFG</th>
-                <td>Mark</td>
-                <td>21:36:12 9/16/2019</td>
-                <td>
-                  Processing
-                  <div class="spinner-border spinner-border-sm" role="status">
-                      <span class="sr-only">Loading...</span>
-                  </div>
-                </td>                
-              </tr>
-              <tr class="table-success">
-                <th scope="row">123456789ABCDEFG</th>
-                <td>Jacob</td>
-                <td>21:36:12 9/16/2019</td>
-                <td>Done <i class="fas fa-check"></i></td>
-              </tr>
-              <tr class="table-danger">
-                <th scope="row">123456789ABCDEFG</th>
-                <td>Larry</td>
-                <td>21:36:12 9/16/2019</td>
-                <td>Error <i class="fas fa-times"></i></td>
-              </tr>
-              <% docs.forEach(function(element){ %>
-                <tr class="table-success">
-                  <th scope="row"><%= element.id %></th>
-                  <td><%= element.nickName%></td>
-                  <td><%= element.submittedTime%></td>
-                  <td><%= element.status%> 
-                    <% if (element.status === 'Done'){%>
-                      <i class="fas fa-check"></i></td>
-                    <% } else if (element.status === 'Processing') {%>
-                      <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="sr-only">Loading...</span>
-                      </div>
-                    <%} else if (element.status === 'error'){%>
-                      <i class="fas fa-times"></i>
-                    <%}%>
+          </td>
+        </tr>
+        <tr class="table-success">
+          <th scope="row">123456789ABCDEFG</th>
+          <td>Jacob</td>
+          <td>2019-09-16 21:36:12</td>
+          <td>Done <i class="fas fa-check"></i></td>
+        </tr>
+        <tr class="table-danger">
+          <th scope="row">123456789ABCDEFG</th>
+          <td>Larry</td>
+          <td>2019-09-16 21:36:12</td>
+          <td>Error <i class="fas fa-times"></i></td>
+        </tr>
+        <% docs.forEach(function(element){ %>
+        <tr class="table-success">
+          <th scope="row"><a href="/jobs/:<%= element.id %>" style="color:black;text-decoration:none;"> <%= element.id %></a></th>
+          <td><%= element.nickName%></td>
+          <td><%= element.submittedTime%></td>
+          <td><%= element.status%>
+            <% if (element.status === 'Done'){%>
+            <i class="fas fa-check"></i></td>
+          <% } else if (element.status === 'Processing') {%>
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <%} else if (element.status === 'error'){%>
+          <i class="fas fa-times"></i>
+          <%}%>
                 </tr>
               <% })%>
-            </tbody>
-          </table>
-        </div>
-    </div>
-    
-    <!-- auto fresh -->
-    <script language="JavaScript">
-        function myrefresh()
-        {
-        window.location.reload();
-        }
-        setTimeout('myrefresh()',20000); //20s refresh
-    </script>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- auto fresh -->
+<script language="JavaScript">
+  function myrefresh() {
+    window.location.reload();
+  }
+  setTimeout('myrefresh()', 200000); //20s refresh
+
+  $(document).ready(function () {
+    $('#table').DataTable({
+      "order": [[ 2, "desc" ]]
+    });
+    $('.dataTables_length').addClass('bs-select');
+  });
+</script>
 
 <% include partials/footer %>
