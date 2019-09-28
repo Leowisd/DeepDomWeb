@@ -1,5 +1,7 @@
 import sys
 import os
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import re
 import pandas as pd
 import keras.utils.np_utils as kutils
