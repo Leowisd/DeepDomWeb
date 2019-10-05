@@ -33,7 +33,7 @@
 <div class="container">
     <% if (flag == 0){%>
     <div class="d-flex justify-content-center">
-        <div class="spinner-border"  style="width: 5rem; height: 5rem; color: green;" role="status" id="processLogo">
+        <div class="spinner-border" style="width: 5rem; height: 5rem; color: green;" role="status" id="processLogo">
             <span class="sr-only"> Loading...</span>
         </div>
     </div>
@@ -52,11 +52,12 @@
     <p class="text-center">
         The job ID is:
     </p>
-    <h3 class="text-center " id="jobIDOutput">
-        <%= jobId %>
-    </h3>
+    <% if (flag == 0){%>
+    <button class="btn btn-primary btn-lg" disabled><%= jobId %></button>
+    <%} else if (flag == 1){%>
+    <center><a class="btn btn-primary btn-lg" href="/jobs/:<%= jobId %>"> <%= jobId %></a></center>>
+    <%}%>
     <center><button class="btn btn-primary mt-2" id="copyBtn"> Copy </button></center>
-
 </div>
 
 <!-- auto fresh -->
@@ -69,15 +70,15 @@
     }
 
     // create a copy button
-    $('#copyBtn').click(function(){
+    $('#copyBtn').click(function () {
         const input = document.createElement('input');
         document.body.appendChild(input);
         input.setAttribute('readonly', 'readonly')
- 	    input.setAttribute('value', $('#jobIDOutput').text().trim());
+        input.setAttribute('value', $('#jobIDOutput').text().trim());
         $(input).select();
         // input.setSelectionRange(0, 9999);
-	    if (document.execCommand('copy')) {
-		    document.execCommand('copy');
+        if (document.execCommand('copy')) {
+            document.execCommand('copy');
             console.log('copy success');
             alert("Copy Success!");
         }
@@ -85,4 +86,4 @@
     })
 </script>
 
-<% include partials/footer %>
+    <% include partials/footer %>
