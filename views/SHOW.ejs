@@ -127,8 +127,8 @@
             card.classList.add("card");
             card.classList.add("card-body");
             card.classList.add("text-center");
-            for (var k = 0; k < score[this.id].length; k++) 
-                if (seq[this.id][k] !== '-')    
+            for (var k = 0; k < score[this.id].length; k++)
+                if (seq[this.id][k] !== '-')
                     card.textContent += seq[this.id][k];
             collapse.appendChild(card);
 
@@ -145,19 +145,22 @@
             container.appendChild(div);
 
             var xAxis = [];
-            for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j + " : " + seq[this.id][j];
+            // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j + " : " + seq[this.id][j];
+            for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
             var gap = [];
             for (var j = 0; j <= score[this.id].length; j++) gap[j] = 0.45;
             var overScore = [];
             var belowScore = [];
             for (var j = 0; j <= score[this.id].length; j++) {
                 if (score[this.id][j] <= gap[j]) {
-                    overScore[j] = 0;
+                    overScore[j] = "NaN";
                     belowScore[j] = score[this.id][j];
+                    if (j > 0 && belowScore[j-1] == 'NaN') overScore[j] = score[this.id][j];
                 }
                 else {
-                    overScore[j] = score[this.id][j] - gap[j];
-                    belowScore[j] = gap[j];
+                    overScore[j] = score[this.id][j];
+                    belowScore[j] = "NaN";
+                    if (j > 0 && overScore[j-1] == 'NaN') overScore[j-1] = belowScore[j-1];
                 }
             }
 
@@ -166,7 +169,7 @@
                 datasets: [{
                     type: 'line',
                     label: 'Score Gap',
-                    backgroundColor: 'rgb(0, 0, 0)',
+                    // backgroundColor: 'rgb(0, 0, 0)',
                     borderColor: 'rgb(0, 0, 0)',
                     borderWidth: 2,
                     fill: false,
@@ -175,21 +178,31 @@
                     pointHoverRadius: 5,
                     data: gap
                 }, {
-                    type: 'bar',
+                    type: 'line',
                     label: 'Score',
-                    backgroundColor: 'rgb(255, 255, 0)',
+                    borderColor: 'rgb(255,255,0)',
+                    pointStyle: "star",
+                    pointBorderColor: 'rgb(0,0,255)',
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    fill: false,
+                    lineTension: 0,
                     data: belowScore
                 }, {
-                    type: 'bar',
+                    type: 'line',
                     label: 'Over Score',
-                    backgroundColor: 'rgb(255, 0, 0)',
+                    borderColor: 'rgb(255,255,0)',
+                    pointStyle: "star",
+                    pointBorderColor: 'rgb(255,0,0)',
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    fill: false,
+                    lineTension: 0,
                     data: overScore
                 }]
             }
 
             var ctx = canvas.getContext('2d');
             new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: chartData,
                 options: {
                     responsive: true,
@@ -199,12 +212,33 @@
                     },
                     scales: {
                         xAxes: [{
-                            stacked: true,
-                            display: false
+                            // stacked: true,
+                            // display: true
                         }],
                         yAxes: [{
-                            stacked: true
+                            // stacked: true
                         }]
+                    },
+                    pan: {
+                        // Boolean to enable panning
+                        enabled: true,
+
+                        // Panning directions. Remove the appropriate direction to disable 
+                        // Eg. 'y' would only allow panning in the y direction
+                        mode: 'xy'
+                    },
+
+                    // Container for zoom options
+                    zoom: {
+                        // Boolean to enable zooming
+                        enabled: true,
+                        // drag: true,
+                        
+                        // Zooming directions. Remove the appropriate direction to disable 
+                        // Eg. 'y' would only allow zooming in the y direction
+                        mode: 'xy',
+
+                        speed: 0.2
                     }
                 }
             })

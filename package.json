@@ -19,6 +19,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "chart.js": "^2.8.0",
+    "chartjs-plugin-zoom": "^0.7.4",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
     "mongoose": "^5.7.1",
