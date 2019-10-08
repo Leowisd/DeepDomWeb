@@ -72,7 +72,7 @@
     </div>
 </div>
 
-<div class="container-border mt-4 mx-auto col-12 col-xl-8"></div>
+<div class="container-border mt-4 mx-auto col-12 col-lg-8 col-xl-6"></div>
 
 <script>
     window.onload = function () {
@@ -129,7 +129,7 @@
             card.classList.add("text-center");
             for (var k = 0; k < score[this.id].length; k++)
                 if (seq[this.id][k] !== '-')
-                    card.textContent += seq[this.id][k];
+                    card.textContent += k+1 + ':' + seq[this.id][k] + ' ';
             collapse.appendChild(card);
 
             container.appendChild(d);
@@ -145,8 +145,8 @@
             container.appendChild(div);
 
             var xAxis = [];
-            // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j + " : " + seq[this.id][j];
-            for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
+            for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j + " : " + seq[this.id][j];
+            // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
             var gap = [];
             for (var j = 0; j <= score[this.id].length; j++) gap[j] = 0.45;
             var overScore = [];
@@ -155,12 +155,12 @@
                 if (score[this.id][j] <= gap[j]) {
                     overScore[j] = "NaN";
                     belowScore[j] = score[this.id][j];
-                    if (j > 0 && belowScore[j-1] == 'NaN') overScore[j] = score[this.id][j];
+                    if (j > 0 && belowScore[j - 1] == 'NaN') overScore[j] = score[this.id][j];
                 }
                 else {
                     overScore[j] = score[this.id][j];
                     belowScore[j] = "NaN";
-                    if (j > 0 && overScore[j-1] == 'NaN') overScore[j-1] = belowScore[j-1];
+                    if (j > 0 && overScore[j - 1] == 'NaN') overScore[j - 1] = belowScore[j - 1];
                 }
             }
 
@@ -233,13 +233,88 @@
                         // Boolean to enable zooming
                         enabled: true,
                         // drag: true,
-                        
+
                         // Zooming directions. Remove the appropriate direction to disable 
                         // Eg. 'y' would only allow zooming in the y direction
                         mode: 'xy',
 
                         speed: 0.2
                     }
+
+                    // tooltips: {
+                    //     // Disable the on-canvas tooltip
+                    //     enabled: false,
+
+                    //     custom: function (tooltipModel) {
+                    //         // Tooltip Element
+                    //         var tooltipEl = document.getElementById('chartjs-tooltip');
+
+                    //         // Create element on first render
+                    //         if (!tooltipEl) {
+                    //             tooltipEl = document.createElement('div');
+                    //             tooltipEl.id = 'chartjs-tooltip';
+                    //             tooltipEl.innerHTML = "<table></table>";
+                    //             document.body.appendChild(tooltipEl);
+                    //         }
+
+                    //         // Hide if no tooltip
+                    //         if (tooltipModel.opacity === 0) {
+                    //             tooltipEl.style.opacity = 0;
+                    //             return;
+                    //         }
+
+                    //         // Set caret Position
+                    //         tooltipEl.classList.remove('above', 'below', 'no-transform');
+                    //         if (tooltipModel.yAlign) {
+                    //             tooltipEl.classList.add(tooltipModel.yAlign);
+                    //         } else {
+                    //             tooltipEl.classList.add('no-transform');
+                    //         }
+
+                    //         function getBody(bodyItem) {
+                    //             return bodyItem.lines;
+                    //         }
+
+                    //         // Set Text
+                    //         if (tooltipModel.body) {
+                    //             var titleLines = tooltipModel.title || [];
+                    //             var bodyLines = tooltipModel.body.map(getBody);
+
+                    //             var innerHtml = '<thead>';
+
+                    //             titleLines.forEach(function (title) {
+                    //                 innerHtml += '<tr><th>' + title + '</th></tr>';
+                    //             });
+                    //             innerHtml += '</thead><tbody>';
+
+                    //             bodyLines.forEach(function (body, i) {
+                    //                 var colors = tooltipModel.labelColors[i];
+                    //                 var style = 'background:' + colors.backgroundColor;
+                    //                 style += '; border-color:' + colors.borderColor;
+                    //                 style += '; border-width: 2px';
+                    //                 var span = '<span style="' + style + '"></span>';
+                    //                 innerHtml += '<tr><td>' + span + body + '</td></tr>';
+                    //             });
+                    //             innerHtml += '</tbody>';
+
+                    //             var tableRoot = tooltipEl.querySelector('table');
+                    //             tableRoot.innerHTML = innerHtml;
+                    //         }
+
+                    //         // `this` will be the overall tooltip
+                    //         var position = this._chart.canvas.getBoundingClientRect();
+
+                    //         // Display, position, and set styles for font
+                    //         tooltipEl.style.opacity = 1;
+                    //         tooltipEl.style.position = 'absolute';
+                    //         tooltipEl.style.left = position.left + tooltipModel.caretX + 'px';
+                    //         tooltipEl.style.top = position.top + tooltipModel.caretY + 'px';
+                    //         tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
+                    //         tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
+                    //         tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+                    //         tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px';
+                    //     }
+                    // }
                 }
             })
         };

@@ -90,30 +90,57 @@ app.get("/jobs/:id", function (req, res) {
 
 
 	var file = jobId + '.txt';
-	// var ele = [];
-	var data = fs.readFileSync('data/input/' + file).toString().split('\n');
-	var seq = [];
-	for (var i = 0; i < data.length; i++) {
-		if (i % 2 == 0) {
-			seq.push(data[i + 1]);
-		}
-	}
 
 	var results = [];
-	var arr = [];
-	fs.readFile('data/results/' + file, function (err, data) {
-		if (err) {
-			return console.log(err);
-		}
-		arr = data.toString().split('\n');
-		for (var i = 0; i < arr.length; i++)
+	var arr = fs.readFileSync('data/results/' + file).toString().split('\n');
+	for (var i = 0; i < arr.length; i++)
 			if (i % 2 == 0) {
 				var result = { name: arr[i], score: arr[i + 1] }
 				results.push(result);
 			}
-		// console.log(results);
-		res.render("SHOW", { results: results, seq: seq, file: file });
-	});
+	
+	var data = fs.readFileSync('data/input/' + file).toString().split('\n');
+	var seq = [];
+	var j = 0;
+	for (var i = 0; i < results.length; i++){
+		var name = results[i].name;
+		var s = "";
+		var num = 0;
+		while(j < data.length){
+			var tmp = data[j].lastIndexOf('_');
+			var na = data[j].substring(0, tmp);
+			
+			if (name === na){
+				if (s != ""){
+					if (num > 0){
+						s = s.substring(0, 80*num);
+					}
+				}
+				s += data[j + 1];
+				j += 2;
+				num ++;
+			}
+			else {
+				seq.push(s);
+				s = "";
+				break;
+			}
+		}
+	}	
+	res.render("SHOW", { results: results, seq: seq, file: file });	
+	// fs.readFile('data/results/' + file, function (err, data) {
+	// 	if (err) {
+	// 		return console.log(err);
+	// 	}
+	// 	arr = data.toString().split('\n');
+	// 	for (var i = 0; i < arr.length; i++)
+	// 		if (i % 2 == 0) {
+	// 			var result = { name: arr[i], score: arr[i + 1] }
+	// 			results.push(result);
+	// 		}
+	// 	// console.log(results);
+	// 	res.render("SHOW", { results: results, seq: seq, file: file });
+	// });
 });
 
 
