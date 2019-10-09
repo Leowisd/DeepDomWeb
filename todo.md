@@ -28,7 +28,7 @@ todo: ~~解决两个子进程的顺序问题~~
 
 ### step 5
 * ~~增加zoom in/out 功能~~
-* 添加drag to zoom和reset to default的按钮
+* ~~添加drag to zoom和reset to default的按钮~~
 * ~~修改sequence错误~~
 * 更改tool tip 样式，改为显示附近的序列
 

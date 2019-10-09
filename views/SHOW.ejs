@@ -129,11 +129,50 @@
             card.classList.add("text-center");
             for (var k = 0; k < score[this.id].length; k++)
                 if (seq[this.id][k] !== '-')
-                    card.textContent += k+1 + ':' + seq[this.id][k] + ' ';
+                    card.textContent += k + 1 + ':' + seq[this.id][k] + ' ';
             collapse.appendChild(card);
 
             container.appendChild(d);
             container.appendChild(collapse);
+
+            //////////////////////////////////////////////////
+            //Add reset-zoom, pan-switch, drag-switch button
+            var btnSet = document.createElement('div');
+            btnSet.classList.add("btn-group");
+            btnSet.classList.add("btn-group-sm");
+            btnSet.classList.add("float-right");
+            btnSet.classList.add("mt-3");
+
+            var btnReset = document.createElement('button');
+            btnReset.classList.add("btn");
+            btnReset.classList.add("btn-secondary");
+            btnReset.setAttribute("type", "button");
+            btnReset.setAttribute("id", "resetZoom");
+            btnReset.setAttribute("onclick", "resetZoom()");
+            btnReset.textContent = "Reset Zoom";
+
+            var btnPan = document.createElement('button');
+            btnPan.classList.add("btn");
+            btnPan.classList.add("btn-secondary");
+            btnPan.setAttribute("type", "button");
+            btnPan.setAttribute("id", "pan-switch");
+            btnPan.setAttribute("onclick", "togglePan()");
+            btnPan.textContent = "Disable Pan";
+
+            var btnDrag = document.createElement('button');
+            btnDrag.classList.add("btn");
+            btnDrag.classList.add("btn-secondary");
+            btnDrag.setAttribute("type", "button");
+            btnDrag.setAttribute("id", "drag-switch");
+            btnDrag.setAttribute("onclick", "toggleDragMode()");
+            btnDrag.textContent = "Enable drag mode";
+
+            btnSet.appendChild(btnReset);
+            btnSet.appendChild(btnPan);
+            btnSet.appendChild(btnDrag);
+
+            container.appendChild(btnSet);
+
             //////////////////////////////////////////////////
 
             // draw chart
@@ -201,7 +240,7 @@
             }
 
             var ctx = canvas.getContext('2d');
-            new Chart(ctx, {
+            window.myline = new Chart(ctx, {
                 type: 'line',
                 data: chartData,
                 options: {
@@ -219,27 +258,26 @@
                             // stacked: true
                         }]
                     },
-                    pan: {
-                        // Boolean to enable panning
-                        enabled: true,
+                    // pan: {
+                    //     // Boolean to enable panning
+                    //     enabled: true,
 
-                        // Panning directions. Remove the appropriate direction to disable 
-                        // Eg. 'y' would only allow panning in the y direction
-                        mode: 'xy'
-                    },
+                    //     // Panning directions. Remove the appropriate direction to disable 
+                    //     // Eg. 'y' would only allow panning in the y direction
+                    //     mode: 'xy'
+                    // },
 
                     // Container for zoom options
-                    zoom: {
-                        // Boolean to enable zooming
-                        enabled: true,
-                        // drag: true,
+                    // zoom: {
+                    //     // Boolean to enable zooming
+                    //     enabled: true,
 
-                        // Zooming directions. Remove the appropriate direction to disable 
-                        // Eg. 'y' would only allow zooming in the y direction
-                        mode: 'xy',
+                    //     // Zooming directions. Remove the appropriate direction to disable 
+                    //     // Eg. 'y' would only allow zooming in the y direction
+                    //     mode: 'xy',
 
-                        speed: 0.2
-                    }
+                    //     speed: 0.2
+                    // }
 
                     // tooltips: {
                     //     // Disable the on-canvas tooltip
@@ -317,7 +355,46 @@
                     // }
                 }
             })
+
+            var chart = window.myline;
+            var zoomOptions = chart.options.plugins.zoom.zoom;
+            zoomOptions.enabled = !zoomOptions.enabled;
+            // zoomOptions.drag = zoomOptions.drag;
+            var panOptions = chart.options.plugins.zoom;
+            panOptions.pan.enabled = !panOptions.pan.enabled;
+            chart.update();
         };
+    };
+    
+    window.resetZoom = function() {
+			window.myline.resetZoom();
+		};
+
+    window.togglePan = function () {
+        var chart = window.myline;
+        var panOptions = chart.options.plugins.zoom;
+        panOptions.pan.enabled = !panOptions.pan.enabled;
+
+        var zoomOptions = chart.options.plugins.zoom.zoom;
+        if (panOptions.pan.enabled && zoomOptions.drag) zoomOptions.drag = !zoomOptions.drag;
+
+        chart.update();
+        document.getElementById('drag-switch').innerText = zoomOptions.drag ? 'Disable drag mode' : 'Enable drag mode';
+        document.getElementById('pan-switch').innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
+    };
+
+    window.toggleDragMode = function() {
+        var chart = window.myline;
+        var zoomOptions = chart.options.plugins.zoom.zoom;
+        zoomOptions.drag = !zoomOptions.drag;
+
+        var panOptions = chart.options.plugins.zoom;
+        if (panOptions.pan.enabled && zoomOptions.drag) panOptions.pan.enabled = !panOptions.pan.enabled;
+        if (!panOptions.pan.enabled && !zoomOptions.drag) panOptions.pan.enabled = !panOptions.pan.enabled;
+
+        chart.update();
+        document.getElementById('drag-switch').innerText = zoomOptions.drag ? 'Disable drag mode' : 'Enable drag mode';
+        document.getElementById('pan-switch').innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
     };
 
 </script>
