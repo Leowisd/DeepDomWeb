@@ -30,10 +30,15 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~增加zoom in/out 功能~~
 * ~~添加drag to zoom和reset to default的按钮~~
 * ~~修改sequence错误~~
+* ~~添加列表搜索框功能~~
+* 更改seq显示样式
+* 增加多选功能
+* 增加返回顶部功能(悬浮框)
 * 更改tool tip 样式，改为显示附近的序列
 
 ### step 6
 * 增加数据库自动清理功能
+* 更换数据传输为ajax
 
 
 RESTFUL ROUTES
@@ -49,7 +54,7 @@ SEARCH              /jobs                 GET         show the page to search jo
 DRAW                /result               POST        get job from database, then rediredct
 SHOW                /jobs/:id             GET         show the result
 JOBSLIST            /jobs/all             GET         show all tasks info
-DOWNLOAD			/jobs/download/:id   GET	      download the result file
+DOWNLOAD			/jobs/download/:id    GET	      download the result file
 
 
 var jobInfoSchema = new mongoose.Schema({
