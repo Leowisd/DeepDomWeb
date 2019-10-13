@@ -74,6 +74,9 @@
 <script>
     // window.onload = function () {
     // };
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
 
     var names = document.getElementById('name').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
     names.length -= 2;
@@ -107,31 +110,23 @@
         d.classList.add("justify-content-center");
 
         var btn = document.createElement("button");
+        btn.setAttribute("type", "button");
         btn.classList.add("btn");
-        btn.classList.add("btn-primary");
+        btn.classList.add("btn-secondary");
         btn.classList.add("btn-sm");
         btn.textContent = "Show Current Sequence";
-        btn.setAttribute("data-target", "#collapseExample");
-        btn.setAttribute("type", "button");
-        btn.setAttribute("data-toggle", "collapse");
-        btn.setAttribute("aria-expanded", "false");
-        btn.setAttribute("aria-controls", "collapseExample");
-        d.appendChild(btn);
-
-        var collapse = document.createElement("div");
-        collapse.classList.add("collapse");
-        collapse.setAttribute("id", "collapseExample");
-        var card = document.createElement("div");
-        card.classList.add("card");
-        card.classList.add("card-body");
-        card.classList.add("text-center");
+        // btn.setAttribute("data-container", "body");
+        btn.setAttribute("data-toggle", "popover");
+        btn.setAttribute("data-placement", "top");
+        var seqData = "";
         for (var k = 0; k < score[id].length; k++)
             if (seq[id][k] !== '-')
-                card.textContent += seq[id][k];
-        collapse.appendChild(card);
+                seqData += seq[id][k];
+        btn.setAttribute("data-content", seqData);
+        d.appendChild(btn);
 
         container.appendChild(d);
-        container.appendChild(collapse);
+        $('[data-toggle="popover"]').popover()
 
         //////////////////////////////////////////////////
         //Add reset-zoom, pan-switch, drag-switch button
@@ -395,5 +390,15 @@
     };
 
 </script>
+
+<style type="text/css">
+    .popover{
+        max-width:50%;
+        background-color: #6c757d;
+    }
+    .popover-body{
+        color: white;
+    }
+</style>
 
 <% include partials/footer%>
