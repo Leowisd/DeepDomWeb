@@ -107,6 +107,8 @@
     var sideNav = document.querySelector('.sidenav');
     var navCopy = sideNav.innerHTML;
 
+    window.myline = [];
+
     $(".selectpicker").change(function () {
         var idList = $(".selectpicker").val();
         // console.log(idList);
@@ -118,11 +120,6 @@
         for (var i = 0; i < idList.length; i++) {
 
             var id = idList[i];
-            
-            //Add list to side bar
-            var a = document.createElement("a");
-            a.textContent = names[id];
-            sideNav.appendChild(a);
 
             var container = document.createElement("container");
 
@@ -163,24 +160,54 @@
             btnReset.classList.add("btn");
             btnReset.classList.add("btn-secondary");
             btnReset.setAttribute("type", "button");
-            btnReset.setAttribute("id", "resetZoom");
-            btnReset.setAttribute("onclick", "resetZoom()");
+            btnReset.setAttribute("id", "resetZoom" + id);
+            btnReset.onclick = function () {
+                var cur = parseInt(this.id.substring(9));
+                window.myline[cur].resetZoom();
+            };
             btnReset.textContent = "Reset Zoom";
 
             var btnPan = document.createElement('button');
             btnPan.classList.add("btn");
             btnPan.classList.add("btn-secondary");
             btnPan.setAttribute("type", "button");
-            btnPan.setAttribute("id", "pan-switch");
-            btnPan.setAttribute("onclick", "togglePan()");
+            btnPan.setAttribute("id", "pan-switch" + id);
+            btnPan.onclick = function () {
+                var cur = parseInt(this.id.substring(10));
+
+                var chart = window.myline[cur];
+                var panOptions = chart.options.plugins.zoom;
+                panOptions.pan.enabled = !panOptions.pan.enabled;
+
+                var zoomOptions = chart.options.plugins.zoom.zoom;
+                if (panOptions.pan.enabled && zoomOptions.drag) zoomOptions.drag = !zoomOptions.drag;
+
+                chart.update();
+                document.getElementById('drag-switch' + cur).innerText = zoomOptions.drag ? 'Disable drag mode' : 'Enable drag mode';
+                document.getElementById('pan-switch' + cur).innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
+            };
             btnPan.textContent = "Disable Pan";
 
             var btnDrag = document.createElement('button');
             btnDrag.classList.add("btn");
             btnDrag.classList.add("btn-secondary");
             btnDrag.setAttribute("type", "button");
-            btnDrag.setAttribute("id", "drag-switch");
-            btnDrag.setAttribute("onclick", "toggleDragMode()");
+            btnDrag.setAttribute("id", "drag-switch" + id);
+            btnDrag.onclick = function () {
+                var cur = parseInt(this.id.substring(11));
+
+                var chart = window.myline[cur];
+                var zoomOptions = chart.options.plugins.zoom.zoom;
+                zoomOptions.drag = !zoomOptions.drag;
+
+                var panOptions = chart.options.plugins.zoom;
+                if (panOptions.pan.enabled && zoomOptions.drag) panOptions.pan.enabled = !panOptions.pan.enabled;
+                if (!panOptions.pan.enabled && !zoomOptions.drag) panOptions.pan.enabled = !panOptions.pan.enabled;
+
+                chart.update();
+                document.getElementById('drag-switch' + cur).innerText = zoomOptions.drag ? 'Disable drag mode' : 'Enable drag mode';
+                document.getElementById('pan-switch' + cur).innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
+            };
             btnDrag.textContent = "Enable drag mode";
 
             btnSet.appendChild(btnReset);
@@ -257,7 +284,7 @@
             }
 
             var ctx = canvas.getContext('2d');
-            window.myline = new Chart(ctx, {
+            window.myline[id] = new Chart(ctx, {
                 type: 'line',
                 data: chartData,
                 options: {
@@ -278,7 +305,7 @@
                 }
             })
 
-            var chart = window.myline;
+            var chart = window.myline[id];
             var zoomOptions = chart.options.plugins.zoom.zoom;
             zoomOptions.enabled = !zoomOptions.enabled;
             // zoomOptions.drag = zoomOptions.drag;
@@ -286,73 +313,57 @@
             panOptions.pan.enabled = !panOptions.pan.enabled;
             chart.update();
         }
+
+        //Add list to side bar
+        for (var i = 0; i < idList.length; i++) {
+            var id = idList[i];
+
+            var a = document.createElement("a");
+            a.textContent = names[id];
+            a.classList.add("list-group-item");
+            a.classList.add("list-group-item-action");
+            a.classList.add("list-group-item-dark");
+            a.setAttribute("style", "font-size: 15px;");
+            a.setAttribute("id", "goto" + id);
+            a.onclick = function () {
+                var cur = parseInt(this.id.substring(4));
+                var element = document.querySelector("#resetZoom" + cur);
+                var actualTop = element.offsetTop;
+                var current = element.offsetParent;
+                while (current !== null) {
+                    actualTop += current.offsetTop;
+                    current = current.offsetParent;
+                }
+                window.scrollTo({
+                    top: actualTop - document.documentElement.clientHeight / 4,
+                    behavior: "smooth"
+                });
+            };
+            sideNav.appendChild(a);
+        }
     });
 
-    $('.reset-select').click(function () {
-        $('.selectpicker').selectpicker('deselectAll');
-        $('.selectpicker').selectpicker('refresh');
-    });
-
-    window.resetZoom = function () {
-        window.myline.resetZoom();
-    };
-
-    window.togglePan = function () {
-        var chart = window.myline;
-        var panOptions = chart.options.plugins.zoom;
-        panOptions.pan.enabled = !panOptions.pan.enabled;
-
-        var zoomOptions = chart.options.plugins.zoom.zoom;
-        if (panOptions.pan.enabled && zoomOptions.drag) zoomOptions.drag = !zoomOptions.drag;
-
-        chart.update();
-        document.getElementById('drag-switch').innerText = zoomOptions.drag ? 'Disable drag mode' : 'Enable drag mode';
-        document.getElementById('pan-switch').innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
-    };
-
-    window.toggleDragMode = function () {
-        var chart = window.myline;
-        var zoomOptions = chart.options.plugins.zoom.zoom;
-        zoomOptions.drag = !zoomOptions.drag;
-
-        var panOptions = chart.options.plugins.zoom;
-        if (panOptions.pan.enabled && zoomOptions.drag) panOptions.pan.enabled = !panOptions.pan.enabled;
-        if (!panOptions.pan.enabled && !zoomOptions.drag) panOptions.pan.enabled = !panOptions.pan.enabled;
-
-        chart.update();
-        document.getElementById('drag-switch').innerText = zoomOptions.drag ? 'Disable drag mode' : 'Enable drag mode';
-        document.getElementById('pan-switch').innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
-    };
-
+    // $('.reset-select').click(function () {
+    //     $('.selectpicker').selectpicker('deselectAll');
+    //     $('.selectpicker').selectpicker('refresh');
+    // });
 
     window.onscroll = function () { scrollFunction() };
 
     function scrollFunction() {
         if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
             document.getElementById("box").style.display = "block";
-            document.getElementById("sidebarBtn").style.display = "block";
+            // document.getElementById("sidebarBtn").style.display = "block";
         } else {
             document.getElementById("box").style.display = "none";
-            document.getElementById("sidebarBtn").style.display = "none";
+            // document.getElementById("sidebarBtn").style.display = "none";
         }
     }
 
-    var timer = null;
     box.onclick = function () {
-        cancelAnimationFrame(timer);
-        //获取当前毫秒数
-        var startTime = +new Date();
-        //获取当前页面的滚动高度
-        var b = document.body.scrollTop || document.documentElement.scrollTop;
-        var d = 500;
-        var c = b;
-        timer = requestAnimationFrame(function func() {
-            var t = d - Math.max(0, startTime - (+new Date()) + d);
-            document.documentElement.scrollTop = document.body.scrollTop = t * (-c) / d + b;
-            timer = requestAnimationFrame(func);
-            if (t == d) {
-                cancelAnimationFrame(timer);
-            }
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
         });
     }
 
@@ -425,7 +436,7 @@
 
     /* sideBar style */
     .sidebarBtn {
-        display: none;
+        /* display: none; */
         position: fixed;
         right: 0;
         bottom: 50%;
@@ -438,6 +449,7 @@
         border-radius: 20%;
         overflow: hidden;
     }
+
     .barBtn-in {
         visibility: visible;
         display: inline-block;
