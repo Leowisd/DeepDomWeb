@@ -57,19 +57,29 @@
         </div>
 
         <div class="btn-group mt-4 mt-sm-0" role="group" aria-label="Second group">
-            <select class="selectpicker show-tick" data-style="btn-secondary" data-width="fit" data-live-search="true"
+            <select class="selectpicker show-tick" multiple data-actions-box="true" data-size="5"
+                data-style="btn-secondary" data-width="300px" data-live-search="true"
                 title="Choose one of the following...">
-                <% var i = 0;%>
-                <% results.forEach(function(element){ %>
-                <option value="<%= i%>"> <%= element.name.trim()%></option>
-                <% i = i + 1;%>
-                <% }) %>
+                <% for (var i = 0; i < results.length - 1; i++) {%>
+                <option value="<%= i%>"> <%= results[i].name.trim()%></option>
+                <% } %>
             </select>
         </div>
     </div>
 </div>
 
 <div class="container-border mt-4 mx-auto col-12 col-lg-8 col-xl-6"></div>
+
+<div id="box" class="box">
+    <div class="box-in"></div>
+</div>
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+</div>
+<div id="sidebarBtn" class="sidebarBtn" onclick="toggleNav()">
+    <div class="barBtn-in"></div>
+</div>
 
 <script>
     // window.onload = function () {
@@ -93,266 +103,194 @@
     seq.length -= 1;
     // console.log(seq);
 
-    var container = document.querySelector('.container-border');
+    var containerAll = document.querySelector('.container-border');
+    var sideNav = document.querySelector('.sidenav');
+    var navCopy = sideNav.innerHTML;
 
     $(".selectpicker").change(function () {
-        var id = $(".selectpicker").val();
-        console.log(id);
-        container.innerHTML = "";
+        var idList = $(".selectpicker").val();
+        // console.log(idList);
 
-        //Add a Button to show a collapse with sequence
-        var d = document.createElement('div');
-        d.classList.add("row");
-        d.classList.add("d-flex");
-        d.classList.add("justify-content-center");
+        containerAll.innerHTML = "";
 
-        var btn = document.createElement("button");
-        btn.setAttribute("type", "button");
-        btn.classList.add("btn");
-        btn.classList.add("btn-secondary");
-        btn.classList.add("btn-sm");
-        btn.textContent = "Show Current Sequence";
-        // btn.setAttribute("data-container", "body");
-        btn.setAttribute("data-toggle", "popover");
-        btn.setAttribute("data-placement", "top");
-        var seqData = "";
-        for (var k = 0; k < score[id].length; k++)
-            if (seq[id][k] !== '-')
-                seqData += seq[id][k];
-        btn.setAttribute("data-content", seqData);
-        d.appendChild(btn);
+        sideNav.innerHTML = navCopy;
 
-        container.appendChild(d);
-        $('[data-toggle="popover"]').popover()
+        for (var i = 0; i < idList.length; i++) {
 
-        //////////////////////////////////////////////////
-        //Add reset-zoom, pan-switch, drag-switch button
-        var btnSet = document.createElement('div');
-        btnSet.classList.add("btn-group");
-        btnSet.classList.add("btn-group-sm");
-        btnSet.classList.add("float-right");
-        btnSet.classList.add("mt-3");
+            var id = idList[i];
+            
+            //Add list to side bar
+            var a = document.createElement("a");
+            a.textContent = names[id];
+            sideNav.appendChild(a);
 
-        var btnReset = document.createElement('button');
-        btnReset.classList.add("btn");
-        btnReset.classList.add("btn-secondary");
-        btnReset.setAttribute("type", "button");
-        btnReset.setAttribute("id", "resetZoom");
-        btnReset.setAttribute("onclick", "resetZoom()");
-        btnReset.textContent = "Reset Zoom";
+            var container = document.createElement("container");
 
-        var btnPan = document.createElement('button');
-        btnPan.classList.add("btn");
-        btnPan.classList.add("btn-secondary");
-        btnPan.setAttribute("type", "button");
-        btnPan.setAttribute("id", "pan-switch");
-        btnPan.setAttribute("onclick", "togglePan()");
-        btnPan.textContent = "Disable Pan";
+            //Add a Button to show a collapse with sequence
+            var d = document.createElement('div');
+            d.classList.add("row");
+            d.classList.add("d-flex");
+            d.classList.add("justify-content-center");
 
-        var btnDrag = document.createElement('button');
-        btnDrag.classList.add("btn");
-        btnDrag.classList.add("btn-secondary");
-        btnDrag.setAttribute("type", "button");
-        btnDrag.setAttribute("id", "drag-switch");
-        btnDrag.setAttribute("onclick", "toggleDragMode()");
-        btnDrag.textContent = "Enable drag mode";
+            var btn = document.createElement("button");
+            btn.setAttribute("type", "button");
+            btn.classList.add("btn");
+            btn.classList.add("btn-secondary");
+            btn.classList.add("btn-sm");
+            btn.textContent = "Show Current Sequence";
+            // btn.setAttribute("data-container", "body");
+            btn.setAttribute("data-toggle", "popover");
+            btn.setAttribute("data-placement", "top");
+            var seqData = "";
+            for (var k = 0; k < score[id].length; k++)
+                if (seq[id][k] !== '-')
+                    seqData += seq[id][k];
+            btn.setAttribute("data-content", seqData);
+            d.appendChild(btn);
 
-        btnSet.appendChild(btnReset);
-        btnSet.appendChild(btnPan);
-        btnSet.appendChild(btnDrag);
+            container.appendChild(d);
+            $('[data-toggle="popover"]').popover();
 
-        container.appendChild(btnSet);
+            //////////////////////////////////////////////////
+            //Add reset-zoom, pan-switch, drag-switch button
+            var btnSet = document.createElement('div');
+            btnSet.classList.add("btn-group");
+            btnSet.classList.add("btn-group-sm");
+            btnSet.classList.add("float-right");
+            btnSet.classList.add("mt-3");
 
-        //////////////////////////////////////////////////
+            var btnReset = document.createElement('button');
+            btnReset.classList.add("btn");
+            btnReset.classList.add("btn-secondary");
+            btnReset.setAttribute("type", "button");
+            btnReset.setAttribute("id", "resetZoom");
+            btnReset.setAttribute("onclick", "resetZoom()");
+            btnReset.textContent = "Reset Zoom";
 
-        // draw chart
-        var div = document.createElement("div");
-        div.classList.add('chart-container');
+            var btnPan = document.createElement('button');
+            btnPan.classList.add("btn");
+            btnPan.classList.add("btn-secondary");
+            btnPan.setAttribute("type", "button");
+            btnPan.setAttribute("id", "pan-switch");
+            btnPan.setAttribute("onclick", "togglePan()");
+            btnPan.textContent = "Disable Pan";
 
-        var canvas = document.createElement("canvas");
-        div.appendChild(canvas);
-        container.appendChild(div);
+            var btnDrag = document.createElement('button');
+            btnDrag.classList.add("btn");
+            btnDrag.classList.add("btn-secondary");
+            btnDrag.setAttribute("type", "button");
+            btnDrag.setAttribute("id", "drag-switch");
+            btnDrag.setAttribute("onclick", "toggleDragMode()");
+            btnDrag.textContent = "Enable drag mode";
 
-        var xAxis = [];
-        for (var j = 0; j <= score[id].length; j++) xAxis[j] = j + " : " + seq[id][j];
-        // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
-        var gap = [];
-        for (var j = 0; j <= score[id].length; j++) gap[j] = 0.45;
-        var overScore = [];
-        var belowScore = [];
-        for (var j = 0; j <= score[id].length; j++) {
-            if (score[id][j] <= gap[j]) {
-                overScore[j] = "NaN";
-                belowScore[j] = score[id][j];
-                if (j > 0 && belowScore[j - 1] == 'NaN') overScore[j] = score[id][j];
+            btnSet.appendChild(btnReset);
+            btnSet.appendChild(btnPan);
+            btnSet.appendChild(btnDrag);
+
+            container.appendChild(btnSet);
+
+            //////////////////////////////////////////////////
+
+            // draw chart
+            var div = document.createElement("div");
+            div.classList.add('chart-container');
+
+            var canvas = document.createElement("canvas");
+            div.appendChild(canvas);
+            container.appendChild(div);
+            containerAll.appendChild(container);
+
+            var xAxis = [];
+            for (var j = 0; j <= score[id].length; j++) xAxis[j] = j + " : " + seq[id][j];
+            // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
+            var gap = [];
+            for (var j = 0; j <= score[id].length; j++) gap[j] = 0.45;
+            var overScore = [];
+            var belowScore = [];
+            for (var j = 0; j <= score[id].length; j++) {
+                if (score[id][j] <= gap[j]) {
+                    overScore[j] = "NaN";
+                    belowScore[j] = score[id][j];
+                    if (j > 0 && belowScore[j - 1] == 'NaN') overScore[j] = score[id][j];
+                }
+                else {
+                    overScore[j] = score[id][j];
+                    belowScore[j] = "NaN";
+                    if (j > 0 && overScore[j - 1] == 'NaN') overScore[j - 1] = belowScore[j - 1];
+                }
             }
-            else {
-                overScore[j] = score[id][j];
-                belowScore[j] = "NaN";
-                if (j > 0 && overScore[j - 1] == 'NaN') overScore[j - 1] = belowScore[j - 1];
+
+            var chartData = {
+                labels: xAxis,
+                datasets: [{
+                    type: 'line',
+                    label: 'Score Gap',
+                    // backgroundColor: 'rgb(0, 0, 0)',
+                    borderColor: 'rgb(0, 0, 0)',
+                    borderWidth: 2,
+                    fill: false,
+                    borderDash: [3, 3],
+                    pointRadius: 1,
+                    pointHoverRadius: 5,
+                    data: gap
+                }, {
+                    type: 'line',
+                    label: 'Score',
+                    borderColor: 'rgb(255,255,0)',
+                    pointStyle: "star",
+                    pointBorderColor: 'rgb(0,0,255)',
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    fill: false,
+                    lineTension: 0,
+                    data: belowScore
+                }, {
+                    type: 'line',
+                    label: 'Over Score',
+                    borderColor: 'rgb(255,255,0)',
+                    pointStyle: "star",
+                    pointBorderColor: 'rgb(255,0,0)',
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    fill: false,
+                    lineTension: 0,
+                    data: overScore
+                }]
             }
+
+            var ctx = canvas.getContext('2d');
+            window.myline = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: names[id]
+                    },
+                    scales: {
+                        xAxes: [{
+                            // stacked: true,
+                            // display: true
+                        }],
+                        yAxes: [{
+                            // stacked: true
+                        }]
+                    }
+                }
+            })
+
+            var chart = window.myline;
+            var zoomOptions = chart.options.plugins.zoom.zoom;
+            zoomOptions.enabled = !zoomOptions.enabled;
+            // zoomOptions.drag = zoomOptions.drag;
+            var panOptions = chart.options.plugins.zoom;
+            panOptions.pan.enabled = !panOptions.pan.enabled;
+            chart.update();
         }
+    });
 
-        var chartData = {
-            labels: xAxis,
-            datasets: [{
-                type: 'line',
-                label: 'Score Gap',
-                // backgroundColor: 'rgb(0, 0, 0)',
-                borderColor: 'rgb(0, 0, 0)',
-                borderWidth: 2,
-                fill: false,
-                borderDash: [3, 3],
-                pointRadius: 1,
-                pointHoverRadius: 5,
-                data: gap
-            }, {
-                type: 'line',
-                label: 'Score',
-                borderColor: 'rgb(255,255,0)',
-                pointStyle: "star",
-                pointBorderColor: 'rgb(0,0,255)',
-                backgroundColor: 'rgba(0, 0, 0, 0)',
-                fill: false,
-                lineTension: 0,
-                data: belowScore
-            }, {
-                type: 'line',
-                label: 'Over Score',
-                borderColor: 'rgb(255,255,0)',
-                pointStyle: "star",
-                pointBorderColor: 'rgb(255,0,0)',
-                backgroundColor: 'rgba(0, 0, 0, 0)',
-                fill: false,
-                lineTension: 0,
-                data: overScore
-            }]
-        }
-
-        var ctx = canvas.getContext('2d');
-        window.myline = new Chart(ctx, {
-            type: 'line',
-            data: chartData,
-            options: {
-                responsive: true,
-                title: {
-                    display: true,
-                    text: names[id]
-                },
-                scales: {
-                    xAxes: [{
-                        // stacked: true,
-                        // display: true
-                    }],
-                    yAxes: [{
-                        // stacked: true
-                    }]
-                },
-                // pan: {
-                //     // Boolean to enable panning
-                //     enabled: true,
-
-                //     // Panning directions. Remove the appropriate direction to disable 
-                //     // Eg. 'y' would only allow panning in the y direction
-                //     mode: 'xy'
-                // },
-
-                // Container for zoom options
-                // zoom: {
-                //     // Boolean to enable zooming
-                //     enabled: true,
-
-                //     // Zooming directions. Remove the appropriate direction to disable 
-                //     // Eg. 'y' would only allow zooming in the y direction
-                //     mode: 'xy',
-
-                //     speed: 0.2
-                // }
-
-                // tooltips: {
-                //     // Disable the on-canvas tooltip
-                //     enabled: false,
-
-                //     custom: function (tooltipModel) {
-                //         // Tooltip Element
-                //         var tooltipEl = document.getElementById('chartjs-tooltip');
-
-                //         // Create element on first render
-                //         if (!tooltipEl) {
-                //             tooltipEl = document.createElement('div');
-                //             tooltipEl.id = 'chartjs-tooltip';
-                //             tooltipEl.innerHTML = "<table></table>";
-                //             document.body.appendChild(tooltipEl);
-                //         }
-
-                //         // Hide if no tooltip
-                //         if (tooltipModel.opacity === 0) {
-                //             tooltipEl.style.opacity = 0;
-                //             return;
-                //         }
-
-                //         // Set caret Position
-                //         tooltipEl.classList.remove('above', 'below', 'no-transform');
-                //         if (tooltipModel.yAlign) {
-                //             tooltipEl.classList.add(tooltipModel.yAlign);
-                //         } else {
-                //             tooltipEl.classList.add('no-transform');
-                //         }
-
-                //         function getBody(bodyItem) {
-                //             return bodyItem.lines;
-                //         }
-
-                //         // Set Text
-                //         if (tooltipModel.body) {
-                //             var titleLines = tooltipModel.title || [];
-                //             var bodyLines = tooltipModel.body.map(getBody);
-
-                //             var innerHtml = '<thead>';
-
-                //             titleLines.forEach(function (title) {
-                //                 innerHtml += '<tr><th>' + title + '</th></tr>';
-                //             });
-                //             innerHtml += '</thead><tbody>';
-
-                //             bodyLines.forEach(function (body, i) {
-                //                 var colors = tooltipModel.labelColors[i];
-                //                 var style = 'background:' + colors.backgroundColor;
-                //                 style += '; border-color:' + colors.borderColor;
-                //                 style += '; border-width: 2px';
-                //                 var span = '<span style="' + style + '"></span>';
-                //                 innerHtml += '<tr><td>' + span + body + '</td></tr>';
-                //             });
-                //             innerHtml += '</tbody>';
-
-                //             var tableRoot = tooltipEl.querySelector('table');
-                //             tableRoot.innerHTML = innerHtml;
-                //         }
-
-                //         // `this` will be the overall tooltip
-                //         var position = this._chart.canvas.getBoundingClientRect();
-
-                //         // Display, position, and set styles for font
-                //         tooltipEl.style.opacity = 1;
-                //         tooltipEl.style.position = 'absolute';
-                //         tooltipEl.style.left = position.left + tooltipModel.caretX + 'px';
-                //         tooltipEl.style.top = position.top + tooltipModel.caretY + 'px';
-                //         tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
-                //         tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
-                //         tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
-                //         tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px';
-                //     }
-                // }
-            }
-        })
-
-        var chart = window.myline;
-        var zoomOptions = chart.options.plugins.zoom.zoom;
-        zoomOptions.enabled = !zoomOptions.enabled;
-        // zoomOptions.drag = zoomOptions.drag;
-        var panOptions = chart.options.plugins.zoom;
-        panOptions.pan.enabled = !panOptions.pan.enabled;
-        chart.update();
+    $('.reset-select').click(function () {
+        $('.selectpicker').selectpicker('deselectAll');
+        $('.selectpicker').selectpicker('refresh');
     });
 
     window.resetZoom = function () {
@@ -386,15 +324,173 @@
         document.getElementById('pan-switch').innerText = panOptions.pan.enabled ? 'Disable Pan' : 'Enable Pan';
     };
 
+
+    window.onscroll = function () { scrollFunction() };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            document.getElementById("box").style.display = "block";
+            document.getElementById("sidebarBtn").style.display = "block";
+        } else {
+            document.getElementById("box").style.display = "none";
+            document.getElementById("sidebarBtn").style.display = "none";
+        }
+    }
+
+    var timer = null;
+    box.onclick = function () {
+        cancelAnimationFrame(timer);
+        //获取当前毫秒数
+        var startTime = +new Date();
+        //获取当前页面的滚动高度
+        var b = document.body.scrollTop || document.documentElement.scrollTop;
+        var d = 500;
+        var c = b;
+        timer = requestAnimationFrame(function func() {
+            var t = d - Math.max(0, startTime - (+new Date()) + d);
+            document.documentElement.scrollTop = document.body.scrollTop = t * (-c) / d + b;
+            timer = requestAnimationFrame(func);
+            if (t == d) {
+                cancelAnimationFrame(timer);
+            }
+        });
+    }
+
+    function toggleNav() {
+        var width = document.getElementById("mySidenav").style.width;
+        if (width == '20%') document.getElementById("mySidenav").style.width = '0';
+        else document.getElementById("mySidenav").style.width = '20%';
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
 </script>
 
 <style type="text/css">
-    .popover{
-        max-width:50%;
+    /* show sequence window style */
+    .popover {
+        max-width: 50%;
         background-color: #6c757d;
     }
-    .popover-body{
+
+    .popover-body {
         color: white;
+    }
+
+    /* Return to Top Style */
+    .box {
+        display: none;
+        position: fixed;
+        right: 30px;
+        bottom: 20px;
+        height: 50px;
+        width: 50px;
+        text-align: center;
+        padding-top: 20px;
+        background-color: lightblue;
+        border-radius: 20%;
+        overflow: hidden;
+    }
+
+    .box:hover:before {
+        top: 50%
+    }
+
+    .box:hover .box-in {
+        visibility: hidden;
+    }
+
+    .box:before {
+        position: absolute;
+        top: -50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        content: 'Top';
+        width: 40px;
+        color: white;
+        font-weight: bold;
+
+    }
+
+    .box-in {
+        visibility: visible;
+        display: inline-block;
+        height: 20px;
+        width: 20px;
+        border: 3px solid black;
+        border-color: white transparent transparent white;
+        transform: rotate(45deg);
+    }
+
+    /* sideBar style */
+    .sidebarBtn {
+        display: none;
+        position: fixed;
+        right: 0;
+        bottom: 50%;
+        height: 50px;
+        width: 30px;
+        text-align: center;
+        padding-top: 15px;
+        padding-left: 10px;
+        background-color: lightblue;
+        border-radius: 20%;
+        overflow: hidden;
+    }
+    .barBtn-in {
+        visibility: visible;
+        display: inline-block;
+        height: 20px;
+        width: 20px;
+        border: 3px solid white;
+        border-color: white transparent transparent white;
+        transform: rotate(315deg);
+    }
+
+    .sidenav {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        background-color: #6c757d;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+    }
+
+    .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: white;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidenav a:hover,
+    .offcanvas a:focus {
+        color: black;
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {
+            padding-top: 15px;
+        }
+
+        .sidenav a {
+            font-size: 18px;
+        }
     }
 </style>
 
