@@ -68,7 +68,7 @@
     </div>
 </div>
 
-<div class="container-border mt-4 mx-auto col-12 col-lg-8 col-xl-6"></div>
+<div id="allContainer" class="container border rounded shadow-lg mt-4 pt-2 mx-auto col-12 col-lg-8 col-xl-6"></div>
 
 <div id="box" class="box">
     <div class="box-in"></div>
@@ -76,14 +76,19 @@
 
 <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div id="barList" class="list-group"></div>
 </div>
 <div id="sidebarBtn" class="sidebarBtn" onclick="toggleNav()">
     <div class="barBtn-in"></div>
 </div>
 
 <script>
-    // window.onload = function () {
-    // };
+    window.onload = function () {
+    };
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
 
     var names = document.getElementById('name').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
     names.length -= 2;
@@ -103,7 +108,7 @@
     seq.length -= 1;
     // console.log(seq);
 
-    var containerAll = document.querySelector('.container-border');
+    var containerAll = document.querySelector('#allContainer');
     var sideNav = document.querySelector('.sidenav');
     var navCopy = sideNav.innerHTML;
 
@@ -116,6 +121,7 @@
         containerAll.innerHTML = "";
 
         sideNav.innerHTML = navCopy;
+        $('[data-toggle="popover"]').popover();
 
         for (var i = 0; i < idList.length; i++) {
 
@@ -143,10 +149,12 @@
                 if (seq[id][k] !== '-')
                     seqData += seq[id][k];
             btn.setAttribute("data-content", seqData);
+            btn.onclick = function () {
+
+            }
             d.appendChild(btn);
 
             container.appendChild(d);
-            $('[data-toggle="popover"]').popover();
 
             //////////////////////////////////////////////////
             //Add reset-zoom, pan-switch, drag-switch button
@@ -293,14 +301,32 @@
                         display: true,
                         text: names[id]
                     },
-                    scales: {
-                        xAxes: [{
-                            // stacked: true,
-                            // display: true
-                        }],
-                        yAxes: [{
-                            // stacked: true
-                        }]
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                            beforeLabel: function (tooltipItem, data) {
+                                var beforeLabel = "Score: ";
+                                beforeLabel += Math.round(tooltipItem.yLabel * 100) / 100;
+                                if (Math.round(tooltipItem.yLabel * 100) / 100 >= 0.45) beforeLabel += " (over)";                          
+                                return beforeLabel;
+                            },
+                            label: function(tooltipItem, data){
+                                var label = "";
+                                return label;
+                            },
+                            afterLabel: function(tooltipItem, data){
+                                var afterLabel = "";
+                                for (var p = tooltipItem.index - 2; p < tooltipItem.index + 3; p++){
+                                    var ch = data.labels[p].substring(data.labels[p].indexOf(":")+1);
+                                    if (data.labels[p] == undefined) afterLabel += "- ";
+                                    else if (p == tooltipItem.index) afterLabel += "<" + ch + "> ";
+                                    else afterLabel += ch + " ";
+                                }
+                                return afterLabel;
+                            }
+                        }
                     }
                 }
             })
@@ -313,16 +339,20 @@
             panOptions.pan.enabled = !panOptions.pan.enabled;
             chart.update();
         }
+        // enable each popover
+        $('[data-toggle="popover"]').popover();
+
 
         //Add list to side bar
+        var listGroup = document.getElementById("barList");
         for (var i = 0; i < idList.length; i++) {
             var id = idList[i];
 
-            var a = document.createElement("a");
+            var a = document.createElement("button");
             a.textContent = names[id];
             a.classList.add("list-group-item");
             a.classList.add("list-group-item-action");
-            a.classList.add("list-group-item-dark");
+            a.classList.add("list-group-item-secondary");
             a.setAttribute("style", "font-size: 15px;");
             a.setAttribute("id", "goto" + id);
             a.onclick = function () {
@@ -339,7 +369,7 @@
                     behavior: "smooth"
                 });
             };
-            sideNav.appendChild(a);
+            listGroup.appendChild(a);
         }
     });
 
@@ -399,7 +429,7 @@
         width: 50px;
         text-align: center;
         padding-top: 20px;
-        background-color: lightblue;
+        background-color: #6c757d;
         border-radius: 20%;
         overflow: hidden;
     }
@@ -445,7 +475,7 @@
         text-align: center;
         padding-top: 15px;
         padding-left: 10px;
-        background-color: lightblue;
+        background-color: #6c757d;
         border-radius: 20%;
         overflow: hidden;
     }
