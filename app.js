@@ -413,11 +413,28 @@ app.post("/upload/file", function (req, res) {
 	res.redirect("/upload/:" + job.id);
 });
 
-
-app.post("/result", function (req, res) {
+// Search POST
+app.post("/resultById", function (req, res) {
 	var jobId = req.body.JobIDInput.trim();
 	res.redirect("/jobs/:" + jobId);
 });
+
+app.post("/resultByName",function (req, res){
+	var name = req.body.NicknameInput.trim();
+
+	jobInfo.find({ 'nickName': {$regex: name} }, function (err, docs) {
+		res.render("JOBSLIST", { docs: docs });
+	});
+});
+
+app.post("/resultBySeq", function(req, res){
+	var seq = req.body.sequenceInput.trim();
+	jobInfo.find({ 'sequence': seq }, function (err, docs) {
+		res.render("JOBSLIST", { docs: docs });
+	});
+});
+
+
 
 app.get("*", function(req, res){
 	res.render("404");

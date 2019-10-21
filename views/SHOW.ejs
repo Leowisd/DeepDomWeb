@@ -1,35 +1,35 @@
 <% include partials/header %>
 
 <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <a class="navbar-brand" href="/">DeepDom</a>
-    <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="container col-12 col-lg-8">
+        <a class="navbar-brand" href="/">DeepDom</a>
+        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
-            </li>
-        </ul>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
-<!-- <div class="container"> -->
 <div class="jumbotron jumbotron-fluid text-center">
     <div class="container">
         <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
         <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
     </div>
 </div>
-<!-- </div> -->
 
 <div class='d-none' id='name'>
     <% results.forEach(function(element){ %>
@@ -47,7 +47,7 @@
     <% }) %>
 </p>
 
-<div class="container col-12 col-lg-8 col-xl-6">
+<div class="container col-12 col-lg-8 ">
     <div class="btn-toolbar d-flex justify-content-start" role="toolbar" aria-label="Toolbar with button group">
         <div class="btn-group mr-2" role="group" aria-label="First group">
             <% var address = "/jobs/download/:" + file%>
@@ -68,7 +68,7 @@
     </div>
 </div>
 
-<div id="allContainer" class="container border rounded shadow-lg mt-4 pt-2 mx-auto col-12 col-lg-8 col-xl-6"></div>
+<div id="allContainer" class="container border rounded shadow-lg mt-4 pt-3 mx-auto col-12 col-lg-8 "></div>
 
 <div id="box" class="box">
     <div class="box-in"></div>
@@ -233,6 +233,10 @@
             var canvas = document.createElement("canvas");
             div.appendChild(canvas);
             container.appendChild(div);
+
+            var hr = document.createElement("hr");
+            if (i < idList.length - 1) container.appendChild(hr);
+
             containerAll.appendChild(container);
 
             var xAxis = [];
@@ -309,19 +313,19 @@
                             beforeLabel: function (tooltipItem, data) {
                                 var beforeLabel = "Score: ";
                                 beforeLabel += Math.round(tooltipItem.yLabel * 100) / 100;
-                                if (Math.round(tooltipItem.yLabel * 100) / 100 >= 0.45) beforeLabel += " (over)";                          
+                                if (Math.round(tooltipItem.yLabel * 100) / 100 >= 0.45) beforeLabel += " (over)";
                                 return beforeLabel;
                             },
-                            label: function(tooltipItem, data){
+                            label: function (tooltipItem, data) {
                                 var label = "";
                                 return label;
                             },
-                            afterLabel: function(tooltipItem, data){
+                            afterLabel: function (tooltipItem, data) {
                                 var afterLabel = "";
-                                for (var p = tooltipItem.index - 2; p < tooltipItem.index + 3; p++){
-                                    var ch = data.labels[p].substring(data.labels[p].indexOf(":")+1);
+                                for (var p = tooltipItem.index - 2; p < tooltipItem.index + 3; p++) {
+                                    var ch = data.labels[p].substring(data.labels[p].indexOf(":") + 1);
                                     if (data.labels[p] == undefined) afterLabel += "- ";
-                                    else if (p == tooltipItem.index) afterLabel += "<" + ch + "> ";
+                                    else if (p == tooltipItem.index) afterLabel += " '" + ch + " ' ";
                                     else afterLabel += ch + " ";
                                 }
                                 return afterLabel;
@@ -353,7 +357,7 @@
             a.classList.add("list-group-item");
             a.classList.add("list-group-item-action");
             a.classList.add("list-group-item-secondary");
-            a.setAttribute("style", "font-size: 15px;");
+            a.setAttribute("style", "font-size: 10px;");
             a.setAttribute("id", "goto" + id);
             a.onclick = function () {
                 var cur = parseInt(this.id.substring(4));
@@ -371,6 +375,14 @@
             };
             listGroup.appendChild(a);
         }
+
+        // display the side bar or not
+        var inside = document.getElementById("barList").innerHTML;
+        if (inside.length > 0) document.getElementById("sidebarBtn").style.display = "block";
+        else {
+            document.getElementById("sidebarBtn").style.display = "none";
+            document.getElementById("mySidenav").style.width = '0';
+        }
     });
 
     // $('.reset-select').click(function () {
@@ -383,10 +395,8 @@
     function scrollFunction() {
         if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
             document.getElementById("box").style.display = "block";
-            // document.getElementById("sidebarBtn").style.display = "block";
         } else {
             document.getElementById("box").style.display = "none";
-            // document.getElementById("sidebarBtn").style.display = "none";
         }
     }
 
@@ -399,8 +409,8 @@
 
     function toggleNav() {
         var width = document.getElementById("mySidenav").style.width;
-        if (width == '20%') document.getElementById("mySidenav").style.width = '0';
-        else document.getElementById("mySidenav").style.width = '20%';
+        if (width == '15%') document.getElementById("mySidenav").style.width = '0';
+        else document.getElementById("mySidenav").style.width = '15%';
     }
 
     function closeNav() {
@@ -466,15 +476,15 @@
 
     /* sideBar style */
     .sidebarBtn {
-        /* display: none; */
+        display: none;
         position: fixed;
-        right: 0;
+        left: 0;
         bottom: 50%;
         height: 50px;
         width: 30px;
         text-align: center;
         padding-top: 15px;
-        padding-left: 10px;
+        padding-right: 10px;
         background-color: #6c757d;
         border-radius: 20%;
         overflow: hidden;
@@ -487,7 +497,7 @@
         width: 20px;
         border: 3px solid white;
         border-color: white transparent transparent white;
-        transform: rotate(315deg);
+        transform: rotate(135deg);
     }
 
     .sidenav {
@@ -496,7 +506,7 @@
         position: fixed;
         z-index: 1;
         top: 0;
-        right: 0;
+        left: 0;
         background-color: #6c757d;
         overflow-x: hidden;
         transition: 0.5s;
@@ -533,6 +543,11 @@
         .sidenav a {
             font-size: 18px;
         }
+    }
+
+    hr {
+        size: 3;
+        color: blue;
     }
 </style>
 

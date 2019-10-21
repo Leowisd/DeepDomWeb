@@ -1,24 +1,27 @@
 <% include partials/header %>
 
 <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <a class="navbar-brand" href="/">DeepDom</a>
-    <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
-            </li>
-        </ul>
-    </div>
+    <div class="container col-12 col-lg-8">
+
+        <a class="navbar-brand" href="/">DeepDom</a>
+        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
+                </li>
+            </ul>
+        </div>
+    </div>>
 </nav>
 
 <!-- <div class="container"> -->
@@ -48,16 +51,16 @@
     <%}%>
 </div>
 
-<div class="container border rounded shadow-lg mt-5">
-    <p class="text-center">
+<div class="container border rounded shadow-lg mt-5" style="width: 40%;">
+    <h5 class="text-center mt-3">
         The job ID is:
-    </p>
+    </h5>
     <% if (flag == 0){%>
-    <button class="btn btn-primary btn-lg" disabled><%= jobId %></button>
+    <center><button class="btn btn-primary btn" id="jobIDOutput" disabled><%= jobId %></button></center>
     <%} else if (flag == 1){%>
-    <center><a class="btn btn-primary btn-lg" href="/jobs/:<%= jobId %>"> <%= jobId %></a></center>>
+    <center><a class="btn btn-primary btn" href="/jobs/:<%= jobId %>" id="jobIDOutput"> <%= jobId %></a></center>
     <%}%>
-    <center><button class="btn btn-primary mt-2" id="copyBtn"> Copy </button></center>
+    <center><button class="btn btn-primary btn-sm mt-2 mb-3" id="copyBtn"> Copy </button></center>
 </div>
 
 <!-- auto fresh -->

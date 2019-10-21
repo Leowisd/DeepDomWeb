@@ -1,128 +1,144 @@
 <% include partials/header %>
 
-    <nav class="navbar navbar-expand-md navbar-light bg-light">     
-            <a class="navbar-brand" href="/">DeepDom</a>
-            <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <div class="container col-12 col-lg-8">
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active" >
-                        <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
-                    </li>
-                </ul>
-            </div>
-    </nav>
+        <a class="navbar-brand" href="/">DeepDom</a>
+        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    
-    <!-- <div class="container"> -->
-        <div class="jumbotron jumbotron-fluid text-center">
-            <div class="container">
-                <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
-                <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
-                <p class="d-none d-lg-block"></p>
-            </div>
-        </div>
-    <!-- </div> -->
-
-    <div class="container border rounded shadow-lg">
-            <ul class="nav nav-pills mb-3 pt-3" id="pills-tab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="pills-Sequence-tab" data-toggle="pill" href="#pills-Sequence" role="tab" aria-controls="pills-Sequence" aria-selected="true">Sequence</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload <span
+                            class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="pills-File-tab" data-toggle="pill" href="#pills-File" role="tab" aria-controls="pills-File" aria-selected="false">File</a>
+                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
                 </li>
             </ul>
-            <div class="tab-content pb-3" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-Sequence" role="tabpanel" aria-labelledby="pills-Sequence-tab">
-                <form class="prediction" action="/upload/sequence" method="POST">
-                    <div class="form-row">
-                        <div class="form-group col-12 col-lg-6">
-                            <label for="sequenceInput">Sequence</label>
-                            <textarea class="form-control" id="sequenceInput" name="sequenceInput" rows="6" aria-describedby="sequenceHelp" required></textarea>
-                            <small id="sequenceHelp" class="form-text text-muted">The sequence must in FASTA format. </small>                        
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-12 col-lg-6">
-                            <label for="nickName1">NickName</label>
-                            <input class="form-control" id="nickName1" name="nickName1" aria-describedby="nickNameHelp1">
-                            <small id="nickNameHelp1" class="form-text text-muted">Optional</small>                        
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-12 col-lg-6">
-                            <label for="emailInput1"> Email address</label>
-                            <input type="email" class="form-control" id="emailInput1" name="emailInput1" aria-describedby="emailHelp1" placeholder="Enter email">
-                            <small id="emailHelp1" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary submitBtn">Submit</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+</nav>
 
-                </form>
+
+<!-- <div class="container"> -->
+<div class="jumbotron jumbotron-fluid text-center">
+    <div class="container">
+        <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+        <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+        <p class="d-none d-lg-block"></p>
+    </div>
+</div>
+<!-- </div> -->
+
+<div class="container border rounded shadow-lg">
+    <ul class="nav nav-pills mb-3 pt-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="pills-Sequence-tab" data-toggle="pill" href="#pills-Sequence" role="tab"
+                aria-controls="pills-Sequence" aria-selected="true">Sequence</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="pills-File-tab" data-toggle="pill" href="#pills-File" role="tab"
+                aria-controls="pills-File" aria-selected="false">File</a>
+        </li>
+    </ul>
+    <div class="tab-content pb-3" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-Sequence" role="tabpanel" aria-labelledby="pills-Sequence-tab">
+            <form class="prediction" action="/upload/sequence" method="POST">
+                <div class="form-row">
+                    <div class="form-group col-12 col-lg-6">
+                        <label for="sequenceInput">Sequence</label>
+                        <textarea class="form-control" id="sequenceInput" name="sequenceInput" rows="6"
+                            aria-describedby="sequenceHelp" required></textarea>
+                        <small id="sequenceHelp" class="form-text text-muted">The sequence must in FASTA format.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12 col-lg-6">
+                        <label for="nickName1">NickName</label>
+                        <input class="form-control" id="nickName1" name="nickName1" aria-describedby="nickNameHelp1">
+                        <small id="nickNameHelp1" class="form-text text-muted">Optional</small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12 col-lg-6">
+                        <label for="emailInput1"> Email address</label>
+                        <input type="email" class="form-control" id="emailInput1" name="emailInput1"
+                            aria-describedby="emailHelp1" placeholder="Enter email">
+                        <small id="emailHelp1" class="form-text text-muted">We'll never share your email with anyone
+                            else.</small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary submitBtn">Submit</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="pills-File" role="tabpanel" aria-labelledby="pills-File-tab">
+            <form class="prediction" action="/upload/file" method="POST" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group col-12 col-lg-6">
+                        <p>Upload file</p>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="fileSelect" name="fileSelect"
+                                aria-describedby="fileHelp" required>
+                            <label id="fileLabel" class="custom-file-label text-truncate" for="fileSelect">Choose
+                                file</label>
+                            <small id="fileHelp" class="form-text text-muted">The file uploaded should contains only
+                                protein sequence in FASTA format.</small>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="tab-pane fade" id="pills-File" role="tabpanel" aria-labelledby="pills-File-tab">
-                    <form class="prediction" action="/upload/file" method="POST" enctype="multipart/form-data">
-                        <div class="form-row">
-                            <div class="form-group col-12 col-lg-6">
-                                <p>Upload file</p>
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="fileSelect" name = "fileSelect" aria-describedby="fileHelp" required>
-                                    <label id = "fileLabel" class="custom-file-label text-truncate" for="fileSelect">Choose file</label>
-                                    <small id="fileHelp" class="form-text text-muted">The file uploaded should contains only protein sequence in FASTA format.</small>
-                                </div>
-                            </div>  
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group col-12 col-lg-6">
-                                <label for="nickName2">NickName</label>
-                                <input class="form-control" id="nickName2" name="nickName2" aria-describedby="nickNameHelp2">
-                                <small id="nickNameHelp2" class="form-text text-muted">Optional</small>                        
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-12 col-lg-6">
-                                <label for="emailInput2">Email address</label>
-                                <input type="email" class="form-control" id="emailInput2" name="emailInput2" aria-describedby="emailHelp2" placeholder="Enter email">
-                                <small id="emailHelp2" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary submitBtn">Submit</button>
-                        <button id="reset" type="reset" class="btn btn-secondary">Reset</button>
-                    </form>
+                <div class="form-row">
+                    <div class="form-group col-12 col-lg-6">
+                        <label for="nickName2">NickName</label>
+                        <input class="form-control" id="nickName2" name="nickName2" aria-describedby="nickNameHelp2">
+                        <small id="nickNameHelp2" class="form-text text-muted">Optional</small>
+                    </div>
                 </div>
-            </div>
+                <div class="form-row">
+                    <div class="form-group col-12 col-lg-6">
+                        <label for="emailInput2">Email address</label>
+                        <input type="email" class="form-control" id="emailInput2" name="emailInput2"
+                            aria-describedby="emailHelp2" placeholder="Enter email">
+                        <small id="emailHelp2" class="form-text text-muted">We'll never share your email with anyone
+                            else.</small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary submitBtn">Submit</button>
+                <button id="reset" type="reset" class="btn btn-secondary">Reset</button>
+            </form>
+        </div>
     </div>
+</div>
 
-    <div class="container pt-3">
-        <h6 class=""> Reference</h6>
-        <p>
-            DeepDom: Predicting protein domain boundary from sequence alone using stacked bidirectional LSTM.
-        </p>
-    </div>
+<div class="container pt-3">
+    <h6 class=""> Reference</h6>
+    <p>
+        DeepDom: Predicting protein domain boundary from sequence alone using stacked bidirectional LSTM.
+    </p>
+</div>
 
-    <script>
+<script>
     // custom-file-input displays the name of uploaded
-    $('.custom-file-input').on('change', function() { 
-        let fileName = $(this).val().split('\\').pop(); 
-        $(this).next('.custom-file-label').addClass("selected").html(fileName); 
+    $('.custom-file-input').on('change', function () {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
     });
 
     // reset button clears the file name 
-    $('#reset').click(function(){
+    $('#reset').click(function () {
         $('#fileLabel').text('Choose file');
     })
-    </script>
+</script>
 
 <% include partials/footer %>
