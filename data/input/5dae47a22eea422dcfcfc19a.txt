@@ -1,8 +1,8 @@
->5EIC:A|PDBID|CHAIN|SEQUENCE_80_0left80
+>5EIC:A|PDBID|CHAIN|SEQUENCE_80_0left80_200_0
 SMRKKIFKPEELRQALMPTLEALYRQDPESLPFRQPVDPQLLGIPDYFDIVKNPMDLSTIKRKLDTGQYQEPWQYVDDVW------------------------------------------------------------------------------------------------------------------------
->5EIC:A|PDBID|CHAIN|SEQUENCE_39_0left39
+>5EIC:A|PDBID|CHAIN|SEQUENCE_39_0left39_200_0
 LMFNNAWLYNRKTSRVYKFCSKLAEVFEQEIDPVMQSLG-----------------------------------------------------------------------------------------------------------------------------------------------------------------
->5EIC:B|PDBID|CHAIN|SEQUENCE_80_0left80
+>5EIC:B|PDBID|CHAIN|SEQUENCE_80_0left80_200_0
 SMRKKIFKPEELRQALMPTLEALYRQDPESLPFRQPVDPQLLGIPDYFDIVKNPMDLSTIKRKLDTGQYQEPWQYVDDVW------------------------------------------------------------------------------------------------------------------------
->5EIC:B|PDBID|CHAIN|SEQUENCE_39_0left39
+>5EIC:B|PDBID|CHAIN|SEQUENCE_39_0left39_200_0
 LMFNNAWLYNRKTSRVYKFCSKLAEVFEQEIDPVMQSLG-----------------------------------------------------------------------------------------------------------------------------------------------------------------

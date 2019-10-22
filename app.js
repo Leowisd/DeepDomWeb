@@ -6,9 +6,8 @@ var express = require("express"),
 	fs = require("fs"),
 	nodemailer = require("nodemailer"),
 	sd = require("silly-datetime"),
+	schedule = require("node-schedule"),
 	exec = require('child_process').exec;
-
-
 
 mongoose.connect("mongodb://localhost/deepdom");
 
@@ -44,7 +43,6 @@ var jobInfoSchema = new mongoose.Schema({
 });
 
 var jobInfo = mongoose.model("jobInfo", jobInfoSchema);
-
 
 // INDEX: show the landing page
 app.get("/", function (req, res) {
@@ -94,31 +92,31 @@ app.get("/jobs/:id", function (req, res) {
 	var results = [];
 	var arr = fs.readFileSync('data/results/' + file).toString().split('\n');
 	for (var i = 0; i < arr.length; i++)
-			if (i % 2 == 0) {
-				var result = { name: arr[i], score: arr[i + 1] }
-				results.push(result);
-			}
-	
+		if (i % 2 == 0) {
+			var result = { name: arr[i], score: arr[i + 1] }
+			results.push(result);
+		}
+
 	var data = fs.readFileSync('data/input/' + file).toString().split('\n');
 	var seq = [];
 	var j = 0;
-	for (var i = 0; i < results.length; i++){
+	for (var i = 0; i < results.length; i++) {
 		var name = results[i].name;
 		var s = "";
 		var num = 0;
-		while(j < data.length){
+		while (j < data.length) {
 			var tmp = data[j].lastIndexOf('_');
 			var na = data[j].substring(0, tmp);
-			
-			if (name === na){
-				if (s != ""){
-					if (num > 0){
-						s = s.substring(0, 80*num);
+
+			if (name === na) {
+				if (s != "") {
+					if (num > 0) {
+						s = s.substring(0, 80 * num);
 					}
 				}
 				s += data[j + 1];
 				j += 2;
-				num ++;
+				num++;
 			}
 			else {
 				seq.push(s);
@@ -126,8 +124,8 @@ app.get("/jobs/:id", function (req, res) {
 				break;
 			}
 		}
-	}	
-	res.render("SHOW", { results: results, seq: seq, file: file });	
+	}
+	res.render("SHOW", { results: results, seq: seq, file: file });
 	// fs.readFile('data/results/' + file, function (err, data) {
 	// 	if (err) {
 	// 		return console.log(err);
@@ -419,25 +417,67 @@ app.post("/resultById", function (req, res) {
 	res.redirect("/jobs/:" + jobId);
 });
 
-app.post("/resultByName",function (req, res){
+app.post("/resultByName", function (req, res) {
 	var name = req.body.NicknameInput.trim();
 
-	jobInfo.find({ 'nickName': {$regex: name} }, function (err, docs) {
+	jobInfo.find({ 'nickName': { $regex: name } }, function (err, docs) {
 		res.render("JOBSLIST", { docs: docs });
 	});
 });
 
-app.post("/resultBySeq", function(req, res){
+app.post("/resultBySeq", function (req, res) {
 	var seq = req.body.sequenceInput.trim();
 	jobInfo.find({ 'sequence': seq }, function (err, docs) {
 		res.render("JOBSLIST", { docs: docs });
 	});
 });
 
-
-
-app.get("*", function(req, res){
+app.get("*", function (req, res) {
 	res.render("404");
+});
+
+// clean data per week
+schedule.scheduleJob('0 0 0 * * 0', function () {
+	var curTime = sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
+	var curDay = parseInt(curTime.substring(8));
+	var curMonth = parseInt(curTime.substring(5, 7));
+	var curYear = parseInt(curTime.substring(0, 4));
+	curDay -= 7;
+	if (curDay <= 0) {
+		curDay = 30 + curDay;
+		curMonth--;
+		if (curMonth <= 0) {
+			curMonth = 12 + curMonth;
+			curYear--;
+		}
+	}
+	var due = curYear + "-" + curMonth + "-" + curDay + " 00:00:00";
+
+	jobInfo.find({ 'submittedTime': { $lte: due } }, function (err, docs) {
+		if (err)
+			return console.error(err);
+		if (docs != undefined) {
+			for (var i = 0; i < docs.length; i++) {
+				var dFile = docs[i].file;
+				fs.unlinkSync('data/input/' + dFile, function (err) {
+					if (err) return console.error(err);
+				});
+				fs.unlinkSync('data/results/' + dFile, function (err) {
+					if (err) return console.error(err);
+				});
+				fs.unlinkSync('data/upload/' + dFile, function (err) {
+					if (err) return console.error(err);
+				});
+			}
+		}
+		return console.log("Clean Old Tasks Files at:" + curTime);
+	});
+	jobInfo.deleteMany({ 'submittedTime': { $lte: due } }, function (err) {
+		if (err)
+			return console.error(err);
+		return console.log("Clean Old Tasks Historys at:" + curTime);
+	});
+
 });
 
 
