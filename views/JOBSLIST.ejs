@@ -276,7 +276,7 @@
           <td><%= element.status%>
             <% if (element.status === 'Done'){%>
             <i class="fas fa-check"></i></td>
-          <% } else if (element.status === 'Processing') {%>
+          <% } else if (element.status === 'Processing' || element.status === 'uploaded') {%>
           <div class="spinner-border spinner-border-sm" role="status">
             <span class="sr-only">Loading...</span>
           </div>
