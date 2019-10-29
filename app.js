@@ -39,13 +39,27 @@ var jobInfoSchema = new mongoose.Schema({
 	file: String,
 	email: String,
 	status: String,
-	submittedTime: String
+	submittedTime: String,
+	ipAddress: String
 });
 
 var jobInfo = mongoose.model("jobInfo", jobInfoSchema);
 
+var userInfoSchema = new mongoose.Schema({
+	ipAddress: String,
+	capacity: Number
+});
+
+var userInfo = mongoose.model("userInfo", userInfoSchema);
+
+// Set Process Count and Wailting List
+var curProcess = 0;
+var taskList = [];
+
 // INDEX: show the landing page
 app.get("/", function (req, res) {
+
+	// console.log(req.ip);
 	res.render("INDEX");
 });
 
@@ -76,8 +90,8 @@ app.get("/upload/:id", function (req, res) {
 
 // JOBSLIST: show all jos
 app.get("/jobs/all", function (req, res) {
-	jobInfo.find({}, function (err, docs) {
-		res.render("JOBSLIST", { docs: docs });
+	jobInfo.find({'ipAddress': req.ip}, function (err, docs) {
+		res.render("JOBSLIST", { docs: docs, ip: req.ip});
 	});
 });
 
@@ -163,7 +177,8 @@ app.post("/upload/sequence", function (req, res) {
 		sequence: sequence,
 		email: email,
 		status: "uploading",
-		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss')
+		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+		ipAddress: req.ip
 	});
 	job.file = job.id + '.txt';
 
@@ -291,7 +306,8 @@ app.post("/upload/file", function (req, res) {
 		nickName: nickName,
 		email: email,
 		status: "uploading",
-		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss')
+		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+		ipAddress: req.ip
 	});
 	job.file = job.id + '.txt';
 
@@ -436,6 +452,19 @@ app.get("*", function (req, res) {
 	res.render("404");
 });
 
+
+// Set a rule schedule to run tasks per 5s
+var rule = new schedule.RecurrenceRule();
+var ruleTime = [1,6,11,16,21,26,31,36,41,46,51,56];
+rule.second = ruleTime;
+schedule.scheduleJob(rule, function () {
+	if (curProcess == 0 && taskList.length > 0){
+		curProcess = 1;
+		console.log("Should run task");
+		// curProcess = 0;
+	}
+});
+
 // clean data per week
 schedule.scheduleJob('0 0 0 * * 0', function () {
 	var curTime = sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
@@ -479,7 +508,6 @@ schedule.scheduleJob('0 0 0 * * 0', function () {
 	});
 
 });
-
 
 app.listen(3000, process.env.IP, function () {
 	console.log("The DeepDom Server Has Started At: http://localhost:3000/");
