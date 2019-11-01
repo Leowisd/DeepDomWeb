@@ -78,7 +78,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary submitBtn">Submit</button>
                 <button type="reset" class="btn btn-secondary">Reset</button>
-
+                <input type="button" id="sample" class="btn btn-secondary" value="Sample"/>
             </form>
         </div>
 
@@ -138,6 +138,12 @@
     // reset button clears the file name 
     $('#reset').click(function () {
         $('#fileLabel').text('Choose file');
+    })
+
+    $('#sample').click(function(){
+        $('#sequenceInput').val('>T0529_2_7-339 364-561\nMSASKEIKSFLWTQSLRRELSGYCSNIKLQVVKDAQALLHGLDFSEVSNVQRLMRKERRDDNDLKRLRDLNQAVNNLVELKSTQQKSILRVGTLTSDDLLILAADLEKLKSKVIRTERPLSAGVYMGNLSSQQLDQRRALLNMIGMSGGNQGARAGRDGVVRVWDVKNAELLNNQFGTMPSLTLACLTKQGQVDLNDAVQALTDLGLIYTAKYPNTSDLDRLTQSHPILNMIDTKKSSLNISGYNFSLGAAVKAGACMLDGGNMLETIKVSPQTMDGILKSILKVKKALGMFISDTPGERNPYENILYKICLSGDGWPYIASRTSITGRAWENTVVDLESDGKPQKADSNNSSKSLQSAGFTAGLTYSQLMTLKDAMLQLDPNAKTWMDIEGRPEDPVEIALYQPSSGCYIHFFREPTDLKQFKQDAKYSHGIDVTDLFATQPGLTSAVIDALPRNMVITCQGSDDIRKLLESQGRKDIKLIDIALSKTDSRKYENAVWDQYKDLCHMHTGVVVEKKKRGGKEEITPHCALMDCIMFDAAVSGGLNTSVLRAVLPRDMVFRTSTPRVVL');
+        $('#nickName1').val('Example Case');
+        $('#emailInput1').val('examplecase@deepdom.com');
     })
 </script>
 

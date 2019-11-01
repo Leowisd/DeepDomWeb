@@ -46,9 +46,15 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~增加存ip数据表~~
 * ~~增加获取IP函数~~
 * ~~增加等待执行列表~~
-* 增加ip用户任务大小
-* 增加用户删除任务功能
+* 增加ip用户任务大小检测
+* ~~客户端ip地址获取修改~~
+* ~~增加用户删除任务功能~~
 
+### step 8
+* 整体UI设计规划
+
+### step 9
+* 上线测试
 
 RESTFUL ROUTES
 
@@ -64,6 +70,7 @@ DRAW                /result               POST        get job from database, the
 SHOW                /jobs/:id             GET         show the result
 JOBSLIST            /jobs/all             GET         show all tasks info
 DOWNLOAD			/jobs/download/:id    GET	      download the result file
+DELETE				/jobs/delete/:id	  POST		  delete the selected job
 
 
 var jobInfoSchema = new mongoose.Schema({
