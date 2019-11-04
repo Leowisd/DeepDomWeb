@@ -609,23 +609,23 @@ app.post("/upload/file", function (req, res) {
 });
 
 // Search POST
-app.post("/resultById", function (req, res) {
+app.post("/result/id", function (req, res) {
 	var jobId = req.body.JobIDInput.trim();
 	res.redirect("/jobs/:" + jobId);
 });
 
-app.post("/resultByName", function (req, res) {
+app.post("/result/name", function (req, res) {
 	var name = req.body.NicknameInput.trim();
 
 	jobInfo.find({ 'nickName': { $regex: name } }, function (err, docs) {
-		res.render("JOBSLIST", { docs: docs });
+		res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req) });
 	});
 });
 
-app.post("/resultBySeq", function (req, res) {
+app.post("/result/seq", function (req, res) {
 	var seq = req.body.sequenceInput.trim();
 	jobInfo.find({ 'sequence': seq }, function (err, docs) {
-		res.render("JOBSLIST", { docs: docs });
+		res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req) });
 	});
 });
 

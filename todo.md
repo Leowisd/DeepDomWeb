@@ -65,8 +65,10 @@ UPLOAD              /upload               GET         show the upload page
 SEQPROCESS          /upload/sequence      POST        deal with sequence, then redirect
 FILEPROCESS         /upload/file          POST        deal with uploaded file, then redirect
 JOBINFO             /upload/:id           GET         show the current job info to user
+RESULT1             /result/id            POST        get job from database by id, then rediredct to result page
+RESULT2             /result/name          POST        get job from database by nick name, then rediredct to result list
+RESULT3             /result/seq           POST        get job from database by sequence, then rediredct to result list
 SEARCH              /jobs                 GET         show the page to search jobs
-DRAW                /result               POST        get job from database, then rediredct
 SHOW                /jobs/:id             GET         show the result
 JOBSLIST            /jobs/all             GET         show all tasks info
 DOWNLOAD			/jobs/download/:id    GET	      download the result file
@@ -80,4 +82,9 @@ var jobInfoSchema = new mongoose.Schema({
 	email: String,
 	status: String,
 	finishedTime: Date
+});
+
+var userInfoSchema = new mongoose.Schema({
+	ipAddress: String,
+	capacity: Number
 });
