@@ -255,21 +255,30 @@
               <span class="sr-only">Loading...</span>
             </div>
           </td>
-          <td><button class="btn btn-danger">Delete</button></td>
+          <td>
+            <a class="btn btn-primary disabled" style="color:white;text-decoration:none;"><i class="fas fa-glasses"></i></a>
+            <button class="btn btn-danger" disabled><i class="far fa-trash-alt"></i></button>
+          </td>
         </tr>
         <tr class="table-success">
           <th scope="row">123456789ABCDEFG</th>
           <td>Jacob</td>
           <td>2019-09-16 21:36:12</td>
           <td>Done <i class="fas fa-check"></i></td>
-          <td><button class="btn btn-danger">Delete</button></td>
+          <td>
+            <a class="btn btn-primary disabled" style="color:white;text-decoration:none;"><i class="fas fa-glasses"></i></a>
+            <button class="btn btn-danger" disabled><i class="far fa-trash-alt"></i></button>
+          </td>
         </tr>
         <tr class="table-danger">
           <th scope="row">123456789ABCDEFG</th>
           <td>Larry</td>
           <td>2019-09-16 21:36:12</td>
           <td>Error <i class="fas fa-times"></i></td>
-          <td><button class="btn btn-danger">Delete</button></td>
+          <td>
+            <a class="btn btn-primary disabled" style="color:white;text-decoration:none;"><i class="fas fa-glasses"></i></a>
+            <button class="btn btn-danger" disabled><i class="far fa-trash-alt"></i></button>
+          </td>
         </tr>
         <% docs.forEach(function(element){ %>
         <tr class="table-success">
@@ -287,13 +296,18 @@
           <%} else if (element.status === 'error'){%>
           <i class="fas fa-times"></i>
           <%}%>
-          <td><button class="btn btn-danger" onclick="deleteTr(this)">Delete</button></td>            
-                </tr>
-              <% })%>
+          <td>
+            <a class="btn btn-primary" href="/jobs/:<%= element.id %>" style="color:white;text-decoration:none;"><i class="fas fa-glasses"></i></a>        
+            <button class="btn btn-danger" onclick="deleteTr(this)"><i class="far fa-trash-alt"></i></button>
+          </td>
+        </tr>
+          <% })%>
       </tbody>
     </table>
   </div>
 </div>
+
+
 
 <!-- auto fresh -->
 <script language="JavaScript">
@@ -310,15 +324,21 @@
   });
 
   function deleteTr(obj) {
-    var deleteID = $(obj).closest('tr').find('th').text().trim();
-    // console.log(deleteID);
-    var url = '/jobs/delete/:'+deleteID;
-    // console.log(url);
-    $.post(url, null, function(data, status){
-      // console.log('Delete Start');
-    });
-    $(obj).closest('tr').remove();
+    var con;
+    con = confirm("Are you sure you wanna delete this job?");
+    if (con == true){
+      var deleteID = $(obj).closest('tr').find('th').text().trim();
+      // console.log(deleteID);
+      var url = '/jobs/delete/:' + deleteID;
+      // console.log(url);
+      $.post(url, null, function (data, status) {
+        // console.log('Delete Start');
+      });
+      $(obj).closest('tr').remove();
+      alert("The job " + deleteID + " has been deleted!");
+    }
   }
+
 </script>
 
 <% include partials/footer %>
