@@ -24,7 +24,7 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~实现点击任务列表跳转结果显示界面, 分页效果~~
 * ~~predict完成可直接点击任务号查看结果~~
 * ~添加404页面~
-* 解决外连样式问题
+* ~~解决外连样式问题~~
 
 ### step 5
 * ~~增加zoom in/out 功能~~
@@ -39,16 +39,17 @@ todo: ~~解决两个子进程的顺序问题~~
 
 ### step 6
 * ~~增加数据库自动清理功能~~
-* 增加查询结果不存在情况
+* ~~增加查询结果不存在情况~~
 * 更换数据传输为ajax
 
 ### step 7
 * ~~增加存ip数据表~~
 * ~~增加获取IP函数~~
 * ~~增加等待执行列表~~
-* 增加ip用户任务大小检测
+* ~~增加ip用户任务大小检测~~
 * ~~客户端ip地址获取修改~~
 * ~~增加用户删除任务功能~~
+* ~~增加保存chart功能~~
 
 ### step 8
 * 整体UI设计规划
@@ -81,7 +82,8 @@ var jobInfoSchema = new mongoose.Schema({
 	file: String,
 	email: String,
 	status: String,
-	finishedTime: Date
+	finishedTime: Date,
+	ipAddress: String
 });
 
 var userInfoSchema = new mongoose.Schema({

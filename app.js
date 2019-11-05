@@ -56,6 +56,9 @@ var userInfo = mongoose.model("userInfo", userInfoSchema);
 var curProcess = 0;
 var taskList = [];
 
+// max capacity for each user
+var maxCapacity = 50 * 1024 * 1024; //50 MB
+
 // INDEX: show the landing page
 app.get("/", function (req, res) {
 	// console.log(get_client_ip(req));
@@ -92,7 +95,11 @@ app.get("/jobs/all", function (req, res) {
 	jobInfo.find({ 'ipAddress': get_client_ip(req) }, function (err, docs) {
 		if (err)
 			console.error(err);
-		res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req) });
+		userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
+			if (err)
+				console.error(err);
+			res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: doc.capacity });
+		});
 	});
 });
 
@@ -101,59 +108,65 @@ app.get("/jobs/:id", function (req, res) {
 	var jobId = req.params.id;
 	jobId = jobId.substr(1);
 
-
 	var file = jobId + '.txt';
 
-	var results = [];
-	var arr = fs.readFileSync('data/results/' + file).toString().split('\n');
-	for (var i = 0; i < arr.length; i++)
-		if (i % 2 == 0) {
-			var result = { name: arr[i], score: arr[i + 1] }
-			results.push(result);
+	fs.exists('data/results/' + file, function (exists) {
+		if (!exists) {
+			res.render("404");
 		}
+		else {
+			var results = [];
+			var arr = fs.readFileSync('data/results/' + file).toString().split('\n');
+			for (var i = 0; i < arr.length; i++)
+				if (i % 2 == 0) {
+					var result = { name: arr[i], score: arr[i + 1] }
+					results.push(result);
+				}
 
-	var data = fs.readFileSync('data/input/' + file).toString().split('\n');
-	var seq = [];
-	var j = 0;
-	for (var i = 0; i < results.length; i++) {
-		var name = results[i].name;
-		var s = "";
-		var num = 0;
-		while (j < data.length) {
-			var tmp = data[j].lastIndexOf('_');
-			var na = data[j].substring(0, tmp);
+			var data = fs.readFileSync('data/input/' + file).toString().split('\n');
+			var seq = [];
+			var j = 0;
+			for (var i = 0; i < results.length; i++) {
+				var name = results[i].name;
+				var s = "";
+				var num = 0;
+				while (j < data.length) {
+					var tmp = data[j].lastIndexOf('_');
+					var na = data[j].substring(0, tmp);
 
-			if (name === na) {
-				if (s != "") {
-					if (num > 0) {
-						s = s.substring(0, 80 * num);
+					if (name === na) {
+						if (s != "") {
+							if (num > 0) {
+								s = s.substring(0, 80 * num);
+							}
+						}
+						s += data[j + 1];
+						j += 2;
+						num++;
+					}
+					else {
+						seq.push(s);
+						s = "";
+						break;
 					}
 				}
-				s += data[j + 1];
-				j += 2;
-				num++;
 			}
-			else {
-				seq.push(s);
-				s = "";
-				break;
-			}
+			res.render("SHOW", { results: results, seq: seq, file: file });
+			// fs.readFile('data/results/' + file, function (err, data) {
+			// 	if (err) {
+			// 		return console.log(err);
+			// 	}
+			// 	arr = data.toString().split('\n');
+			// 	for (var i = 0; i < arr.length; i++)
+			// 		if (i % 2 == 0) {
+			// 			var result = { name: arr[i], score: arr[i + 1] }
+			// 			results.push(result);
+			// 		}
+			// 	// console.log(results);
+			// 	res.render("SHOW", { results: results, seq: seq, file: file });
+			// });
 		}
-	}
-	res.render("SHOW", { results: results, seq: seq, file: file });
-	// fs.readFile('data/results/' + file, function (err, data) {
-	// 	if (err) {
-	// 		return console.log(err);
-	// 	}
-	// 	arr = data.toString().split('\n');
-	// 	for (var i = 0; i < arr.length; i++)
-	// 		if (i % 2 == 0) {
-	// 			var result = { name: arr[i], score: arr[i + 1] }
-	// 			results.push(result);
-	// 		}
-	// 	// console.log(results);
-	// 	res.render("SHOW", { results: results, seq: seq, file: file });
-	// });
+	});
 });
 
 
@@ -168,16 +181,17 @@ app.post("/jobs/delete/:id", function (req, res) {
 	var job = req.params.id.substr(1);
 	// console.log(job);
 
+	// update user capacity
 	var fileSize = 0;
-	fs.stat('data/upload/' + job + '.txt', function(err, stats){
+	fs.stat('data/upload/' + job + '.txt', function (err, stats) {
 		if (err)
 			return console.error(err);
 		fileSize = stats.size;
 	});
-	userInfo.findOne({'ipAddress': get_client_ip(req)}, function(err, doc){
+	userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
 		if (err)
 			console.error(err);
-		if (doc != undefined){
+		if (doc != undefined) {
 			var update = { $set: { capacity: doc.capacity - fileSize } };
 			userInfo.updateOne({ 'ipAddress': get_client_ip(req) }, update, function (err, u) {
 				if (err)
@@ -190,6 +204,7 @@ app.post("/jobs/delete/:id", function (req, res) {
 		}
 	});
 
+	// delete jobs
 	jobInfo.findOne({ _id: job }, function (err, doc) {
 		if (err)
 			return console.error(err);
@@ -243,22 +258,27 @@ app.post("/upload/sequence", function (req, res) {
 	fs.writeFileSync('data/upload/' + job.file, sequence);
 	console.log("Data written success!");
 	console.log("======================================");
-	
+
 	var fileSize = 0;
-	fs.stat('data/upload/' + job.file, function(err, stats){
+	fs.stat('data/upload/' + job.file, function (err, stats) {
 		if (err)
 			return console.error(err);
 		fileSize = stats.size;
 	});
-	userInfo.findOne({'ipAddress': get_client_ip(req)}, function(err, doc){
+	var isEnough = 1;
+	userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
 		if (err)
 			console.error(err);
-		if (doc == undefined){
+		if (doc == undefined) {
 			var user = new userInfo({
 				ipAddress: get_client_ip(req),
 				capacity: fileSize
 			});
-			user.save(function(err, u){
+			if (user.capacity > maxCapacity) {
+				user.capacity = 0;
+				isEnough = 0;
+			}
+			user.save(function (err, u) {
 				if (err)
 					console.error(err);
 				else {
@@ -267,44 +287,58 @@ app.post("/upload/sequence", function (req, res) {
 				}
 			})
 		}
-		else{
-			var update = { $set: { capacity: doc.capacity + fileSize } };
-			userInfo.updateOne({ 'ipAddress': get_client_ip(req) }, update, function (err, u) {
-				if (err)
-					console.log(err);
-				else {
-					console.log("User info was updated!");
-					console.log("User size: " + (doc.capacity + fileSize));
-					console.log("======================================");
-				}
+		else {
+			if (doc.capacity + fileSize <= maxCapacity) {
+				var update = { $set: { capacity: doc.capacity + fileSize } };
+				userInfo.updateOne({ 'ipAddress': get_client_ip(req) }, update, function (err, u) {
+					if (err)
+						console.log(err);
+					else {
+						console.log("User info was updated!");
+						console.log("User size: " + (doc.capacity + fileSize));
+						console.log("======================================");
+					}
+				});
+			}
+			else isEnough = 0;
+		}
+	});
+
+	if (isEnough == 1) {
+
+		taskList.push(job.id);
+
+		job.save(function (err, job) {
+			if (err) {
+				console.log("SOMETHING WENT WRONG!");
+			}
+			else {
+				console.log("Job was saved!");
+				console.log("======================================");
+			}
+		});
+
+		// send job ID email
+		if (job.email !== "") {
+			var mail = {
+				from: 'DeepDom<deepdom.service@gmail.com>',
+				subject: 'DeepDom: Job Infomation',
+				to: email,
+				text: 'Your job ID is:' + job.id
+			};
+			transporter.sendMail(mail, function (error, info) {
+				if (error) return console.log(error);
+				console.log('mail sent:', info.response);
 			});
 		}
-	});
 
-	taskList.push(job.id);
-
-	job.save(function (err, job) {
-		if (err) {
-			console.log("SOMETHING WENT WRONG!");
-		}
-		else {
-			console.log("Job was saved!");
-			console.log("======================================");
-		}
-	});
-
-	// send job ID email
-	if (job.email !== "") {
-		var mail = {
-			from: 'DeepDom<deepdom.service@gmail.com>',
-			subject: 'DeepDom: Job Infomation',
-			to: email,
-			text: 'Your job ID is:' + job.id
-		};
-		transporter.sendMail(mail, function (error, info) {
-			if (error) return console.log(error);
-			console.log('mail sent:', info.response);
+		res.redirect("/upload/:" + job.id);
+	}
+	else {
+		fs.unlink('data/upload/' + job.file, function (err) {
+			if (err) console.error(err);
 		});
+		alert("Your jobs' capacity is out of range! Please delete your useless jobs.");
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -404,8 +438,6 @@ app.post("/upload/sequence", function (req, res) {
 	// 	});
 
 	// });
-
-	res.redirect("/upload/:" + job.id);
 });
 
 //Deal with file post
@@ -448,20 +480,25 @@ app.post("/upload/file", function (req, res) {
 	}); //delete the original file
 
 	var fileSize = 0;
-	fs.stat('data/upload/' + job.file, function(err, stats){
+	fs.stat('data/upload/' + job.file, function (err, stats) {
 		if (err)
 			return console.error(err);
 		fileSize = stats.size;
 	});
-	userInfo.findOne({'ipAddress': get_client_ip(req)}, function(err, doc){
+	var isEnough = 1;
+	userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
 		if (err)
 			console.error(err);
-		if (doc == undefined){
+		if (doc == undefined) {
 			var user = new userInfo({
 				ipAddress: get_client_ip(req),
 				capacity: fileSize
 			});
-			user.save(function(err, u){
+			if (user.capacity > maxCapacity) {
+				user.capacity = 0;
+				isEnough = 0;
+			}
+			user.save(function (err, u) {
 				if (err)
 					console.error(err);
 				else {
@@ -470,44 +507,58 @@ app.post("/upload/file", function (req, res) {
 				}
 			})
 		}
-		else{
-			var update = { $set: { capacity: doc.capacity + fileSize } };
-			userInfo.updateOne({ 'ipAddress': get_client_ip(req) }, update, function (err, u) {
-				if (err)
-					console.log(err);
-				else {
-					console.log("User info was updated!");
-					console.log("User size: " + (doc.capacity + fileSize));
-					console.log("======================================");
-				}
+		else {
+			if (doc.capacity + fileSize <= maxCapacity) {
+				var update = { $set: { capacity: doc.capacity + fileSize } };
+				userInfo.updateOne({ 'ipAddress': get_client_ip(req) }, update, function (err, u) {
+					if (err)
+						console.log(err);
+					else {
+						console.log("User info was updated!");
+						console.log("User size: " + (doc.capacity + fileSize));
+						console.log("======================================");
+					}
+				});
+			}
+			else isEnough = 0;
+		}
+	});
+
+	if (isEnough == 1) {
+
+		taskList.push(job.id);
+
+		job.save(function (err, job) {
+			if (err) {
+				console.log("SOMETHING WENT WRONG!");
+			}
+			else {
+				console.log("Job was saved!");
+				console.log("======================================");
+			}
+		});
+
+		// send job ID email
+		if (job.email !== "") {
+			var mail = {
+				from: 'DeepDom<deepdom.service@gmail.com>',
+				subject: 'DeepDom: Job Infomation',
+				to: email,
+				text: 'Your job ID is:' + job.id
+			};
+			transporter.sendMail(mail, function (error, info) {
+				if (error) return console.log(error);
+				console.log('mail sent:', info.response);
 			});
 		}
-	});
 
-	taskList.push(job.id);
-
-	job.save(function (err, job) {
-		if (err) {
-			console.log("SOMETHING WENT WRONG!");
-		}
-		else {
-			console.log("Job was saved!");
-			console.log("======================================");
-		}
-	});
-
-	// send job ID email
-	if (job.email !== "") {
-		var mail = {
-			from: 'DeepDom<deepdom.service@gmail.com>',
-			subject: 'DeepDom: Job Infomation',
-			to: email,
-			text: 'Your job ID is:' + job.id
-		};
-		transporter.sendMail(mail, function (error, info) {
-			if (error) return console.log(error);
-			console.log('mail sent:', info.response);
+		res.redirect("/upload/:" + job.id);
+	}
+	else {
+		fs.unlink('data/upload/' + job.file, function (err) {
+			if (err) console.error(err);
 		});
+		alert("Your jobs' capacity is out of range! Please delete your useless jobs.");
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -605,7 +656,6 @@ app.post("/upload/file", function (req, res) {
 
 	// });
 
-	res.redirect("/upload/:" + job.id);
 });
 
 // Search POST
@@ -617,15 +667,28 @@ app.post("/result/id", function (req, res) {
 app.post("/result/name", function (req, res) {
 	var name = req.body.NicknameInput.trim();
 
-	jobInfo.find({ 'nickName': { $regex: name } }, function (err, docs) {
-		res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req) });
+	jobInfo.find({ 'nickName': { $regex: name }, 'ipAddress': get_client_ip(req) }, function (err, docs) {
+		if (err)
+			console.error(err);
+		userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
+			if (err)
+				console.error(err);
+			res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: doc.capacity });
+		});
 	});
 });
 
 app.post("/result/seq", function (req, res) {
 	var seq = req.body.sequenceInput.trim();
-	jobInfo.find({ 'sequence': seq }, function (err, docs) {
-		res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req) });
+
+	jobInfo.find({ 'sequence': seq, 'ipAddress': get_client_ip(req) }, function (err, docs) {
+		if (err)
+			console.error(err);
+		userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
+			if (err)
+				console.error(err);
+			res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: doc.capacity });
+		});
 	});
 });
 

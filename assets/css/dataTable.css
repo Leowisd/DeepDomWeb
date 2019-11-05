@@ -1,7 +1,3 @@
-body{
-    background-color: #4285f4
- }
- 
  table.dataTable thead {
    cursor: pointer; }
    table.dataTable thead > tr > th:active,

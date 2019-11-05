@@ -1,5 +1,9 @@
 <% include partials/header %>
 
+<!-- Print/save image -->
+<script type="text/javascript" src="/lib/jQuery.print.js"></script>
+<script type="text/javascript" src="/js/imagePrint.js"></script>
+
 <nav class="navbar navbar-expand-md navbar-light bg-light">
     <div class="container col-12 col-lg-8">
         <a class="navbar-brand" href="/">DeepDom</a>
@@ -157,7 +161,7 @@
             container.appendChild(d);
 
             //////////////////////////////////////////////////
-            //Add reset-zoom, pan-switch, drag-switch button
+            //Add reset-zoom, pan-switch, drag-switch, print button
             var btnSet = document.createElement('div');
             btnSet.classList.add("btn-group");
             btnSet.classList.add("btn-group-sm");
@@ -184,6 +188,7 @@
                 var cur = parseInt(this.id.substring(10));
 
                 var chart = window.myline[cur];
+                // console.log(chart.canvas);
                 var panOptions = chart.options.plugins.zoom;
                 panOptions.pan.enabled = !panOptions.pan.enabled;
 
@@ -218,9 +223,25 @@
             };
             btnDrag.textContent = "Enable drag mode";
 
+            var btnShot = document.createElement('button');
+            btnShot.classList.add("btn");
+            btnShot.classList.add("btn-secondary");
+            btnShot.setAttribute("type", "button");
+            btnShot.setAttribute("id", "screenShot" + id);
+            btnShot.onclick = function () {
+                var cur = parseInt(this.id.substring(10));
+
+                var chart = window.myline[cur];
+
+                printClip(chart.canvas, chart.options.title.text);
+                
+            };
+            btnShot.textContent = "Print";
+
             btnSet.appendChild(btnReset);
             btnSet.appendChild(btnPan);
             btnSet.appendChild(btnDrag);
+            btnSet.appendChild(btnShot);
 
             container.appendChild(btnSet);
 
