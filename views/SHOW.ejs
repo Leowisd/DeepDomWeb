@@ -35,22 +35,6 @@
     </div>
 </div>
 
-<div class='d-none' id='name'>
-    <% results.forEach(function(element){ %>
-    <%= element.name%>,
-    <% }) %>
-</div>
-<p class='d-none' id='score'>
-    <% results.forEach(function(element){ %>
-    <%= element.score %>,
-    <% }) %>
-</p>
-<p class='d-none' id='seq'>
-    <% seq.forEach(function(element){ %>
-    <%= element%>,
-    <% }) %>
-</p>
-
 <div class="container col-12 col-lg-8 ">
     <div class="btn-toolbar d-flex justify-content-start" role="toolbar" aria-label="Toolbar with button group">
         <div class="btn-group mr-2" role="group" aria-label="First group">
@@ -64,8 +48,8 @@
             <select class="selectpicker show-tick" multiple data-actions-box="true" data-size="5"
                 data-style="btn-secondary" data-width="300px" data-live-search="true"
                 title="Choose one of the following...">
-                <% for (var i = 0; i < results.length - 1; i++) {%>
-                <option value="<%= i%>"> <%= results[i].name.trim()%></option>
+                <% for (var i = 0; i < names.length; i++) {%>
+                <option value="<%= i%>"> <%= names[i]%></option>
                 <% } %>
             </select>
         </div>
@@ -94,28 +78,32 @@
         $('[data-toggle="popover"]').popover()
     })
 
-    var names = document.getElementById('name').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
-    names.length -= 2;
-    // console.log(names);
-
-    var score = document.getElementById('score').textContent.replace(/[\r\n]/g, "").split(',');
+    var tmpScore = "<%= scores %>";
+    score = tmpScore.split(',');
     for (var i = 0; i < score.length; i++) {
         score[i] = score[i].trim().split(' ');
         for (var j = 0; j < score[i].length; j++) {
             score[i][j] = parseFloat(score[i][j]);
         }
     }
-    score.length -= 2;
     // console.log(score);
 
-    var seq = document.getElementById('seq').textContent.replace(/\ +/g, "").replace(/[\r\n]/g, "").split(',');
-    seq.length -= 1;
+    var tmpNames = "<%= names %>";
+    var names = tmpNames.split(',');
+    for (var i = 0; i < names.length; i++) {
+        names[i] = '>' + names[i].substring(4);
+    }
+    // console.log(names);
+
+    var tmpSeq = "<%= seq %>";
+    var seq = tmpSeq.split(',');
     // console.log(seq);
 
     var containerAll = document.querySelector('#allContainer');
     var sideNav = document.querySelector('.sidenav');
     var navCopy = sideNav.innerHTML;
 
+    var threshold = 0.42;
     window.myline = [];
 
     $(".selectpicker").change(function () {
@@ -234,7 +222,7 @@
                 var chart = window.myline[cur];
 
                 printClip(chart.canvas, chart.options.title.text);
-                
+
             };
             btnShot.textContent = "Print";
 
@@ -263,12 +251,11 @@
             var xAxis = [];
             for (var j = 0; j <= score[id].length; j++) xAxis[j] = j + " : " + seq[id][j];
             // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
-            var gap = [];
-            for (var j = 0; j <= score[id].length; j++) gap[j] = 0.45;
+
             var overScore = [];
             var belowScore = [];
             for (var j = 0; j <= score[id].length; j++) {
-                if (score[id][j] <= gap[j]) {
+                if (score[id][j] <= threshold) {
                     overScore[j] = "NaN";
                     belowScore[j] = score[id][j];
                     if (j > 0 && belowScore[j - 1] == 'NaN') overScore[j] = score[id][j];
@@ -283,37 +270,26 @@
             var chartData = {
                 labels: xAxis,
                 datasets: [{
-                    type: 'line',
-                    label: 'Score Gap',
-                    // backgroundColor: 'rgb(0, 0, 0)',
-                    borderColor: 'rgb(0, 0, 0)',
-                    borderWidth: 2,
-                    fill: false,
-                    borderDash: [3, 3],
-                    pointRadius: 1,
-                    pointHoverRadius: 5,
-                    data: gap
-                }, {
-                    type: 'line',
-                    label: 'Score',
-                    borderColor: 'rgb(255,255,0)',
-                    pointStyle: "star",
-                    pointBorderColor: 'rgb(0,0,255)',
-                    backgroundColor: 'rgba(0, 0, 0, 0)',
-                    fill: false,
-                    lineTension: 0,
-                    data: belowScore
-                }, {
-                    type: 'line',
-                    label: 'Over Score',
-                    borderColor: 'rgb(255,255,0)',
-                    pointStyle: "star",
-                    pointBorderColor: 'rgb(255,0,0)',
-                    backgroundColor: 'rgba(0, 0, 0, 0)',
-                    fill: false,
-                    lineTension: 0,
-                    data: overScore
-                }]
+                        type: 'line',
+                        label: 'Score',
+                        borderColor: 'rgb(255,255,0)',
+                        pointStyle: "star",
+                        pointBorderColor: 'rgb(0,0,255)',
+                        backgroundColor: 'rgba(0, 0, 0, 0)',
+                        fill: false,
+                        lineTension: 0,
+                        data: belowScore
+                    }, {
+                        type: 'line',
+                        label: 'Over Score',
+                        borderColor: 'rgb(255,255,0)',
+                        pointStyle: "star",
+                        pointBorderColor: 'rgb(255,0,0)',
+                        backgroundColor: 'rgba(0, 0, 0, 0)',
+                        fill: false,
+                        lineTension: 0,
+                        data: overScore
+                    }]
             }
 
             var ctx = canvas.getContext('2d');
@@ -333,8 +309,8 @@
                         callbacks: {
                             beforeLabel: function (tooltipItem, data) {
                                 var beforeLabel = "Score: ";
-                                beforeLabel += Math.round(tooltipItem.yLabel * 100) / 100;
-                                if (Math.round(tooltipItem.yLabel * 100) / 100 >= 0.45) beforeLabel += " (over)";
+                                beforeLabel += Math.round(tooltipItem.yLabel * 10000000) / 10000000;
+                                if (Math.round(tooltipItem.yLabel * 10000000) / 10000000 >= threshold) beforeLabel += " (over)";
                                 return beforeLabel;
                             },
                             label: function (tooltipItem, data) {
@@ -352,6 +328,42 @@
                                 return afterLabel;
                             }
                         }
+                    },
+                    annotation: {
+                        events: ["mouseover", "mouseout"],
+                        annotations: [
+                            {
+                                drawTime: "afterDatasetsDraw",
+                                id: "hline",
+                                type: "line",
+                                mode: "horizontal",
+                                scaleID: "y-axis-0",
+                                value: threshold,
+                                borderColor: "black",
+                                borderWidth: 5,
+                                label: {
+                                    backgroundColor: "red",
+                                    content: "Threshold: " + threshold,
+                                    enabled: false
+                                },
+                                onMouseover: function (e) {
+                                    var element = this;
+                                    element.options.borderWidth = 7;
+                                    element.options.label.enabled = true;
+                                    element.chartInstance.update();
+                                    element.chartInstance.chart.canvas.style.cursor = 'pointer';
+                                },
+                                onMouseout: function (e) {
+                                    var element = this;
+                                    element.options.borderWidth = 4;
+                                    element.chartInstance.update();
+                                    setTimeout(function () {
+                                        element.options.label.enabled = false;
+                                        element.chartInstance.update();
+                                    }, 0);
+                                    element.chartInstance.chart.canvas.style.cursor = 'initial';
+                                }
+                            }]
                     }
                 }
             })

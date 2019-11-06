@@ -116,11 +116,15 @@ app.get("/jobs/:id", function (req, res) {
 		}
 		else {
 			var results = [];
+			var names = [];
+			var scores = [];
 			var arr = fs.readFileSync('data/results/' + file).toString().split('\n');
 			for (var i = 0; i < arr.length; i++)
 				if (i % 2 == 0) {
 					var result = { name: arr[i], score: arr[i + 1] }
 					results.push(result);
+					names.push(arr[i]);
+					scores.push(arr[i + 1]);
 				}
 
 			var data = fs.readFileSync('data/input/' + file).toString().split('\n');
@@ -151,7 +155,11 @@ app.get("/jobs/:id", function (req, res) {
 					}
 				}
 			}
-			res.render("SHOW", { results: results, seq: seq, file: file });
+			names.length--;
+			// console.log(names);
+			scores.length--;
+			// console.log(scores);
+			res.render("SHOW", {names: names, scores: scores, seq: seq, file: file });
 			// fs.readFile('data/results/' + file, function (err, data) {
 			// 	if (err) {
 			// 		return console.log(err);
