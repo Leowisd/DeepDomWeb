@@ -66,14 +66,19 @@ UPLOAD              /upload               GET         show the upload page
 SEQPROCESS          /upload/sequence      POST        deal with sequence, then redirect
 FILEPROCESS         /upload/file          POST        deal with uploaded file, then redirect
 JOBINFO             /upload/:id           GET         show the current job info to user
+
 RESULT1             /result/id            POST        get job from database by id, then rediredct to result page
 RESULT2             /result/name          POST        get job from database by nick name, then rediredct to result list
 RESULT3             /result/seq           POST        get job from database by sequence, then rediredct to result list
+
 SEARCH              /jobs                 GET         show the page to search jobs
 SHOW                /jobs/:id             GET         show the result
 JOBSLIST            /jobs/all             GET         show all tasks info
 DOWNLOAD			/jobs/download/:id    GET	      download the result file
 DELETE				/jobs/delete/:id	  POST		  delete the selected job
+
+HMMSCAN				/process/hmmscan	  POST		  do the hmmscan of post seq
+
 
 
 var jobInfoSchema = new mongoose.Schema({

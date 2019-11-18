@@ -1,10 +1,11 @@
 var express = require("express");
-var router = express.Router({mergeParams: true});
+var router = express.Router({ mergeParams: true });
 var sd = require("silly-datetime"),
-    fs = require("fs"),
+	fs = require("fs"),
 	schedule = require("node-schedule"),
-    exec = require('child_process').exec;
-    
+	request = require("request");
+exec = require('child_process').exec;
+
 var jobInfo = require("../models/jobInfo");
 var transporter = require("../models/emailConfig");
 
@@ -37,7 +38,8 @@ schedule.scheduleJob(rule, function () {
 				console.log("Data convert ready...");
 				var arg1 = 'data/upload/' + job.file;
 				var arg2 = 'data/input/' + job.file;
-				var workprecessor = exec("perl DeepDom/dataprocess.pl -input_seq " + arg1 + ' -output_seq ' + arg2 + ' ', function (error, stdout, stderr) {
+				var cmd1 = "perl DeepDom/dataprocess.pl -input_seq " + arg1 + ' -output_seq ' + arg2 + ' ';
+				var workprecessor = exec(cmd1, function (error, stdout, stderr) {
 					if (error) {
 						console.info('stderr : ' + stderr);
 						job.status = 'error';
@@ -53,10 +55,11 @@ schedule.scheduleJob(rule, function () {
 					console.log("Predict ready...");
 					var arg3 = 'data/input/' + job.file;
 					var arg4 = 'data/results/' + job.file;
-					// GPU
-					// var workprecessor2 = exec("python DeepDom/predict.py -input " + arg3 + ' -output ' + arg4, function (error, stdout, stderr) {
 					// CPU
-					var workprecessor2 = exec("python DeepDom/predict.py -input " + arg3 + ' -output ' + arg4 + " -model-prefix DeepDom/cpu_model.h5", function (error, stdout, stderr) {
+					var cmd2 = "python DeepDom/predict.py -input " + arg3 + ' -output ' + arg4 + " -model-prefix DeepDom/cpu_model.h5";
+					// GPU
+					// var cmd2 = "python DeepDom/predict.py -input " + arg3 + ' -output ' + arg4;
+					var workprecessor2 = exec(cmd2, function (error, stdout, stderr) {
 						if (error) {
 							console.info('stderr : ' + stderr);
 
@@ -76,8 +79,8 @@ schedule.scheduleJob(rule, function () {
 
 					workprecessor2.on('exit', function (code) {
 						console.info('Predict done!');
+
 						curProcess = 0;
-						// console.log('predict child process exit，exit code: '+code);		
 						var updates = { $set: { status: 'Done' } };
 						jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
 							if (err) {
@@ -151,11 +154,11 @@ schedule.scheduleJob('0 0 0 * * 0', function () {
 			}
 		}
 		return console.log("Clean Old Tasks Files at:" + curTime);
-    });
-    
+	});
+
 	jobInfo.deleteMany({ 'submittedTime': { $lte: due } }, function (err) {
 		if (err)
-            return console.error(err);
+			return console.error(err);
 		return console.log("Clean Old Tasks Historys at:" + curTime);
 	});
 

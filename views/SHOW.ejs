@@ -121,7 +121,7 @@
 
             var container = document.createElement("container");
 
-            //Add a Button to show a collapse with sequence
+            //Add a Button to show a popover with sequence
             var d = document.createElement('div');
             d.classList.add("row");
             d.classList.add("d-flex");
@@ -142,9 +142,47 @@
                     seqData += seq[id][k];
             btn.setAttribute("data-content", seqData);
             btn.onclick = function () {
-
             }
             d.appendChild(btn);
+
+            // Add a button to start hmmer scan
+            var btnScan = document.createElement('button');
+            btnScan.classList.add("btn");
+            btnScan.classList.add("btn-secondary");
+            btnScan.classList.add("ml-2");
+            btnScan.setAttribute("type", "button");
+            btnScan.setAttribute("id", "hmmscan" + id);
+            btnScan.onclick = function () {
+                var cur = parseInt(this.id.substring(7));
+                var seqscanData = "";
+                for (var k = 0; k < score[cur].length; k++)
+                    if (seq[cur][k] !== '-')
+                        seqscanData += seq[cur][k];
+                const scanData = { seq: seqscanData, name: names[cur] + "_NO_" + cur };
+                const scanURL = "/process/hmmscan";
+                $.post(scanURL, scanData, function (data, status) {
+                    console.log(data);
+                    document.getElementById("family" + cur).removeAttribute("disabled");
+                    document.getElementById("hmmscan" + cur).setAttribute("disabled", "");
+                    for (var k = 0; k < data.superfamily.length; k++)
+                        document.getElementById("cardfamily" + cur).innerText += data.superfamily[k] + " " + data.supeval[k] + " " + data.family[k] + " " + data.fameval[k] + " " + data.seg[k];
+                });
+            };
+            btnScan.textContent = "hmmscan";
+            d.appendChild(btnScan);
+
+            // Add a button to show the scan result 
+            var btnFamily = document.createElement('button');
+            btnFamily.classList.add("btn");
+            btnFamily.classList.add("btn-secondary");
+            btnFamily.classList.add("ml-2");
+            btnFamily.setAttribute("type", "button");
+            btnFamily.setAttribute("data-toggle", "collapse");
+            btnFamily.setAttribute("data-target", "#familyCollapse" + id);
+            btnFamily.setAttribute("id", "family" + id);
+            btnFamily.setAttribute("disabled", "");
+            btnFamily.textContent = "famliy result";
+            d.appendChild(btnFamily);
 
             container.appendChild(d);
 
@@ -243,11 +281,23 @@
             div.appendChild(canvas);
             container.appendChild(div);
 
+            var collapseDiv = document.createElement("div");
+            collapseDiv.classList.add("collapse");
+            collapseDiv.classList.add("mb-4");
+            collapseDiv.setAttribute("id", "familyCollapse" + id);
+            var cardfamily = document.createElement("div");
+            cardfamily.classList.add("card");
+            cardfamily.classList.add("card-body");
+            cardfamily.setAttribute("id", "cardfamily" + id);
+            collapseDiv.appendChild(cardfamily);
+            container.appendChild(collapseDiv);
+
             var hr = document.createElement("hr");
             if (i < idList.length - 1) container.appendChild(hr);
 
             containerAll.appendChild(container);
 
+            ///////////////////////////////////////////////////
             var xAxis = [];
             for (var j = 0; j <= score[id].length; j++) xAxis[j] = j + " : " + seq[id][j];
             // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
@@ -270,26 +320,26 @@
             var chartData = {
                 labels: xAxis,
                 datasets: [{
-                        type: 'line',
-                        label: 'Score',
-                        borderColor: 'rgb(255,255,0)',
-                        pointStyle: "star",
-                        pointBorderColor: 'rgb(0,0,255)',
-                        backgroundColor: 'rgba(0, 0, 0, 0)',
-                        fill: false,
-                        lineTension: 0,
-                        data: belowScore
-                    }, {
-                        type: 'line',
-                        label: 'Over Score',
-                        borderColor: 'rgb(255,255,0)',
-                        pointStyle: "star",
-                        pointBorderColor: 'rgb(255,0,0)',
-                        backgroundColor: 'rgba(0, 0, 0, 0)',
-                        fill: false,
-                        lineTension: 0,
-                        data: overScore
-                    }]
+                    type: 'line',
+                    label: 'Score',
+                    borderColor: 'rgb(255,255,0)',
+                    pointStyle: "star",
+                    pointBorderColor: 'rgb(0,0,255)',
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    fill: false,
+                    lineTension: 0,
+                    data: belowScore
+                }, {
+                    type: 'line',
+                    label: 'Over Score',
+                    borderColor: 'rgb(255,255,0)',
+                    pointStyle: "star",
+                    pointBorderColor: 'rgb(255,0,0)',
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    fill: false,
+                    lineTension: 0,
+                    data: overScore
+                }]
             }
 
             var ctx = canvas.getContext('2d');

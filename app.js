@@ -6,7 +6,8 @@ var express = require("express"),
 var uploadsRoutes = require("./routes/uploads"),
 	jobsRoutes = require("./routes/jobs"),
 	resultsRoutes = require("./routes/results"),
-	indexRoutes = require("./routes/index");
+	indexRoutes = require("./routes/index"),
+	processRoutes = require("./routes/process");
 
 mongoose.connect("mongodb://localhost/deepdom");
 
@@ -17,6 +18,7 @@ app.use(express.static('assets'))
 app.use(indexRoutes);
 app.use(uploadsRoutes);
 app.use(jobsRoutes);
+app.use(processRoutes);
 app.use(resultsRoutes);
 
 app.get("*", function (req, res) {
