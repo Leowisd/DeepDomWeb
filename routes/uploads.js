@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router({mergeParams: true});
 var sd = require("silly-datetime"),
-    fs = require("fs"),
+	fs = require("fs"),
+	moment = require("moment"),
 	multer = require('multer');
 
 const upload = multer({
@@ -47,7 +48,8 @@ router.post("/upload/sequence", function (req, res) {
 		sequence: sequence,
 		email: email,
 		status: "uploaded",
-		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+		// submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+		submittedTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
 	});
 	job.file = job.id + '.txt';
@@ -159,7 +161,8 @@ router.post("/upload/file", function (req, res) {
 		nickName: nickName,
 		email: email,
 		status: "uploaded",
-		submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+		// submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+		submittedTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
 	});
 	job.file = job.id + '.txt';

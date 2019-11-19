@@ -3,6 +3,7 @@ var router = express.Router({ mergeParams: true });
 var sd = require("silly-datetime"),
 	fs = require("fs"),
 	schedule = require("node-schedule"),
+	moment = require("moment"),
 	request = require("request");
 exec = require('child_process').exec;
 
@@ -120,8 +121,8 @@ schedule.scheduleJob(rule, function () {
 // schedule.scheduleJob('0 * * * * *', function () {
 
 schedule.scheduleJob('0 0 0 * * 0', function () {
-	var curTime = sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
-	var curDay = parseInt(curTime.substring(8));
+	var curTime = moment().format('YYYY-MM-DD HH:mm:ss');
+	var curDay = parseInt(curTime.substring(8, 10));
 	var curMonth = parseInt(curTime.substring(5, 7));
 	var curYear = parseInt(curTime.substring(0, 4));
 	curDay -= 7;
