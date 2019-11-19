@@ -49,7 +49,7 @@ router.post("/upload/sequence", function (req, res) {
 		email: email,
 		status: "uploaded",
 		// submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
-		submittedTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+		submittedTime: moment().local().format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
 	});
 	job.file = job.id + '.txt';
@@ -162,7 +162,7 @@ router.post("/upload/file", function (req, res) {
 		email: email,
 		status: "uploaded",
 		// submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
-		submittedTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+		submittedTime: moment().local().format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
 	});
 	job.file = job.id + '.txt';
