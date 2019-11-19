@@ -121,7 +121,7 @@ schedule.scheduleJob(rule, function () {
 // schedule.scheduleJob('0 * * * * *', function () {
 
 schedule.scheduleJob('0 0 0 * * 0', function () {
-	var curTime = moment().local().format('YYYY-MM-DD HH:mm:ss');
+	var curTime = moment().utcOffset("-06:00").format('YYYY-MM-DD HH:mm:ss');
 	var curDay = parseInt(curTime.substring(8, 10));
 	var curMonth = parseInt(curTime.substring(5, 7));
 	var curYear = parseInt(curTime.substring(0, 4));
