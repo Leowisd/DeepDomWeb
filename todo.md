@@ -52,9 +52,13 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~增加保存chart功能~~
 
 ### step 8
+* ~~增加hmmscan功能~~
+* 可视化hmmscan结果
+
+### step
 * 整体UI设计规划
 
-### step 9
+### step
 * 上线测试
 
 RESTFUL ROUTES
