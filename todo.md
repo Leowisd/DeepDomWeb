@@ -56,6 +56,11 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~可视化hmmscan结果~~
 * ~~fix 没有结果bug~~
 
+### step 9
+* ~~增加structure scan 功能~~
+* ~~可视化结果~~
+* ~~fix 响应超时bug~~
+
 ### step
 * 整体UI设计规划
 
@@ -82,8 +87,8 @@ JOBSLIST            /jobs/all             GET         show all tasks info
 DOWNLOAD			/jobs/download/:id    GET	      download the result file
 DELETE				/jobs/delete/:id	  POST		  delete the selected job
 
-HMMSCAN				/process/hmmscan	  POST		  do the hmmscan of post seq
-
+HMMSCAN_SF			/process/hmmscan/superfamily	  POST		  do the superfamily hmmscan of post seq
+HMMSCAN_3D			/process/hmmscan/3d				  POST		  do the gene3D hmmscan of post seq
 
 
 var jobInfoSchema = new mongoose.Schema({
