@@ -56,7 +56,7 @@
     </div>
 </div>
 
-<div id="allContainer" class="container border rounded shadow-lg mt-4 pt-3 mx-auto col-12 col-lg-8 "></div>
+<div id="mainContainer" class="container border rounded shadow-lg mt-4 pt-3 mx-auto col-12 col-lg-8 "></div>
 
 <div id="box" class="box">
     <div class="box-in"></div>
@@ -99,7 +99,7 @@
     var seq = tmpSeq.split(',');
     // console.log(seq);
 
-    var containerAll = document.querySelector('#allContainer');
+    var mainContainer = document.querySelector('#mainContainer');
     var sideNav = document.querySelector('.sidenav');
     var navCopy = sideNav.innerHTML;
 
@@ -110,7 +110,7 @@
         var idList = $(".selectpicker").val();
         // console.log(idList);
 
-        containerAll.innerHTML = "";
+        mainContainer.innerHTML = "";
 
         sideNav.innerHTML = navCopy;
         $('[data-toggle="popover"]').popover();
@@ -124,32 +124,54 @@
             //Add a Button to show a popover with sequence
             var d = document.createElement('div');
             d.classList.add("row");
-            d.classList.add("d-flex");
-            d.classList.add("justify-content-center");
 
             var btn = document.createElement("button");
             btn.setAttribute("type", "button");
             btn.classList.add("btn");
             btn.classList.add("btn-secondary");
             btn.classList.add("btn-sm");
-            btn.textContent = "Show Current Sequence";
-            // btn.setAttribute("data-container", "body");
+            btn.classList.add("ml-3");
+            btn.textContent = "Show sequence";
             btn.setAttribute("data-toggle", "popover");
-            btn.setAttribute("data-placement", "top");
+            btn.setAttribute("data-placement", "right");
+            btn.setAttribute("id", "seqBtn" + id);
             var seqData = "";
             for (var k = 0; k < score[id].length; k++)
                 if (seq[id][k] !== '-')
                     seqData += seq[id][k];
             btn.setAttribute("data-content", seqData);
             btn.onclick = function () {
+                var cur = parseInt(this.id.substring(6));
+                var tmp = document.getElementById("seqBtn" + cur);
+                tmp.textContent = tmp.textContent == "Show sequence" ? "Hide sequence" : "Show sequence";
             }
             d.appendChild(btn);
+            container.appendChild(d);
+
+            var scanBtnToolbar = document.createElement("div");
+            scanBtnToolbar.classList.add("btn-toolbar");
+            scanBtnToolbar.classList.add("mt-2");
+            scanBtnToolbar.classList.add("float-left");
+            scanBtnToolbar.setAttribute("role", "toolbar");
+            container.appendChild(scanBtnToolbar);
+
+            var supfamBtnSet = document.createElement("div");
+            scanBtnToolbar.appendChild(supfamBtnSet);
+            supfamBtnSet.classList.add("btn-group");
+            supfamBtnSet.classList.add("btn-group-sm");
+            supfamBtnSet.classList.add("mr-2");
+            supfamBtnSet.setAttribute("role", "group");
+
+            var gene3dBtnSet = document.createElement("div");
+            scanBtnToolbar.appendChild(gene3dBtnSet);
+            gene3dBtnSet.classList.add("btn-group");
+            gene3dBtnSet.classList.add("btn-group-sm");
+            gene3dBtnSet.setAttribute("role", "group");
 
             // Add a button to start hmmer scan in superfamily
             var btnSupfam = document.createElement('button');
             btnSupfam.classList.add("btn");
             btnSupfam.classList.add("btn-secondary");
-            btnSupfam.classList.add("ml-2");
             btnSupfam.setAttribute("type", "button");
             btnSupfam.setAttribute("id", "hmmscan_supfam" + id);
             btnSupfam.onclick = function () {
@@ -160,14 +182,25 @@
                         seqscanData += seq[cur][k];
                 const scanData = { seq: seqscanData, name: names[cur] + "_NUMBER_" + cur };
                 const scanURL = "/process/hmmscan/superfamily";
-                document.getElementById("hmmscan_supfam" + cur).setAttribute("disabled", "");
+
+                var tmpBtn = document.getElementById("hmmscan_supfam" + cur);
+                tmpBtn.setAttribute("disabled", "");
+                tmpBtn.textContent = "";
+                var spinner = document.createElement("div");
+                tmpBtn.appendChild(spinner);
+                spinner.classList.add("spinner-grow");
+                spinner.classList.add("spinner-grow-sm");
+                var span = document.createElement("span");
+                spinner.appendChild(span);
+                span.classList.add("sr-only");
+
                 $.post(scanURL, scanData, function (data, status) {
-                    // console.log(data);
+                    tmpBtn.textContent = "Superfamily";
                     if (data.superfamily.length == 0) {
                         document.getElementById("family" + cur).innerText = "No Result";
                     }
-                    else if (data == undefined){
-                        document.getElementById("hmmscan_supfam" + cur).removeAttribute("disabled");
+                    else if (data == undefined) {
+                        tmpBtn.removeAttribute("disabled");
                         alert("Server is busy. Please try again in few seconds!");
                     }
                     else {
@@ -190,7 +223,7 @@
                         }
 
                         // Create a svg line graph
-                        var svglength = containerAll.clientWidth * 0.95;
+                        var svglength = mainContainer.clientWidth * 0.95;
 
                         var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                         card.appendChild(svg);
@@ -211,6 +244,34 @@
                                 svg.appendChild(rect);
                                 rect.setAttribute("y", 5);
                                 rect.setAttribute("height", 20);
+                                rect.setAttribute("rx", 2);
+                                rect.setAttribute("ry", 2);
+
+                                //  cur: No. seq
+                                //  k: No. family
+                                //  data.seg[k].length / 2: the number of seg rects in current family
+                                //  x: No. seg rect in current family
+                                rect.setAttribute("id", "rect_family_" + cur + "_" + k + "_" + data.seg[k].length / 2 + "_" + x);
+                                rect.onmouseover = function () {
+                                    var tmpid = this.id.split("_");
+                                    var curid = parseInt(tmpid[2]);
+                                    var curk = parseInt(tmpid[3]);
+                                    var curtotal = parseInt(tmpid[4])
+                                    for (var l = 0; l < curtotal; l++){
+                                        document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
+                                    }
+                                    document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
+                                }
+                                rect.onmouseleave = function () {
+                                    var tmpid = this.id.split("_");
+                                    var curid = parseInt(tmpid[2]);
+                                    var curk = parseInt(tmpid[3]);
+                                    var curtotal = parseInt(tmpid[4])
+                                    for (var l = 0; l < curtotal; l++){
+                                        document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
+                                    }
+                                    document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
+                                }
 
                                 var start = data.seg[k][2 * x];
                                 var end = data.seg[k][2 * x + 1];
@@ -263,6 +324,31 @@
                         for (var k = 0; k < data.superfamily.length; k++) {
                             var tbodytr = document.createElement("tr");
                             tbody.appendChild(tbodytr);
+                            // cur: No. seq
+                            // k: No. family
+                            // data.seg[k].length / 2: the numbe of seg rects in current family
+                            tbodytr.setAttribute("id", "table_family_" + cur + "_" + k + "_" + data.seg[k].length / 2);
+                            tbodytr.onmouseover = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                var curtotal = parseInt(tmpid[4])                                
+                                this.classList.add("table-hover");
+                                for (var x = 0; x < curtotal; x++) {
+                                   document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
+                                }
+                            }
+                            tbodytr.onpointerleave = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                var curtotal = parseInt(tmpid[4])
+                                this.classList.remove("table-hover");
+                                for (var x = 0; x < curtotal; x++) {
+                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.remove("rect-hover");
+                                }
+                            }
+
 
                             var tbodyth = document.createElement("th");
                             tbodytr.appendChild(tbodyth);
@@ -296,14 +382,31 @@
 
                 });
             };
-            btnSupfam.textContent = "hmmscan_superfamily";
-            d.appendChild(btnSupfam);
+            btnSupfam.textContent = "Superfamily";
+            supfamBtnSet.appendChild(btnSupfam);
+
+            // Add a button to show the superfamily result 
+            var btnFamily = document.createElement('button');
+            btnFamily.classList.add("btn");
+            btnFamily.classList.add("btn-secondary");
+            btnFamily.setAttribute("type", "button");
+            btnFamily.setAttribute("data-toggle", "collapse");
+            btnFamily.setAttribute("data-target", "#familyCollapse" + id);
+            btnFamily.setAttribute("id", "family" + id);
+            btnFamily.setAttribute("disabled", "");
+            btnFamily.textContent = "Show";
+            btnFamily.onclick = function () {
+                var cur = parseInt(this.id.substring(6));
+                var tmp = document.getElementById("family" + cur);
+                tmp.textContent = tmp.textContent == "Show" ? "Hide" : "Show";
+            }
+            supfamBtnSet.appendChild(btnFamily);
+
 
             // Add a button to start hmmer scan in gene3D db
             var btn3d = document.createElement('button');
             btn3d.classList.add("btn");
             btn3d.classList.add("btn-secondary");
-            btn3d.classList.add("ml-2");
             btn3d.setAttribute("type", "button");
             btn3d.setAttribute("id", "hmmscan_3d" + id);
             btn3d.onclick = function () {
@@ -314,13 +417,25 @@
                         seqscanData += seq[cur][k];
                 const scanData = { seq: seqscanData, name: names[cur] + "_NUMBER_" + cur };
                 const scanURL = "/process/hmmscan/3d";
-                document.getElementById("hmmscan_3d" + cur).setAttribute("disabled", "");
+
+                var tmpBtn = document.getElementById("hmmscan_3d" + cur);
+                tmpBtn.setAttribute("disabled", "");
+                tmpBtn.textContent = "";
+                var spinner = document.createElement("div");
+                tmpBtn.appendChild(spinner);
+                spinner.classList.add("spinner-grow");
+                spinner.classList.add("spinner-grow-sm");
+                var span = document.createElement("span");
+                spinner.appendChild(span);
+                span.classList.add("sr-only");
+
                 $.post(scanURL, scanData, function (data, status) {
+                    tmpBtn.textContent = "Gene3D";
                     if (data.id.length == 0) {
                         document.getElementById("gene_result" + cur).innerText = "No Result";
                     }
-                    else if (data == undefined){
-                        document.getElementById("hmmscan_3d" + cur).removeAttribute("disabled");
+                    else if (data == undefined) {
+                        tmpBtn.removeAttribute("disabled");
                         alert("Server is busy. Please try again in few seconds!");
                     }
                     else {
@@ -343,7 +458,7 @@
 
 
                         // Create a svg line graph
-                        var svglength = containerAll.clientWidth * 0.95;
+                        var svglength = mainContainer.clientWidth * 0.95;
 
                         var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                         card.appendChild(svg);
@@ -363,6 +478,23 @@
                             svg.appendChild(rect);
                             rect.setAttribute("y", 5);
                             rect.setAttribute("height", 20);
+                            rect.setAttribute("rx", 2);
+                            rect.setAttribute("ry", 2);
+                            rect.setAttribute("id", "rect_gene3d_" + cur + "_" + k);
+                            rect.onmouseover = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                this.classList.add("rect-hover");
+                                document.getElementById("table_gene3d_" + curid + "_" + curk).classList.add("table-hover");
+                            }
+                            rect.onmouseleave = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                this.classList.remove("rect-hover");
+                                document.getElementById("table_gene3d_" + curid + "_" + curk).classList.remove("table-hover");
+                            }
 
                             var start = data.region[k][0];
                             var end = data.region[k][1];
@@ -426,6 +558,21 @@
                         for (var k = 0; k < data.id.length; k++) {
                             var tbodytr = document.createElement("tr");
                             tbody.appendChild(tbodytr);
+                            tbodytr.setAttribute("id", "table_gene3d_" + cur + "_" + k);
+                            tbodytr.onmouseover = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                this.classList.add("table-hover");
+                                document.getElementById("rect_gene3d_" + curid + "_" + curk).classList.add("rect-hover");
+                            }
+                            tbodytr.onpointerleave = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                this.classList.remove("table-hover");
+                                document.getElementById("rect_gene3d_" + curid + "_" + curk).classList.remove("rect-hover");
+                            }
 
                             var tbodyth = document.createElement("th");
                             tbodytr.appendChild(tbodyth);
@@ -464,46 +611,33 @@
                     }
                 });
             }
-            btn3d.textContent = "hmmscan_gene3D";
-            d.appendChild(btn3d);
-
-            // Add a button to show the superfamily result 
-            var btnFamily = document.createElement('button');
-            btnFamily.classList.add("btn");
-            btnFamily.classList.add("btn-secondary");
-            btnFamily.classList.add("ml-2");
-            btnFamily.setAttribute("type", "button");
-            btnFamily.setAttribute("data-toggle", "collapse");
-            btnFamily.setAttribute("data-target", "#familyCollapse" + id);
-            btnFamily.setAttribute("id", "family" + id);
-            btnFamily.setAttribute("disabled", "");
-            btnFamily.textContent = "famliy result";
-            d.appendChild(btnFamily);
-
+            btn3d.textContent = "Gene3D";
+            gene3dBtnSet.appendChild(btn3d);
 
             // Add a button to show the 3d result 
             var btn3dresult = document.createElement('button');
             btn3dresult.classList.add("btn");
             btn3dresult.classList.add("btn-secondary");
-            btn3dresult.classList.add("ml-2");
             btn3dresult.setAttribute("type", "button");
             btn3dresult.setAttribute("data-toggle", "collapse");
             btn3dresult.setAttribute("data-target", "#geneCollapse" + id);
             btn3dresult.setAttribute("id", "gene_result" + id);
             btn3dresult.setAttribute("disabled", "");
-            btn3dresult.textContent = "3d result";
-            d.appendChild(btn3dresult);
-
-            container.appendChild(d);
-
+            btn3dresult.textContent = "Show";
+            btn3dresult.onclick = function () {
+                var cur = parseInt(this.id.substring(11));
+                var tmp = document.getElementById("gene_result" + cur);
+                tmp.textContent = tmp.textContent == "Show" ? "Hide" : "Show";
+            }
+            gene3dBtnSet.appendChild(btn3dresult);
 
             //////////////////////////////////////////////////
             //Add reset-zoom, pan-switch, drag-switch, print button
-            var btnSet = document.createElement('div');
-            btnSet.classList.add("btn-group");
-            btnSet.classList.add("btn-group-sm");
-            btnSet.classList.add("float-right");
-            btnSet.classList.add("mt-3");
+            var chartBtnSet = document.createElement('div');
+            chartBtnSet.classList.add("btn-group");
+            chartBtnSet.classList.add("btn-group-sm");
+            chartBtnSet.classList.add("float-right");
+            chartBtnSet.classList.add("mt-2");
 
             var btnReset = document.createElement('button');
             btnReset.classList.add("btn");
@@ -575,12 +709,12 @@
             };
             btnShot.textContent = "Print";
 
-            btnSet.appendChild(btnReset);
-            btnSet.appendChild(btnPan);
-            btnSet.appendChild(btnDrag);
-            btnSet.appendChild(btnShot);
+            chartBtnSet.appendChild(btnReset);
+            chartBtnSet.appendChild(btnPan);
+            chartBtnSet.appendChild(btnDrag);
+            chartBtnSet.appendChild(btnShot);
 
-            container.appendChild(btnSet);
+            container.appendChild(chartBtnSet);
 
             //////////////////////////////////////////////////
 
@@ -619,7 +753,7 @@
             var hr = document.createElement("hr");
             if (i < idList.length - 1) container.appendChild(hr);
 
-            containerAll.appendChild(container);
+            mainContainer.appendChild(container);
 
             ///////////////////////////////////////////////////
             var xAxis = [];
@@ -955,6 +1089,16 @@
         width: 15px;
         height: 15px;
         display: inline-block;
+    }
+
+    .rect-hover {
+        stroke-width: 2;
+        stroke: black;
+    }
+
+    .table-hover {
+        background: rgb(231, 209, 209);
+        opacity: 0.8;
     }
 
     hr {

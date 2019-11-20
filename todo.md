@@ -60,6 +60,7 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~增加structure scan 功能~~
 * ~~可视化结果~~
 * ~~fix 响应超时bug~~
+* ~~改进btn样式 & 图表矩形互相响应（同属一个family的seg rect 的响应）~~
 
 ### step
 * 整体UI设计规划

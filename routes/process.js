@@ -21,7 +21,7 @@ router.post("/process/hmmscan/superfamily", function (req, res) {
         var fameval = [];
         var seg = [];
 
-        if (stdout == undefined) res.send(undefined);   //in case of service busy
+        if (stdout == undefined) res.send(undefined);   //in case of server busy
 
         parseString(stdout, function (err, result) {
             var hits = result.opt.data[0].hits;
@@ -78,7 +78,7 @@ router.post("/process/hmmscan/3d", function (req, res) {
         var indeval = [];
         var condval = [];
         
-        if (stdout == undefined) res.send(undefined);   //in case of service busy
+        if (stdout == undefined) res.send(undefined);   //in case of server busy
 
         parseString(stdout, function (err, result) {
             var hits = result.opt.data[0].hits;
