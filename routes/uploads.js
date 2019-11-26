@@ -52,7 +52,7 @@ router.post("/upload/sequence", function (req, res) {
 		submittedTime: moment().utcOffset("-06:00").format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
 	});
-	job.file = job.id + '.txt';
+	job.file = job.id + '.fa';
 
 	// Create a new file and write the sequence in
 	console.log("Data written ready...");
@@ -165,7 +165,7 @@ router.post("/upload/file", function (req, res) {
 		submittedTime: moment().utcOffset("-06:00").format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
 	});
-	job.file = job.id + '.txt';
+	job.file = job.id + '.fa';
 
 	var data = fs.readFileSync(req.files[0].path);
 	fs.writeFileSync('data/upload/' + job.file, data);

@@ -39,12 +39,21 @@ schedule.scheduleJob(rule, function () {
 				console.log("Data convert ready...");
 				var arg1 = 'data/upload/' + job.file;
 				var arg2 = 'data/input/' + job.file;
-				var cmd1 = "perl DeepDom/dataprocess.pl -input_seq " + arg1 + ' -output_seq ' + arg2 + ' ';
+				var cmd1 = "perl Modules/DEEPDOM/dataprocess.pl -input_seq " + arg1 + ' -output_seq ' + arg2 + ' ';
 				var workprecessor = exec(cmd1, function (error, stdout, stderr) {
 					if (error) {
 						console.info('stderr : ' + stderr);
-						job.status = 'error';
-						return;
+						var updates = { $set: { status: 'error' } };
+						jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
+							if (err) {
+								console.log(err);
+							}
+							else {
+								console.log("SOMETHING WENT WRONG WHEN CONVERT!");
+								// console.log(job);
+							}
+						});
+						// return;
 					}
 				});
 				workprecessor.on('exit', function (code) {
@@ -55,22 +64,21 @@ schedule.scheduleJob(rule, function () {
 					// python predict.py -input processed_seq.txt -output predict_result.txt -model-prefix cpu_model.h5
 					console.log("Predict ready...");
 					var arg3 = 'data/input/' + job.file;
-					var arg4 = 'data/results/' + job.file;
+					var arg4 = 'data/results/' + job.id + '.res';
 					// CPU
-					var cmd2 = "python DeepDom/predict.py -input " + arg3 + ' -output ' + arg4 + " -model-prefix DeepDom/cpu_model.h5";
+					var cmd2 = "python Modules/DEEPDOM/predict.py -input " + arg3 + ' -output ' + arg4 + " -model-prefix Modules/DEEPDOM/cpu_model.h5";
 					// GPU
-					// var cmd2 = "python DeepDom/predict.py -input " + arg3 + ' -output ' + arg4;
+					// var cmd2 = "python Modules/DEEPDOM/predict.py -input " + arg3 + ' -output ' + arg4;
 					var workprecessor2 = exec(cmd2, function (error, stdout, stderr) {
 						if (error) {
 							console.info('stderr : ' + stderr);
-
 							var updates = { $set: { status: 'error' } };
 							jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
 								if (err) {
 									console.log(err);
 								}
 								else {
-									console.log("SOMETHING WENT WRONG!");
+									console.log("SOMETHING WENT WRONG WHEN DEEPDOM!");
 									// console.log(job);
 								}
 							});
@@ -79,34 +87,76 @@ schedule.scheduleJob(rule, function () {
 					});
 
 					workprecessor2.on('exit', function (code) {
-						console.info('Predict done!');
+						console.info('Predict done...');
 
-						curProcess = 0;
-						var updates = { $set: { status: 'Done' } };
-						jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
-							if (err) {
-								console.log(err);
+						// Run SCOP Superfamily scan
+						console.info("SCOP Scan Starts...");
+						var arg5 = 'data/upload/' + job.file;
+						var cmd3 = 'perl Modules/SCOP/superfamily.pl ' + arg5;
+						var workprecessor3 = exec(cmd3, function (error, stdout, stderr) {
+							if (error) {
+								console.info('stderr : ' + stderr);
+								var updates = { $set: { status: 'error' } };
+								jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
+									if (err) {
+										console.log(err);
+									}
+									else {
+										console.log("SOMETHING WENT WRONG WHEN SCOP!");
+										// console.log(job);
+									}
+								});
+								// return;
 							}
-							else {
-								console.log("Job was updated!");
-								console.log("======================================");
-								// console.log(job);
-							}
+							console.info("SCANNING");
 						});
 
-						// send success email 
-						if (job.email !== "") {
-							var mail = {
-								from: 'DeepDom<deepdom.service@gmail.com>',
-								subject: 'DeepDom: Job Infomation',
-								to: job.email,
-								text: 'Your job: ' + job.id + ' has completed!'
-							};
-							transporter.sendMail(mail, function (error, info) {
-								if (error) return console.log(error);
-								console.log('mail sent:', info.response);
+						workprecessor3.on('exit', function (code) {
+							// clean tmp files
+							fs.unlink('data/tmp/' + job.id + '_torun.fa', function (err) {
+								if (err)
+									console.error(err);
 							});
-						}
+							fs.unlink('data/tmp/' + job.id + '.res', function (err) {
+								if (err)
+									console.error(err);
+							});
+							console.info("SCOP done...");
+
+							// // Run CATH scan
+							// console.info("CATH Scan Starts...");
+
+
+
+							curProcess = 0;
+							var updates = { $set: { status: 'Done' } };
+							jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
+								if (err) {
+									console.log(err);
+								}
+								else {
+									console.log("Job was updated!");
+									console.log("======================================");
+									// console.log(job);
+								}
+							});
+
+							// send success email 
+							if (job.email !== "") {
+								var mail = {
+									from: 'DeepDom<deepdom.service@gmail.com>',
+									subject: 'DeepDom: Job Infomation',
+									to: job.email,
+									text: 'Your job: ' + job.id + ' has completed!'
+								};
+								transporter.sendMail(mail, function (error, info) {
+									if (error) return console.log(error);
+									console.log('mail sent:', info.response);
+								});
+							}
+
+						});
+
 
 					});
 
@@ -146,10 +196,13 @@ schedule.scheduleJob('0 0 0 * * 0', function () {
 				fs.unlink('data/input/' + dFile, function (err) {
 					if (err) console.error(err);
 				});
-				fs.unlink('data/results/' + dFile, function (err) {
+				fs.unlink('data/results/' + docs[i].id + '.res', function (err) {
 					if (err) console.error(err);
 				});
 				fs.unlink('data/upload/' + dFile, function (err) {
+					if (err) console.error(err);
+				});
+				fs.unlink('data/SCOP/' + docs[i].id + '.ass', function(err){
 					if (err) console.error(err);
 				});
 			}

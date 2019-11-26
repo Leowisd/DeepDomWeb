@@ -62,6 +62,11 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~fix 响应超时bug~~
 * ~~改进btn样式 & 图表矩形互相响应（同属一个family的seg rect 的响应）~~
 
+### Add run SCOP superfamily scripts in back-end
+* ~~下载相关module并test~~
+* ~~加进运行队列~~
+* ~~修改 superfamily.pl 中文件名获取、命令的路径 和 ass3.pl 中的文件路径~~
+
 ### step
 * 整体UI设计规划
 

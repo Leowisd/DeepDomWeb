@@ -44,9 +44,9 @@ router.get("/jobs/:id", function (req, res) {
 	var jobId = req.params.id;
 	jobId = jobId.substr(1);
 
-	var file = jobId + '.txt';
+	// var file = jobId + '.res';
 
-	fs.exists('data/results/' + file, function (exists) {
+	fs.exists('data/results/' + jobId + '.res', function (exists) {
 		if (!exists) {
 			res.render("404");
 		}
@@ -54,7 +54,7 @@ router.get("/jobs/:id", function (req, res) {
 			var results = [];
 			var names = [];
 			var scores = [];
-			var arr = fs.readFileSync('data/results/' + file).toString().split('\n');
+			var arr = fs.readFileSync('data/results/' + jobId + '.res').toString().split('\n');
 			for (var i = 0; i < arr.length; i++)
 				if (i % 2 == 0) {
 					var result = { name: arr[i], score: arr[i + 1] }
@@ -63,7 +63,7 @@ router.get("/jobs/:id", function (req, res) {
 					scores.push(arr[i + 1]);
 				}
 
-			var data = fs.readFileSync('data/input/' + file).toString().split('\n');
+			var data = fs.readFileSync('data/input/' + jobId + '.fa').toString().split('\n');
 			var seq = [];
 			var j = 0;
 			for (var i = 0; i < results.length; i++) {
@@ -95,7 +95,7 @@ router.get("/jobs/:id", function (req, res) {
 			// console.log(names);
 			scores.length--;
 			// console.log(scores);
-			res.render("SHOW", {names: names, scores: scores, seq: seq, file: file });
+			res.render("SHOW", {names: names, scores: scores, seq: seq, file: jobId + '.res' });
 			// fs.readFile('data/results/' + file, function (err, data) {
 			// 	if (err) {
 			// 		return console.log(err);
@@ -127,7 +127,7 @@ router.post("/jobs/delete/:id", function (req, res) {
 
 	// update user capacity
 	var fileSize = 0;
-	fs.stat('data/upload/' + job + '.txt', function (err, stats) {
+	fs.stat('data/upload/' + job + '.fa', function (err, stats) {
 		if (err)
 			return console.error(err);
 		fileSize = stats.size;
@@ -136,6 +136,7 @@ router.post("/jobs/delete/:id", function (req, res) {
 		if (err)
 			console.error(err);
 		if (doc != undefined) {
+			// var update = { $set: { capacity: 0 } };
 			var update = { $set: { capacity: doc.capacity - fileSize } };
 			userInfo.updateOne({ 'ipAddress': get_client_ip(req) }, update, function (err, u) {
 				if (err)
@@ -157,10 +158,13 @@ router.post("/jobs/delete/:id", function (req, res) {
 			fs.unlink('data/input/' + dFile, function (err) {
 				if (err) console.error(err);
 			});
-			fs.unlink('data/results/' + dFile, function (err) {
+			fs.unlink('data/results/' + doc.id + '.res', function (err) {
 				if (err) console.error(err);
 			});
 			fs.unlink('data/upload/' + dFile, function (err) {
+				if (err) console.error(err);
+			});
+			fs.unlink('data/SCOP/' + doc.id + '.ass', function(err){
 				if (err) console.error(err);
 			});
 		}
