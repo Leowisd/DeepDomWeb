@@ -66,6 +66,7 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~下载相关module并test~~
 * ~~加进运行队列~~
 * ~~修改 superfamily.pl 中文件名获取、命令的路径 和 ass3.pl 中的文件路径~~
+* ~~新增convert2csv.py脚本，转化结果到csv文件~~
 
 ### Add run CATH scripts in back-end
 * ~~下载相关module并test~~
@@ -74,6 +75,7 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~加进运行队列~~
 
 ### step
+* 更改deepdom predict过程，command写进一脚本后整体调用 
 * 整体UI设计规划
 
 ### step

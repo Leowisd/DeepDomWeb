@@ -111,12 +111,23 @@ schedule.scheduleJob(rule, function () {
 						});
 
 						workprecessor3.on('exit', function (code) {
+							// copy the result to SCOP results file
+							var sdata = fs.readFileSync('data/tmp/' + job.id + '.ass.csv');
+							fs.writeFileSync('data/SCOP/' + job.id + '_SCOP.csv', sdata);
 							// clean tmp files
 							fs.unlink('data/tmp/' + job.id + '_torun.fa', function (err) {
 								if (err)
 									console.error(err);
 							});
 							fs.unlink('data/tmp/' + job.id + '.res', function (err) {
+								if (err)
+									console.error(err);
+							});
+							fs.unlink('data/tmp/' + job.id + '.ass', function (err) {
+								if (err)
+									console.error(err);
+							});
+							fs.unlink('data/tmp/' + job.id + '.ass.csv', function (err) {
 								if (err)
 									console.error(err);
 							});
@@ -145,7 +156,7 @@ schedule.scheduleJob(rule, function () {
 							workprecessor4.on('exit', function (code) {
 								// copy the result to CATH results file
 								var cdata = fs.readFileSync('data/tmp/' + job.id + '.crh.csv');
-								fs.writeFileSync('data/CATH/' + job.id + '.csv', cdata);
+								fs.writeFileSync('data/CATH/' + job.id + '_CATH.csv', cdata);
 								// clean tmp files
 								fs.unlink('data/tmp/' + job.id + '.crh', function (err) {
 									if (err)
@@ -236,10 +247,10 @@ schedule.scheduleJob('0 0 0 * * 0', function () {
 				fs.unlink('data/upload/' + dFile, function (err) {
 					if (err) console.error(err);
 				});
-				fs.unlink('data/SCOP/' + docs[i].id + '.ass', function (err) {
+				fs.unlink('data/SCOP/' + docs[i].id + '_SCOP.csv', function (err) {
 					if (err) console.error(err);
 				});
-				fs.unlink('data/CATH/' + docs[i].id + '.csv', function (err) {
+				fs.unlink('data/CATH/' + docs[i].id + '_CATH.csv', function (err) {
 					if (err) console.error(err);
 				});
 			}

@@ -164,10 +164,10 @@ router.post("/jobs/delete/:id", function (req, res) {
 			fs.unlink('data/upload/' + dFile, function (err) {
 				if (err) console.error(err);
 			});
-			fs.unlink('data/SCOP/' + doc.id + '.ass', function(err){
+			fs.unlink('data/SCOP/' + doc.id + '_SCOP.csv', function(err){
 				if (err) console.error(err);
 			});
-			fs.unlink('data/CATH/' + doc.id + '.csv', function(err){
+			fs.unlink('data/CATH/' + doc.id + '_CATH.csv', function(err){
 				if (err) console.error(err);
 			});
 		}
