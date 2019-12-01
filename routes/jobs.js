@@ -167,6 +167,9 @@ router.post("/jobs/delete/:id", function (req, res) {
 			fs.unlink('data/SCOP/' + doc.id + '.ass', function(err){
 				if (err) console.error(err);
 			});
+			fs.unlink('data/CATH/' + doc.id + '.csv', function(err){
+				if (err) console.error(err);
+			});
 		}
 		return console.log("Delete files of the job: " + job);
 	});

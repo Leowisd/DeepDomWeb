@@ -57,7 +57,7 @@ schedule.scheduleJob(rule, function () {
 					}
 				});
 				workprecessor.on('exit', function (code) {
-					console.info('Data convert success!');
+					console.info('Data convert success...');
 					// console.log('convert child process exit，exit code: '+code);
 
 					//after convert, run the predict script
@@ -90,7 +90,7 @@ schedule.scheduleJob(rule, function () {
 						console.info('Predict done...');
 
 						// Run SCOP Superfamily scan
-						console.info("SCOP Scan Starts...");
+						console.info("SCOP Starts...");
 						var arg5 = 'data/upload/' + job.file;
 						var cmd3 = 'perl Modules/SCOP/superfamily.pl ' + arg5;
 						var workprecessor3 = exec(cmd3, function (error, stdout, stderr) {
@@ -108,7 +108,6 @@ schedule.scheduleJob(rule, function () {
 								});
 								// return;
 							}
-							console.info("SCANNING");
 						});
 
 						workprecessor3.on('exit', function (code) {
@@ -124,36 +123,71 @@ schedule.scheduleJob(rule, function () {
 							console.info("SCOP done...");
 
 							// // Run CATH scan
-							// console.info("CATH Scan Starts...");
-
-
-
-							curProcess = 0;
-							var updates = { $set: { status: 'Done' } };
-							jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
-								if (err) {
-									console.log(err);
-								}
-								else {
-									console.log("Job was updated!");
-									console.log("======================================");
-									// console.log(job);
+							console.info("CATH Starts...");
+							var arg6 = 'data/upload/' + job.file;
+							var cmd4 = 'perl Modules/CATH/cath.pl ' + arg6;
+							var workprecessor4 = exec(cmd4, function (error, stdout, stderr) {
+								if (error) {
+									console.info('stderr : ' + stderr);
+									var updates = { $set: { status: 'error' } };
+									jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
+										if (err) {
+											console.log(err);
+										}
+										else {
+											console.log("SOMETHING WENT WRONG WHEN CATH!");
+											// console.log(job);
+										}
+									});
 								}
 							});
 
-							// send success email 
-							if (job.email !== "") {
-								var mail = {
-									from: 'DeepDom<deepdom.service@gmail.com>',
-									subject: 'DeepDom: Job Infomation',
-									to: job.email,
-									text: 'Your job: ' + job.id + ' has completed!'
-								};
-								transporter.sendMail(mail, function (error, info) {
-									if (error) return console.log(error);
-									console.log('mail sent:', info.response);
+							workprecessor4.on('exit', function (code) {
+								// copy the result to CATH results file
+								var cdata = fs.readFileSync('data/tmp/' + job.id + '.crh.csv');
+								fs.writeFileSync('data/CATH/' + job.id + '.csv', cdata);
+								// clean tmp files
+								fs.unlink('data/tmp/' + job.id + '.crh', function (err) {
+									if (err)
+										console.error(err);
 								});
-							}
+								fs.unlink('data/tmp/' + job.id + '.crh.csv', function (err) {
+									if (err)
+										console.error(err);
+								});
+								fs.unlink('data/tmp/' + job.id + '.hmmsearch', function (err) {
+									if (err)
+										console.error(err);
+								});
+								console.info("CATH done...");
+
+								curProcess = 0;
+								var updates = { $set: { status: 'Done' } };
+								jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
+									if (err) {
+										console.log(err);
+									}
+									else {
+										console.log("Job was updated!");
+										console.log("======================================");
+										// console.log(job);
+									}
+								});
+
+								// send success email 
+								if (job.email !== "") {
+									var mail = {
+										from: 'DeepDom<deepdom.service@gmail.com>',
+										subject: 'DeepDom: Job Infomation',
+										to: job.email,
+										text: 'Your job: ' + job.id + ' has completed!'
+									};
+									transporter.sendMail(mail, function (error, info) {
+										if (error) return console.log(error);
+										console.log('mail sent:', info.response);
+									});
+								}
+							});
 
 						});
 
@@ -202,7 +236,10 @@ schedule.scheduleJob('0 0 0 * * 0', function () {
 				fs.unlink('data/upload/' + dFile, function (err) {
 					if (err) console.error(err);
 				});
-				fs.unlink('data/SCOP/' + docs[i].id + '.ass', function(err){
+				fs.unlink('data/SCOP/' + docs[i].id + '.ass', function (err) {
+					if (err) console.error(err);
+				});
+				fs.unlink('data/CATH/' + docs[i].id + '.csv', function (err) {
 					if (err) console.error(err);
 				});
 			}

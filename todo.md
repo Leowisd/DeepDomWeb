@@ -67,6 +67,12 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~加进运行队列~~
 * ~~修改 superfamily.pl 中文件名获取、命令的路径 和 ass3.pl 中的文件路径~~
 
+### Add run CATH scripts in back-end
+* ~~下载相关module并test~~
+* ~~编写perl脚本cath.pl运行整个pipline~~
+* ~~修改assign_cath_superfamilies.py的两个文件路径~~
+* ~~加进运行队列~~
+
 ### step
 * 整体UI设计规划
 
