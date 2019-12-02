@@ -19,7 +19,7 @@ router.get("/jobs/all", function (req, res) {
 		userInfo.findOne({ 'ipAddress': get_client_ip(req) }, function (err, doc) {
 			if (err)
 				console.error(err);
-			if (doc == undefined){
+			if (doc == undefined) {
 				var user = new userInfo({
 					ipAddress: get_client_ip(req),
 					capacity: 0
@@ -32,7 +32,7 @@ router.get("/jobs/all", function (req, res) {
 						console.log("======================================");
 					}
 				})
-				res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: 0});
+				res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: 0 });
 			}
 			else res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: doc.capacity });
 		});
@@ -40,7 +40,7 @@ router.get("/jobs/all", function (req, res) {
 });
 
 // SHOW: show result
-router.get("/jobs/:id", function (req, res) {        
+router.get("/jobs/:id", function (req, res) {
 	var jobId = req.params.id;
 	jobId = jobId.substr(1);
 
@@ -51,6 +51,9 @@ router.get("/jobs/:id", function (req, res) {
 			res.render("404");
 		}
 		else {
+			// ============================
+			// analysis deepdom result data
+			// ============================
 			var results = [];
 			var names = [];
 			var scores = [];
@@ -95,7 +98,8 @@ router.get("/jobs/:id", function (req, res) {
 			// console.log(names);
 			scores.length--;
 			// console.log(scores);
-			res.render("SHOW", {names: names, scores: scores, seq: seq, file: jobId + '.res' });
+
+			res.render("SHOW", { names: names, scores: scores, seq: seq, file: jobId + '.res', jobId: jobId});
 			// fs.readFile('data/results/' + file, function (err, data) {
 			// 	if (err) {
 			// 		return console.log(err);
@@ -164,10 +168,10 @@ router.post("/jobs/delete/:id", function (req, res) {
 			fs.unlink('data/upload/' + dFile, function (err) {
 				if (err) console.error(err);
 			});
-			fs.unlink('data/SCOP/' + doc.id + '_SCOP.csv', function(err){
+			fs.unlink('data/SCOP/' + doc.id + '_SCOP.csv', function (err) {
 				if (err) console.error(err);
 			});
-			fs.unlink('data/CATH/' + doc.id + '_CATH.csv', function(err){
+			fs.unlink('data/CATH/' + doc.id + '_CATH.csv', function (err) {
 				if (err) console.error(err);
 			});
 		}

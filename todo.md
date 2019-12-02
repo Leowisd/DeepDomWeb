@@ -74,6 +74,9 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~修改assign_cath_superfamilies.py的两个文件路径~~
 * ~~加进运行队列~~
 
+### Redesign show page
+
+
 ### step
 * 更改deepdom predict过程，command写进一脚本后整体调用 
 * 整体UI设计规划

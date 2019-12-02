@@ -2,7 +2,91 @@ var express = require("express");
 var router = express.Router();
 var fs = require("fs"),
     parseString = require('xml2js').parseString,
+    csv = require("csvjson"),
     exec = require('child_process').exec;
+
+router.post("/process/scop/:id", function (req, res) {
+    var jobId = req.params.id;
+    jobId = jobId.substr(1);
+    // console.log(jobId);
+
+    var id = req.body.queryId;
+
+    const scopCsvPath = 'data/SCOP/' + jobId + '_SCOP.csv';
+    var scopdata = fs.readFileSync(scopCsvPath, { encoding: 'utf8' });
+    var options = {
+        delimiter: ',', // optional
+        quote: '"' // optional
+    };
+
+    var jsonObj = csv.toObject(scopdata, options);
+
+    var scopRes = [];
+    if (jsonObj.length > 0) {
+
+        var queryID = "";
+        var scopFamID = [];
+        var sfevalue = [];
+        var scopDomID = [];
+        var famevalue = [];
+        var seg = [];
+
+        for (var i = 0; i < jsonObj.length; i++) {
+            if (i > 0 && jsonObj[i].seqID !== jsonObj[i - 1].seqID) {
+                // console.log("new!" + jsonObj[i].seqID);
+                var jsonTmp = {
+                    numberId: id,
+                    queryID: queryID,
+                    superfamily: scopFamID,
+                    supeval: sfevalue,
+                    family: scopDomID,
+                    fameval: famevalue,
+                    seg: seg
+                }
+                // console.log(jsonTmp);
+                scopRes.push(jsonTmp);
+
+                queryID = "";
+                scopFamID = [];
+                sfevalue = [];
+                scopDomID = [];
+                famevalue = [];
+                seg = [];
+
+                queryID = jsonObj[i].seqID;
+
+                scopFamID.push(jsonObj[i].scopFamID);
+
+                sfevalue.push(jsonObj[i].evalue);
+
+                scopDomID.push(jsonObj[i].scopDomID);
+
+                famevalue.push(jsonObj[i].famEvalue);
+
+                var segTmp = jsonObj[i].matchRegion.replace(/,/g, '-').split('-');
+                seg.push(segTmp);
+            }
+            else {
+                // console.log("add!" + jsonObj[i].seqID);
+                queryID = jsonObj[i].seqID;
+
+                scopFamID.push(jsonObj[i].scopFamID);
+
+                sfevalue.push(jsonObj[i].evalue);
+
+                scopDomID.push(jsonObj[i].scopDomID);
+
+                famevalue.push(jsonObj[i].famEvalue);
+
+                var segTmp = jsonObj[i].matchRegion.replace(/,/g, '-').split('-');
+                seg.push(segTmp);
+            }
+        }
+    }
+    // console.log(scopRes[id]);
+
+    res.send(scopRes[id]);
+})
 
 router.post("/process/hmmscan/superfamily", function (req, res) {
     // console.log(req.body.seq);
@@ -68,7 +152,7 @@ router.post("/process/hmmscan/3d", function (req, res) {
         if (error) {
             console.info('stderr : ' + stderr);
         }
-        
+
         var id = [];
         var accession = [];
         var desciption = [];
@@ -77,7 +161,7 @@ router.post("/process/hmmscan/3d", function (req, res) {
         var end = [];
         var indeval = [];
         var condval = [];
-        
+
         if (stdout == undefined) res.send(undefined);   //in case of server busy
 
         parseString(stdout, function (err, result) {

@@ -31,7 +31,7 @@ for line in open(infile):
     scop_fam_id.append(vals[7])
     scop_domain_id.append(vals[8])
 
-writer.writerow(["seq-id","spfam-id","match-region", "evalue","model-match","align-model","fam-evalue","scop-fam-id","scop-dom-id"])
+writer.writerow(["seqID","spfamID","matchRegion", "evalue","modelMatch","alignModel","famEvalue","scopFamID","scopDomID"])
 
 for i in range(0, len(seq_id)):
     writer.writerow([seq_id[i], supfam_id[i], match_region[i], evalue[i], model_match_position[i], align_model[i], fam_evalue[i],scop_fam_id[i],scop_domain_id[i]])

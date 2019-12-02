@@ -4,7 +4,7 @@
 <script type="text/javascript" src="/lib/jQuery.print.js"></script>
 <script type="text/javascript" src="/js/imagePrint.js"></script>
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container col-12 col-lg-8">
         <a class="navbar-brand" href="/">DeepDom</a>
         <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -15,7 +15,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/upload"><i class="fas fa-home"></i> Upload </a>
+                    <a class="nav-link" href="/upload"><i class="fas fa-upload"></i> Upload </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search </a>
@@ -46,7 +46,7 @@
 
         <div class="btn-group mt-4 mt-sm-0" role="group" aria-label="Second group">
             <select class="selectpicker show-tick" multiple data-actions-box="true" data-size="5"
-                data-style="btn-secondary" data-width="300px" data-live-search="true"
+                data-style="btn-primary" data-width="300px" data-live-search="true"
                 title="Choose one of the following...">
                 <% for (var i = 0; i < names.length; i++) {%>
                 <option value="<%= i%>"> <%= names[i]%></option>
@@ -99,6 +99,9 @@
     var seq = tmpSeq.split(',');
     // console.log(seq);
 
+    var jobId = "<%= jobId %>";
+    // console.log(jobId);
+
     var mainContainer = document.querySelector('#mainContainer');
     var sideNav = document.querySelector('.sidenav');
     var navCopy = sideNav.innerHTML;
@@ -121,6 +124,270 @@
 
             var container = document.createElement("container");
 
+            // ===========================
+            // create a head for each query
+            // click to show sequence
+            // ===========================
+            var queryHead = document.createElement("div");
+            container.appendChild(queryHead);
+            queryHead.classList.add("alert");
+            queryHead.classList.add("text-center");
+            queryHead.classList.add("alert-primary");
+            queryHead.textContent = names[id] + " (click to show sequence)";
+            queryHead.setAttribute("id", "query_header_" + id);
+            queryHead.setAttribute("data-toggle", "popover");
+            queryHead.setAttribute("data-placement", "top");
+            var seqData = "";
+            for (var k = 0; k < score[id].length; k++)
+                if (seq[id][k] !== '-')
+                    seqData += seq[id][k];
+            queryHead.setAttribute("data-content", seqData);
+            queryHead.onclick = function () {
+                var cur = parseInt(this.id.substring(13));
+                var tmp = document.getElementById("query_header_" + cur);
+                if (tmp.textContent == names[cur] + " (click to show sequence)"){
+                    tmp.classList.remove("alert-primary");
+                    tmp.classList.add("alert-warning");
+                    tmp.textContent = names[cur] + " (click to unshow sequence)";
+                }
+                else{
+                    tmp.classList.remove("alert-warning");
+                    tmp.classList.add("alert-primary");
+                    tmp.textContent = names[cur] + " (click to show sequence)";
+                }
+            }
+
+
+            // ==============================
+            // Create SCOP Collapse Components
+            // ==============================
+            var scopCard = document.createElement("div");
+            container.appendChild(scopCard);
+            scopCard.classList.add("card");
+            scopCard.classList.add("mt-2");
+
+            var scopHeader = document.createElement("div");
+            scopCard.appendChild(scopHeader);
+            scopHeader.classList.add("card-header");
+            scopHeader.setAttribute("id", "scop_heading_" + id);
+
+            var scopHeaderH2 = document.createElement("h2");
+            scopHeader.appendChild(scopHeaderH2);
+            scopHeaderH2.classList.add("mb-0");
+
+            var scopbutton = document.createElement("button");
+            scopHeaderH2.appendChild(scopbutton);
+            scopbutton.classList.add("btn");
+            scopbutton.classList.add("btn-link");
+            scopbutton.setAttribute("data-toggle", "collapse");
+            scopbutton.setAttribute("data-target", "#scop_" + id);
+            scopbutton.textContent = "SCOP";
+
+            var scopContent = document.createElement("div");
+            scopCard.appendChild(scopContent);
+            scopContent.classList.add("collapse");
+            scopContent.setAttribute("id", "scop_" + id);
+
+            var scopContentBody = document.createElement("div");
+            scopContent.appendChild(scopContentBody);
+            scopContentBody.classList.add("card-body");
+            scopContentBody.setAttribute("id", "scop_content_" + id);
+
+            var scopURL = "/process/scop/:" + jobId;
+            var scopData = { queryId: id };
+            $.post(scopURL, scopData, function (data, status) {
+                // console.log(data);
+                if (data.superfamily.length == 0 || data == undefined) {
+
+                }
+                else {
+                    var cur = data.numberId;
+                    var card = document.getElementById("scop_content_" + cur);
+
+                    // Generate colors for different familys
+                    var r = [];
+                    var g = [];
+                    var b = [];
+                    for (var k = 0; k < data.superfamily.length; k++) {
+                        r.push(Math.floor(Math.random() * 255));
+                        g.push(Math.floor(Math.random() * 255));
+                        b.push(Math.floor(Math.random() * 255));
+                    }
+
+                    // Create a svg line graph
+                    var svglength = mainContainer.clientWidth * 0.95;
+
+                    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    card.appendChild(svg);
+                    svg.setAttribute("width", svglength);
+                    svg.setAttribute("height", "50");
+
+                    var line = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    svg.appendChild(line);
+                    line.setAttribute("x", 0);
+                    line.setAttribute("y", 15);
+                    line.setAttribute("width", svglength);
+                    line.setAttribute("height", 2);
+                    line.setAttribute("style", "fill: rgb(187, 187, 187);");
+
+                    for (var k = 0; k < data.superfamily.length; k++) {
+                        for (var x = 0; x < data.seg[k].length / 2; x++) {
+                            var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                            svg.appendChild(rect);
+                            rect.setAttribute("y", 5);
+                            rect.setAttribute("height", 20);
+                            rect.setAttribute("rx", 2);
+                            rect.setAttribute("ry", 2);
+
+                            //  cur: No. seq
+                            //  k: No. family
+                            //  data.seg[k].length / 2: the number of seg rects in current family
+                            //  x: No. seg rect in current family
+                            rect.setAttribute("id", "rect_family_" + cur + "_" + k + "_" + data.seg[k].length / 2 + "_" + x);
+                            rect.onmouseover = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                var curtotal = parseInt(tmpid[4])
+                                for (var l = 0; l < curtotal; l++) {
+                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
+                                }
+                                document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
+                            }
+                            rect.onmouseleave = function () {
+                                var tmpid = this.id.split("_");
+                                var curid = parseInt(tmpid[2]);
+                                var curk = parseInt(tmpid[3]);
+                                var curtotal = parseInt(tmpid[4])
+                                for (var l = 0; l < curtotal; l++) {
+                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
+                                }
+                                document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
+                            }
+
+                            var start = data.seg[k][2 * x];
+                            var end = data.seg[k][2 * x + 1];
+                            var l = score[cur].length;
+
+                            rect.setAttribute("x", start / l * svglength);
+                            rect.setAttribute("width", (end - start) / l * svglength);
+
+                            rect.setAttribute("style", "fill: rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");opacity: 0.8;");
+                        }
+                    }
+
+                    // Create the result table
+                    var table = document.createElement("table");
+                    table.classList.add("table");
+                    card.appendChild(table);
+
+                    var thead = document.createElement("thead");
+                    var theadtr = document.createElement("tr");
+                    var th1 = document.createElement("th");
+                    th1.setAttribute("scope", "col");
+                    th1.textContent = '#';
+                    theadtr.appendChild(th1);
+                    var th2 = document.createElement("th");
+                    th2.setAttribute("scope", "col");
+                    th2.textContent = 'Superfamily';
+                    theadtr.appendChild(th2);
+                    var th3 = document.createElement("th");
+                    th3.setAttribute("scope", "col");
+                    th3.textContent = 'E-value';
+                    theadtr.appendChild(th3);
+                    var th4 = document.createElement("th");
+                    th4.setAttribute("scope", "col");
+                    th4.textContent = 'Family';
+                    theadtr.appendChild(th4);
+                    var th5 = document.createElement("th");
+                    th5.setAttribute("scope", "col");
+                    th5.textContent = 'E-value';
+                    theadtr.appendChild(th5);
+                    var th6 = document.createElement("th");
+                    th6.setAttribute("scope", "col");
+                    th6.textContent = 'Segments';
+                    theadtr.appendChild(th6);
+                    thead.appendChild(theadtr);
+                    table.appendChild(thead);
+
+                    var tbody = document.createElement("tbody");
+                    table.appendChild(tbody);
+                    for (var k = 0; k < data.superfamily.length; k++) {
+                        var tbodytr = document.createElement("tr");
+                        tbody.appendChild(tbodytr);
+                        // cur: No. seq
+                        // k: No. family
+                        // data.seg[k].length / 2: the numbe of seg rects in current family
+                        tbodytr.setAttribute("id", "table_family_" + cur + "_" + k + "_" + data.seg[k].length / 2);
+                        tbodytr.onmouseover = function () {
+                            var tmpid = this.id.split("_");
+                            var curid = parseInt(tmpid[2]);
+                            var curk = parseInt(tmpid[3]);
+                            var curtotal = parseInt(tmpid[4])
+                            this.classList.add("table-hover");
+                            for (var x = 0; x < curtotal; x++) {
+                                document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
+                            }
+                        }
+                        tbodytr.onpointerleave = function () {
+                            var tmpid = this.id.split("_");
+                            var curid = parseInt(tmpid[2]);
+                            var curk = parseInt(tmpid[3]);
+                            var curtotal = parseInt(tmpid[4])
+                            this.classList.remove("table-hover");
+                            for (var x = 0; x < curtotal; x++) {
+                                document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.remove("rect-hover");
+                            }
+                        }
+
+
+                        var tbodyth = document.createElement("th");
+                        tbodytr.appendChild(tbodyth);
+                        tbodyth.setAttribute("scope", "row");
+
+                        var colorbox = document.createElement("span");
+                        tbodyth.appendChild(colorbox);
+                        colorbox.classList.add("color-box");
+                        colorbox.setAttribute("style", "background-color: " + "rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");");
+
+                        var td1 = document.createElement("td");
+                        tbodytr.appendChild(td1);
+                        td1.textContent = data.superfamily[k];
+                        var td2 = document.createElement("td");
+                        tbodytr.appendChild(td2);
+                        td2.textContent = data.supeval[k];
+                        var td3 = document.createElement("td");
+                        tbodytr.appendChild(td3);
+                        td3.textContent = data.family[k];
+                        var td4 = document.createElement("td");
+                        tbodytr.appendChild(td4);
+                        td4.textContent = data.fameval[k];
+                        var td5 = document.createElement("td");
+                        tbodytr.appendChild(td5);
+                        for (var x = 0; x < data.seg[k].length / 2; x++) {
+                            td5.textContent += data.seg[k][2 * x] + '~' + data.seg[k][2 * x + 1];
+                            if (x != data.seg[k].length / 2 - 1) td5.textContent += " | ";
+                        }
+                    }
+                }
+
+            })
+
+            // ===============================
+            // Create CATH Collapse Components
+            // ===============================
+
+
+
+
+            // ============================================================
+            // ============================================================
+            // ============================================================
+            // ============================================================
+            // ============================================================
+            // ============================================================
+            // ============================================================
+
             //Add a Button to show a popover with sequence
             var d = document.createElement('div');
             d.classList.add("row");
@@ -135,16 +402,16 @@
             btn.setAttribute("data-toggle", "popover");
             btn.setAttribute("data-placement", "right");
             btn.setAttribute("id", "seqBtn" + id);
-            var seqData = "";
-            for (var k = 0; k < score[id].length; k++)
-                if (seq[id][k] !== '-')
-                    seqData += seq[id][k];
-            btn.setAttribute("data-content", seqData);
-            btn.onclick = function () {
-                var cur = parseInt(this.id.substring(6));
-                var tmp = document.getElementById("seqBtn" + cur);
-                tmp.textContent = tmp.textContent == "Show sequence" ? "Hide sequence" : "Show sequence";
-            }
+            // var seqData = "";
+            // for (var k = 0; k < score[id].length; k++)
+            //     if (seq[id][k] !== '-')
+            //         seqData += seq[id][k];
+            // btn.setAttribute("data-content", seqData);
+            // btn.onclick = function () {
+            //     var cur = parseInt(this.id.substring(6));
+            //     var tmp = document.getElementById("seqBtn" + cur);
+            //     tmp.textContent = tmp.textContent == "Show sequence" ? "Hide sequence" : "Show sequence";
+            // }
             d.appendChild(btn);
             container.appendChild(d);
 
@@ -257,7 +524,7 @@
                                     var curid = parseInt(tmpid[2]);
                                     var curk = parseInt(tmpid[3]);
                                     var curtotal = parseInt(tmpid[4])
-                                    for (var l = 0; l < curtotal; l++){
+                                    for (var l = 0; l < curtotal; l++) {
                                         document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
                                     }
                                     document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
@@ -267,7 +534,7 @@
                                     var curid = parseInt(tmpid[2]);
                                     var curk = parseInt(tmpid[3]);
                                     var curtotal = parseInt(tmpid[4])
-                                    for (var l = 0; l < curtotal; l++){
+                                    for (var l = 0; l < curtotal; l++) {
                                         document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
                                     }
                                     document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
@@ -332,10 +599,10 @@
                                 var tmpid = this.id.split("_");
                                 var curid = parseInt(tmpid[2]);
                                 var curk = parseInt(tmpid[3]);
-                                var curtotal = parseInt(tmpid[4])                                
+                                var curtotal = parseInt(tmpid[4])
                                 this.classList.add("table-hover");
                                 for (var x = 0; x < curtotal; x++) {
-                                   document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
+                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
                                 }
                             }
                             tbodytr.onpointerleave = function () {
@@ -962,11 +1229,11 @@
     /* show sequence window style */
     .popover {
         max-width: 50%;
-        background-color: #6c757d;
+        /* background-color: #6c757d; */
     }
 
     .popover-body {
-        color: white;
+        color: black;
     }
 
     /* Return to Top Style */
