@@ -326,6 +326,10 @@
                     th6.setAttribute("scope", "col");
                     th6.textContent = 'Segments';
                     theadtr.appendChild(th6);
+                    var th7 = document.createElement("th");
+                    th7.setAttribute("scop","col");
+                    th7.textContent = 'Close Structure'
+                    theadtr.appendChild(th7);
                     thead.appendChild(theadtr);
                     table.appendChild(thead);
 
@@ -371,13 +375,25 @@
 
                         var td1 = document.createElement("td");
                         tbodytr.appendChild(td1);
-                        td1.textContent = data.superfamily[k];
+                        var sp_a = document.createElement("a");
+                        td1.appendChild(sp_a);
+                        sp_a.setAttribute("href", "http://supfam.org/SUPERFAMILY/cgi-bin/scop.cgi?sunid=" + data.scopspfamID[k]);
+                        sp_a.setAttribute("target", "scop_superfamily");
+                        sp_a.textContent = data.spfamName[k];
+
                         var td2 = document.createElement("td");
                         tbodytr.appendChild(td2);
                         td2.textContent = data.supeval[k];
+
                         var td3 = document.createElement("td");
                         tbodytr.appendChild(td3);
-                        td3.textContent = data.family[k];
+                        // td3.textContent = data.famName[k];
+                        var fam_a = document.createElement("a");
+                        td3.appendChild(fam_a);
+                        fam_a.setAttribute("href", "http://supfam.org/SUPERFAMILY/cgi-bin/scop.cgi?sunid=" + data.family[k]);
+                        fam_a.setAttribute("target", "scop_family");
+                        fam_a.textContent = data.famName[k];
+
                         var td4 = document.createElement("td");
                         tbodytr.appendChild(td4);
                         td4.textContent = data.fameval[k];
@@ -387,6 +403,15 @@
                             td5.textContent += data.seg[k][2 * x] + '~' + data.seg[k][2 * x + 1];
                             if (x != data.seg[k].length / 2 - 1) td5.textContent += " | ";
                         }
+
+                        var td6 = document.createElement("td");
+                        tbodytr.appendChild(td6);
+                        // td6.textContent = data.closeName[k];
+                        var close_a = document.createElement("a");
+                        td6.appendChild(close_a);
+                        close_a.setAttribute("href", "http://supfam.org/SUPERFAMILY/cgi-bin/scop.cgi?sunid=" + data.closeID[k]);
+                        close_a.setAttribute("target", "scop_close_structure");
+                        close_a.textContent = data.closeName[k];
                     }
                 }
 
@@ -529,11 +554,11 @@
                     theadtr.appendChild(th1);
                     var th2 = document.createElement("th");
                     th2.setAttribute("scope", "col");
-                    th2.textContent = 'Id';
+                    th2.textContent = 'Family ID';
                     theadtr.appendChild(th2);
                     var th3 = document.createElement("th");
                     th3.setAttribute("scope", "col");
-                    th3.textContent = 'Accession';
+                    th3.textContent = 'Family Accession';
                     theadtr.appendChild(th3);
                     var th4 = document.createElement("th");
                     th4.setAttribute("scope", "col");
@@ -545,11 +570,11 @@
                     theadtr.appendChild(th5);
                     var th8 = document.createElement("th");
                     th8.setAttribute("scope", "col");
-                    th8.textContent = 'Ind. E-values';
+                    th8.textContent = 'Domain Ind. E-values';
                     theadtr.appendChild(th8);
                     var th9 = document.createElement("th");
                     th9.setAttribute("scope", "col");
-                    th9.textContent = 'Cond. E-values';
+                    th9.textContent = 'Domain Cond. E-values';
                     theadtr.appendChild(th9);
 
                     thead.appendChild(theadtr);

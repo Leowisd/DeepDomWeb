@@ -85,7 +85,7 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~DEEPDOM 完成~~
 
 ### sciprts plugins
-* 增加SCOP和CATH结果domain ID对应的名称，同时添加外联接
+* ~~增加SCOP~~和CATH结果domain ID对应的名称，同时添加外联接
 
 
 ### ADD USER MAP AND STATISTIC ON INDEX PAGE

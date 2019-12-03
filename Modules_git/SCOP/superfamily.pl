@@ -33,9 +33,9 @@ system "perl Modules/SCOP/ass3.pl -t n -f 4 -e 0.01 data/tmp/$file\_torun.fa dat
 
 
 print "Running convert to cvs\n";
-system "python Modules/SCOP/convert2cvs.py data/tmp/$file.ass";
+system "python Modules/SCOP/convert2cvs.py data/tmp/$file.ass Modules/SCOP/model.tab Modules/SCOP/dir.des.scop.txt";
 
 
-print "Running ass_to_html\n";
-system "perl Modules/SCOP/ass_to_html.pl Modules/SCOP/dir.des.scop.txt Modules/SCOP/model.tab data/tmp/$file.ass >data/SCOP/$file.html";
+# print "Running ass_to_html\n";
+# system "perl Modules/SCOP/ass_to_html.pl Modules/SCOP/dir.des.scop.txt Modules/SCOP/model.tab data/tmp/$file.ass >data/SCOP/$file.html";
 

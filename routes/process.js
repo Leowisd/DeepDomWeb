@@ -23,11 +23,16 @@ router.post("/process/scop/:id", function (req, res) {
     if (jsonObj.length > 0) {
 
         var queryID = "";
-        var scopFamID = [];
+        var spfamID = [];
         var sfevalue = [];
         var scopDomID = [];
         var famevalue = [];
         var seg = [];
+        var spfamName = [];
+        var scopspfamID = [];
+        var famName = [];
+        var closeName = [];
+        var closeID = [];
 
         for (var i = 0; i < jsonObj.length; i++) {
             if (i > 0 && jsonObj[i].seqID !== jsonObj[i - 1].seqID) {
@@ -35,34 +40,54 @@ router.post("/process/scop/:id", function (req, res) {
                 var jsonTmp = {
                     numberId: id,
                     queryID: queryID,
-                    superfamily: scopFamID,
+                    superfamily: spfamID,
                     supeval: sfevalue,
                     family: scopDomID,
                     fameval: famevalue,
-                    seg: seg
+                    seg: seg,
+                    spfamName: spfamName,
+                    famName: famName,
+                    closeID: closeID,
+                    closeName: closeName,
+                    scopspfamID: scopspfamID
                 }
 
                 scopRes.push(jsonTmp);
-                if (scopRes.length - 1 == id){
+                if (scopRes.length - 1 == id) {
                     res.send(jsonTmp);
                 }
 
                 queryID = "";
-                scopFamID = [];
+                spfamID = [];
                 sfevalue = [];
                 scopDomID = [];
                 famevalue = [];
                 seg = [];
+                spfamName = [];
+                famName = [];
+                closeName = [];
+                closeID = [];
+                scopspfamID = [];
 
                 queryID = jsonObj[i].seqID;
 
-                scopFamID.push(jsonObj[i].scopFamID);
+                spfamID.push(jsonObj[i].spfamID);
+
+                spfamName.push(jsonObj[i].spfamName);
+
+                scopspfamID.push(jsonObj[i].scopspfamID);
 
                 sfevalue.push(jsonObj[i].evalue);
 
                 scopDomID.push(jsonObj[i].scopDomID);
 
+                famName.push(jsonObj[i].famName);
+
                 famevalue.push(jsonObj[i].famEvalue);
+
+                closeID.push(jsonObj[i].scopFamID);
+
+                closeName.push(jsonObj[i].closeStruct);
 
                 var segTmp = jsonObj[i].matchRegion.replace(/,/g, '-').split('-');
                 seg.push(segTmp);
@@ -71,13 +96,23 @@ router.post("/process/scop/:id", function (req, res) {
                 // console.log("add!" + jsonObj[i].seqID);
                 queryID = jsonObj[i].seqID;
 
-                scopFamID.push(jsonObj[i].scopFamID);
+                spfamID.push(jsonObj[i].spfamID);
+
+                spfamName.push(jsonObj[i].spfamName);
+
+                scopspfamID.push(jsonObj[i].scopspfamID);
 
                 sfevalue.push(jsonObj[i].evalue);
 
                 scopDomID.push(jsonObj[i].scopDomID);
 
+                famName.push(jsonObj[i].famName);
+
                 famevalue.push(jsonObj[i].famEvalue);
+
+                closeID.push(jsonObj[i].scopFamID);
+
+                closeName.push(jsonObj[i].closeStruct);
 
                 var segTmp = jsonObj[i].matchRegion.replace(/,/g, '-').split('-');
                 seg.push(segTmp);
@@ -88,14 +123,19 @@ router.post("/process/scop/:id", function (req, res) {
     var jsonTmp = {
         numberId: id,
         queryID: queryID,
-        superfamily: scopFamID,
+        superfamily: spfamID,
         supeval: sfevalue,
         family: scopDomID,
         fameval: famevalue,
-        seg: seg
+        seg: seg,
+        spfamName: spfamName,
+        famName: famName,
+        closeID: closeID,
+        closeName: closeName,
+        scopspfamID: scopspfamID
     }
     scopRes.push(jsonTmp);
-    if (scopRes.length - 1 == id){
+    if (scopRes.length - 1 == id) {
         res.send(jsonTmp);
     }
 })
@@ -145,7 +185,7 @@ router.post("/process/cath/:id", function (req, res) {
                 }
                 // console.log(jsonTmp);
                 cathRes.push(jsonTmp);
-                if (name == jsonTmp.queryID){
+                if (name == jsonTmp.queryID) {
                     res.send(jsonTmp);
                 }
 
@@ -204,7 +244,7 @@ router.post("/process/cath/:id", function (req, res) {
         condval: condval
     }
     cathRes.push(jsonTmp);
-    if (name == jsonTmp.queryID){
+    if (name == jsonTmp.queryID) {
         res.send(jsonTmp);
     }
 })

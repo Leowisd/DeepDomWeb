@@ -4,17 +4,41 @@ import os
 
 writer = None  
 infile = sys.argv[1]
-writer = csv.writer(open(infile + ".csv","w"))
+mod = sys.argv[2]
+des = sys.argv[3]
 
-seq_id = [];
-supfam_id =[];
-match_region =[];
-evalue = [];
-model_match_position = [];
-align_model = [];
-fam_evalue = [];
-scop_fam_id = [];
-scop_domain_id = [];
+writer = csv.writer(open(infile + ".csv","w"))
+# reader = csv.reader(open(mod))
+
+dict_spfam = {}
+dict_spfam2scop = {}
+for rows in open(mod):
+    row = rows.replace('\n', '').split('\t')
+    if (len(row) < 5):
+        continue
+    dict_spfam[row[0]] = row[4]
+    dict_spfam2scop[row[0]] = row[1]
+
+dict_fam = {}
+for rows in open(des):
+    row = rows.replace('\n', '').split('\t')
+    if (len(row) < 5):
+        continue
+    dict_fam[row[0]] = row[4]
+
+seq_id = []
+supfam_id =[]
+match_region =[]
+evalue = []
+model_match_position = []
+align_model = []
+fam_evalue = []
+scop_fam_id = []
+scop_domain_id = []
+
+spfam_name = []
+fam_name = []
+close_stuct = []
 for line in open(infile):
    
     line =line.replace("\n","")
@@ -31,7 +55,7 @@ for line in open(infile):
     scop_fam_id.append(vals[7])
     scop_domain_id.append(vals[8])
 
-writer.writerow(["seqID","spfamID","matchRegion", "evalue","modelMatch","alignModel","famEvalue","scopFamID","scopDomID"])
+writer.writerow(["seqID","spfamID","spfamName","scopspfamID","matchRegion", "evalue","modelMatch","alignModel","famEvalue","scopFamID","closeStruct","scopDomID","famName"])
 
 for i in range(0, len(seq_id)):
-    writer.writerow([seq_id[i], supfam_id[i], match_region[i], evalue[i], model_match_position[i], align_model[i], fam_evalue[i],scop_fam_id[i],scop_domain_id[i]])
+    writer.writerow([seq_id[i], supfam_id[i], dict_spfam[supfam_id[i]], dict_spfam2scop[supfam_id[i]],match_region[i], evalue[i], model_match_position[i], align_model[i], fam_evalue[i],scop_fam_id[i],dict_fam[scop_fam_id[i]],scop_domain_id[i],dict_fam[scop_domain_id[i]]])
