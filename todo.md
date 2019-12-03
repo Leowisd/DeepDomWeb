@@ -1,3 +1,5 @@
+## VERSION ONE
+
 ### step 1
 
 * ~~上传sequence并保存~~
@@ -62,6 +64,9 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~fix 响应超时bug~~
 * ~~改进btn样式 & 图表矩形互相响应（同属一个family的seg rect 的响应）~~
 
+## VERSION UPDATE
+~~更改deepdom predict过程，command写进一脚本后整体调用~~ 
+
 ### Add run SCOP superfamily scripts in back-end
 * ~~下载相关module并test~~
 * ~~加进运行队列~~
@@ -74,12 +79,23 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~修改assign_cath_superfamilies.py的两个文件路径~~
 * ~~加进运行队列~~
 
-### Redesign show page
+### Redesign result showing page
+* ~~SCOP 完成~~
+* ~~CATH 完成~~
+* ~~DEEPDOM 完成~~
 
+### sciprts plugins
+* 增加SCOP和CATH结果domain ID对应的名称，同时添加外联接
+
+
+### ADD USER MAP AND STATISTIC ON INDEX PAGE
+
+### ADD PAGE INSTRUCTION FUNCTION ON EACH PAGE
 
 ### step
-* 更改deepdom predict过程，command写进一脚本后整体调用 
-* 整体UI设计规划
+* 整体UI设计规划/ footer
+* 任务等待页设计
+* 邮件样式设计
 
 ### step
 * 上线测试
@@ -104,8 +120,8 @@ JOBSLIST            /jobs/all             GET         show all tasks info
 DOWNLOAD			/jobs/download/:id    GET	      download the result file
 DELETE				/jobs/delete/:id	  POST		  delete the selected job
 
-HMMSCAN_SF			/process/hmmscan/superfamily	  POST		  do the superfamily hmmscan of post seq
-HMMSCAN_3D			/process/hmmscan/3d				  POST		  do the gene3D hmmscan of post seq
+SCOP				/process/scop/:id	  POST		  get current job scop result
+CATH				/process/cath/:id	  POST		  do the gene3D hmmscan of post seq
 
 
 var jobInfoSchema = new mongoose.Schema({

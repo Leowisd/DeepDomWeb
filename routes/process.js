@@ -1,16 +1,14 @@
 var express = require("express");
 var router = express.Router();
 var fs = require("fs"),
-    parseString = require('xml2js').parseString,
-    csv = require("csvjson"),
-    exec = require('child_process').exec;
+    csv = require("csvjson");
 
 router.post("/process/scop/:id", function (req, res) {
     var jobId = req.params.id;
     jobId = jobId.substr(1);
     // console.log(jobId);
 
-    var id = req.body.queryId;
+    var id = req.body.queryNo;
 
     const scopCsvPath = 'data/SCOP/' + jobId + '_SCOP.csv';
     var scopdata = fs.readFileSync(scopCsvPath, { encoding: 'utf8' });
@@ -43,8 +41,11 @@ router.post("/process/scop/:id", function (req, res) {
                     fameval: famevalue,
                     seg: seg
                 }
-                // console.log(jsonTmp);
+
                 scopRes.push(jsonTmp);
+                if (scopRes.length - 1 == id){
+                    res.send(jsonTmp);
+                }
 
                 queryID = "";
                 scopFamID = [];
@@ -83,133 +84,130 @@ router.post("/process/scop/:id", function (req, res) {
             }
         }
     }
-    // console.log(scopRes[id]);
 
-    res.send(scopRes[id]);
+    var jsonTmp = {
+        numberId: id,
+        queryID: queryID,
+        superfamily: scopFamID,
+        supeval: sfevalue,
+        family: scopDomID,
+        fameval: famevalue,
+        seg: seg
+    }
+    scopRes.push(jsonTmp);
+    if (scopRes.length - 1 == id){
+        res.send(jsonTmp);
+    }
 })
 
-router.post("/process/hmmscan/superfamily", function (req, res) {
-    // console.log(req.body.seq);
-    var seq = req.body.seq;
-    var name = req.body.name;
 
-    console.info("Hmmscan in superfamily DB started: " + name);
-    var cmd = "curl -X POST -L -H 'Expect:' -H 'Accept:text/xml' -F hmmdb=superfamily -F seq='" + seq + "' https://www.ebi.ac.uk/Tools/hmmer/search/hmmscan";
-    var workprecessor = exec(cmd, function (error, stdout, stderr) {
-        if (error) {
-            console.info('stderr : ' + stderr);
-        }
-        var superfamily = [];
-        var family = [];
-        var supeval = [];
-        var fameval = [];
-        var seg = [];
+router.post("/process/cath/:id", function (req, res) {
+    var jobId = req.params.id;
+    jobId = jobId.substr(1);
+    // console.log(jobId);
 
-        if (stdout == undefined) res.send(undefined);   //in case of server busy
+    var name = req.body.queryName.substr(1).split(' ')[0];
+    var id = req.body.queryNo;
 
-        parseString(stdout, function (err, result) {
-            var hits = result.opt.data[0].hits;
-            if (hits != undefined) {
-                for (var i = 0; i < hits.length; i++) {
-                    // superfamily
-                    superfamily.push(hits[i].$.desc);
-                    supeval.push(hits[i].$.evalue);
-                    // famliy
-                    family.push(hits[i].domains[0].family[0].$.famdesc);
-                    fameval.push(hits[i].domains[0].family[0].$.fameval);
-                    // segments
-                    var segments = hits[i].domains[0].segments;
-                    var segtmp = [];
-                    for (var j = 0; j < segments.length; j++) {
-                        segtmp.push(segments[j].$.start);
-                        segtmp.push(segments[j].$.end);
-                    }
-                    seg.push(segtmp);
-                }
-            }
-        });
-        var result = {
-            superfamily: superfamily,
-            supeval: supeval,
-            family: family,
-            fameval: fameval,
-            seg: seg
-        };
-        // console.log(result);
-        console.info("Hmmscan in superfamily DB finished: " + name);
-        res.send(result);
-    });
-})
+    const cathCsvPath = 'data/CATH/' + jobId + '_CATH.csv';
+    var cathdata = fs.readFileSync(cathCsvPath, { encoding: 'utf8' });
+    var options = {
+        delimiter: ',', // optional
+        quote: '"' // optional
+    };
 
-router.post("/process/hmmscan/3d", function (req, res) {
-    // console.log(req.body.seq);
-    var seq = req.body.seq;
-    var name = req.body.name;
+    var jsonArray = csv.toArray(cathdata, options);
 
-    console.info("Hmmscan in 3D DB started: " + name);
-    var cmd = "curl -X POST -L -H 'Expect:' -H 'Accept:text/xml' -F hmmdb=gene3d -F seq='" + seq + "' https://www.ebi.ac.uk/Tools/hmmer/search/hmmscan";
-    var workprecessor = exec(cmd, function (error, stdout, stderr) {
-        if (error) {
-            console.info('stderr : ' + stderr);
-        }
+    var cathRes = [];
+    if (jsonArray.length > 1) {
 
-        var id = [];
+        var queryID = "";
+        var match_id = [];
         var accession = [];
         var desciption = [];
         var region = [];
-        var start = [];
-        var end = [];
         var indeval = [];
         var condval = [];
 
-        if (stdout == undefined) res.send(undefined);   //in case of server busy
-
-        parseString(stdout, function (err, result) {
-            var hits = result.opt.data[0].hits;
-            if (hits != undefined) {
-                for (var i = 0; i < hits.length; i++) {
-                    for (var j = 0; j < hits[i].domains.length; j++) {
-                        // id
-                        id.push(hits[i].$.name);
-                        // accession
-                        accession.push(hits[i].$.acc);
-                        // description
-                        desciption.push(hits[i].$.desc);
-                        // region
-                        var segtmp = [];
-                        segtmp.push(hits[i].domains[j].segments[0].$.start);
-                        segtmp.push(hits[i].domains[j].segments[0].$.end);
-                        region.push(segtmp);
-                        // start
-                        start.push(hits[i].domains[j].$.ienv);
-                        // end
-                        end.push(hits[i].domains[j].$.jenv);
-                        // indeval
-                        indeval.push(hits[i].domains[j].$.ievalue);
-                        // condeval
-                        condval.push(hits[i].domains[j].$.cevalue);
-                    }
+        for (var i = 1; i < jsonArray.length; i++) {
+            if (i > 1 && jsonArray[i][2] !== jsonArray[i - 1][2]) {
+                // console.log("new!" + jsonObj[i].seqID);
+                var jsonTmp = {
+                    numberId: id,
+                    queryName: name,
+                    queryID: queryID,
+                    id: match_id,
+                    accession: accession,
+                    desciption: desciption,
+                    seg: region,
+                    indeval: indeval,
+                    condval: condval
                 }
+                // console.log(jsonTmp);
+                cathRes.push(jsonTmp);
+                if (name == jsonTmp.queryID){
+                    res.send(jsonTmp);
+                }
+
+                queryID = "";
+                match_id = [];
+                accession = [];
+                desciption = [];
+                region = [];
+                indeval = [];
+                condval = [];
+
+                queryID = jsonArray[i][2];
+
+                match_id.push(jsonArray[i][0]);
+
+                accession.push(jsonArray[i][1]);
+
+                // desciption.push();
+
+                indeval.push(jsonArray[i][9]);
+
+                condval.push(jsonArray[i][8]);
+
+                var segTmp = jsonArray[i][6].replace(/,/g, '-').split('-');
+                region.push(segTmp);
             }
-        });
+            else {
+                // console.log("add!" + jsonObj[i].seqID);
+                queryID = jsonArray[i][2];
 
-        var result = {
-            id: id,
-            accession: accession,
-            desciption: desciption,
-            region: region,
-            start: start,
-            end: end,
-            indeval: indeval,
-            condval: condval
+                match_id.push(jsonArray[i][0]);
+
+                accession.push(jsonArray[i][1]);
+
+                // desciption.push();
+
+                indeval.push(jsonArray[i][9]);
+
+                condval.push(jsonArray[i][8]);
+
+                var segTmp = jsonArray[i][6].replace(/,/g, '-').split('-');
+                region.push(segTmp);
+            }
         }
-        console.info("Hmmscan in 3D DB finished: " + name);
-        // console.log(result);
-        res.send(result);
-    });
+    }
+
+    var jsonTmp = {
+        numberId: id,
+        queryName: name,
+        queryID: queryID,
+        id: match_id,
+        accession: accession,
+        desciption: desciption,
+        seg: region,
+        indeval: indeval,
+        condval: condval
+    }
+    cathRes.push(jsonTmp);
+    if (name == jsonTmp.queryID){
+        res.send(jsonTmp);
+    }
 })
-
-
 
 module.exports = router;
 

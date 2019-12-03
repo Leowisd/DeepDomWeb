@@ -78,6 +78,12 @@
         $('[data-toggle="popover"]').popover()
     })
 
+    // ++++++++++++++++++++++++++++++++++
+    // ++++++++++++++++++++++++++++++++++
+    // Analysis deepdom results' data
+    // ++++++++++++++++++++++++++++++++++
+    // ++++++++++++++++++++++++++++++++++
+    
     var tmpScore = "<%= scores %>";
     score = tmpScore.split(',');
     for (var i = 0; i < score.length; i++) {
@@ -102,6 +108,12 @@
     var jobId = "<%= jobId %>";
     // console.log(jobId);
 
+    // +++++++++++++++++++++++++++++++++++++
+    // +++++++++++++++++++++++++++++++++++++
+    // Create main results units
+    // +++++++++++++++++++++++++++++++++++++
+    // +++++++++++++++++++++++++++++++++++++
+
     var mainContainer = document.querySelector('#mainContainer');
     var sideNav = document.querySelector('.sidenav');
     var navCopy = sideNav.innerHTML;
@@ -123,6 +135,7 @@
             var id = idList[i];
 
             var container = document.createElement("container");
+            mainContainer.appendChild(container);
 
             // ===========================
             // create a head for each query
@@ -145,12 +158,12 @@
             queryHead.onclick = function () {
                 var cur = parseInt(this.id.substring(13));
                 var tmp = document.getElementById("query_header_" + cur);
-                if (tmp.textContent == names[cur] + " (click to show sequence)"){
+                if (tmp.textContent == names[cur] + " (click to show sequence)") {
                     tmp.classList.remove("alert-primary");
                     tmp.classList.add("alert-warning");
                     tmp.textContent = names[cur] + " (click to unshow sequence)";
                 }
-                else{
+                else {
                     tmp.classList.remove("alert-warning");
                     tmp.classList.add("alert-primary");
                     tmp.textContent = names[cur] + " (click to show sequence)";
@@ -194,17 +207,19 @@
             scopContentBody.setAttribute("id", "scop_content_" + id);
 
             var scopURL = "/process/scop/:" + jobId;
-            var scopData = { queryId: id };
+            var scopData = { queryNo: id };
             $.post(scopURL, scopData, function (data, status) {
                 // console.log(data);
-                if (data.superfamily.length == 0 || data == undefined) {
-
+                var cur = data.numberId;
+                var card = document.getElementById("scop_content_" + cur);
+                if (data == undefined || data.superfamily[0] == '-') {
+                    card.classList.add("text-center");
+                    card.textContent = "No Result";
                 }
                 else {
-                    var cur = data.numberId;
-                    var card = document.getElementById("scop_content_" + cur);
-
+                    // -------------------------------------
                     // Generate colors for different familys
+                    // -------------------------------------
                     var r = [];
                     var g = [];
                     var b = [];
@@ -214,7 +229,9 @@
                         b.push(Math.floor(Math.random() * 255));
                     }
 
+                    // -----------------------
                     // Create a svg line graph
+                    // -----------------------
                     var svglength = mainContainer.clientWidth * 0.95;
 
                     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -243,16 +260,16 @@
                             //  k: No. family
                             //  data.seg[k].length / 2: the number of seg rects in current family
                             //  x: No. seg rect in current family
-                            rect.setAttribute("id", "rect_family_" + cur + "_" + k + "_" + data.seg[k].length / 2 + "_" + x);
+                            rect.setAttribute("id", "rect_scop_" + cur + "_" + k + "_" + data.seg[k].length / 2 + "_" + x);
                             rect.onmouseover = function () {
                                 var tmpid = this.id.split("_");
                                 var curid = parseInt(tmpid[2]);
                                 var curk = parseInt(tmpid[3]);
                                 var curtotal = parseInt(tmpid[4])
                                 for (var l = 0; l < curtotal; l++) {
-                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
+                                    document.getElementById("rect_scop_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
                                 }
-                                document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
+                                document.getElementById("table_scop_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
                             }
                             rect.onmouseleave = function () {
                                 var tmpid = this.id.split("_");
@@ -260,9 +277,9 @@
                                 var curk = parseInt(tmpid[3]);
                                 var curtotal = parseInt(tmpid[4])
                                 for (var l = 0; l < curtotal; l++) {
-                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
+                                    document.getElementById("rect_scop_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
                                 }
-                                document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
+                                document.getElementById("table_scop_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
                             }
 
                             var start = data.seg[k][2 * x];
@@ -276,7 +293,9 @@
                         }
                     }
 
-                    // Create the result table
+                    // -----------------
+                    // Create the table
+                    // -----------------
                     var table = document.createElement("table");
                     table.classList.add("table");
                     card.appendChild(table);
@@ -318,7 +337,7 @@
                         // cur: No. seq
                         // k: No. family
                         // data.seg[k].length / 2: the numbe of seg rects in current family
-                        tbodytr.setAttribute("id", "table_family_" + cur + "_" + k + "_" + data.seg[k].length / 2);
+                        tbodytr.setAttribute("id", "table_scop_" + cur + "_" + k + "_" + data.seg[k].length / 2);
                         tbodytr.onmouseover = function () {
                             var tmpid = this.id.split("_");
                             var curid = parseInt(tmpid[2]);
@@ -326,7 +345,7 @@
                             var curtotal = parseInt(tmpid[4])
                             this.classList.add("table-hover");
                             for (var x = 0; x < curtotal; x++) {
-                                document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
+                                document.getElementById("rect_scop_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
                             }
                         }
                         tbodytr.onpointerleave = function () {
@@ -336,7 +355,7 @@
                             var curtotal = parseInt(tmpid[4])
                             this.classList.remove("table-hover");
                             for (var x = 0; x < curtotal; x++) {
-                                document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.remove("rect-hover");
+                                document.getElementById("rect_scop_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.remove("rect-hover");
                             }
                         }
 
@@ -377,538 +396,278 @@
             // Create CATH Collapse Components
             // ===============================
 
+            var cathCard = document.createElement("div");
+            container.appendChild(cathCard);
+            cathCard.classList.add("card");
 
+            var cathHeader = document.createElement("div");
+            cathCard.appendChild(cathHeader);
+            cathHeader.classList.add("card-header");
+            cathHeader.setAttribute("id", "cath_heading_" + id);
 
+            var cathHeaderH2 = document.createElement("h2");
+            cathHeader.appendChild(cathHeaderH2);
+            cathHeaderH2.classList.add("mb-0");
 
-            // ============================================================
-            // ============================================================
-            // ============================================================
-            // ============================================================
-            // ============================================================
-            // ============================================================
-            // ============================================================
+            var cathbutton = document.createElement("button");
+            cathHeaderH2.appendChild(cathbutton);
+            cathbutton.classList.add("btn");
+            cathbutton.classList.add("btn-link");
+            cathbutton.setAttribute("data-toggle", "collapse");
+            cathbutton.setAttribute("data-target", "#cath_" + id);
+            cathbutton.textContent = "CATH";
 
-            //Add a Button to show a popover with sequence
-            var d = document.createElement('div');
-            d.classList.add("row");
+            var cathContent = document.createElement("div");
+            cathCard.appendChild(cathContent);
+            cathContent.classList.add("collapse");
+            cathContent.setAttribute("id", "cath_" + id);
 
-            var btn = document.createElement("button");
-            btn.setAttribute("type", "button");
-            btn.classList.add("btn");
-            btn.classList.add("btn-secondary");
-            btn.classList.add("btn-sm");
-            btn.classList.add("ml-3");
-            btn.textContent = "Show sequence";
-            btn.setAttribute("data-toggle", "popover");
-            btn.setAttribute("data-placement", "right");
-            btn.setAttribute("id", "seqBtn" + id);
-            // var seqData = "";
-            // for (var k = 0; k < score[id].length; k++)
-            //     if (seq[id][k] !== '-')
-            //         seqData += seq[id][k];
-            // btn.setAttribute("data-content", seqData);
-            // btn.onclick = function () {
-            //     var cur = parseInt(this.id.substring(6));
-            //     var tmp = document.getElementById("seqBtn" + cur);
-            //     tmp.textContent = tmp.textContent == "Show sequence" ? "Hide sequence" : "Show sequence";
-            // }
-            d.appendChild(btn);
-            container.appendChild(d);
+            var cathContentBody = document.createElement("div");
+            cathContent.appendChild(cathContentBody);
+            cathContentBody.classList.add("card-body");
+            cathContentBody.setAttribute("id", "cath_content_" + id);
 
-            var scanBtnToolbar = document.createElement("div");
-            scanBtnToolbar.classList.add("btn-toolbar");
-            scanBtnToolbar.classList.add("mt-2");
-            scanBtnToolbar.classList.add("float-left");
-            scanBtnToolbar.setAttribute("role", "toolbar");
-            container.appendChild(scanBtnToolbar);
-
-            var supfamBtnSet = document.createElement("div");
-            scanBtnToolbar.appendChild(supfamBtnSet);
-            supfamBtnSet.classList.add("btn-group");
-            supfamBtnSet.classList.add("btn-group-sm");
-            supfamBtnSet.classList.add("mr-2");
-            supfamBtnSet.setAttribute("role", "group");
-
-            var gene3dBtnSet = document.createElement("div");
-            scanBtnToolbar.appendChild(gene3dBtnSet);
-            gene3dBtnSet.classList.add("btn-group");
-            gene3dBtnSet.classList.add("btn-group-sm");
-            gene3dBtnSet.setAttribute("role", "group");
-
-            // Add a button to start hmmer scan in superfamily
-            var btnSupfam = document.createElement('button');
-            btnSupfam.classList.add("btn");
-            btnSupfam.classList.add("btn-secondary");
-            btnSupfam.setAttribute("type", "button");
-            btnSupfam.setAttribute("id", "hmmscan_supfam" + id);
-            btnSupfam.onclick = function () {
-                var cur = parseInt(this.id.substring(14));
-                var seqscanData = "";
-                for (var k = 0; k < score[cur].length; k++)
-                    if (seq[cur][k] !== '-')
-                        seqscanData += seq[cur][k];
-                const scanData = { seq: seqscanData, name: names[cur] + "_NUMBER_" + cur };
-                const scanURL = "/process/hmmscan/superfamily";
-
-                var tmpBtn = document.getElementById("hmmscan_supfam" + cur);
-                tmpBtn.setAttribute("disabled", "");
-                tmpBtn.textContent = "";
-                var spinner = document.createElement("div");
-                tmpBtn.appendChild(spinner);
-                spinner.classList.add("spinner-grow");
-                spinner.classList.add("spinner-grow-sm");
-                var span = document.createElement("span");
-                spinner.appendChild(span);
-                span.classList.add("sr-only");
-
-                $.post(scanURL, scanData, function (data, status) {
-                    tmpBtn.textContent = "Superfamily";
-                    if (data.superfamily.length == 0) {
-                        document.getElementById("family" + cur).innerText = "No Result";
-                    }
-                    else if (data == undefined) {
-                        tmpBtn.removeAttribute("disabled");
-                        alert("Server is busy. Please try again in few seconds!");
-                    }
-                    else {
-                        document.getElementById("family" + cur).removeAttribute("disabled");
-
-                        var card = document.getElementById("cardfamily" + cur);
-
-                        var h3 = document.createElement("h3");
-                        card.appendChild(h3);
-                        h3.textContent = "Superfamily"
-
-                        // Generate colors for different familys
-                        var r = [];
-                        var g = [];
-                        var b = [];
-                        for (var k = 0; k < data.superfamily.length; k++) {
-                            r.push(Math.floor(Math.random() * 255));
-                            g.push(Math.floor(Math.random() * 255));
-                            b.push(Math.floor(Math.random() * 255));
-                        }
-
-                        // Create a svg line graph
-                        var svglength = mainContainer.clientWidth * 0.95;
-
-                        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                        card.appendChild(svg);
-                        svg.setAttribute("width", svglength);
-                        svg.setAttribute("height", "50");
-
-                        var line = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                        svg.appendChild(line);
-                        line.setAttribute("x", 0);
-                        line.setAttribute("y", 15);
-                        line.setAttribute("width", svglength);
-                        line.setAttribute("height", 2);
-                        line.setAttribute("style", "fill: rgb(187, 187, 187);");
-
-                        for (var k = 0; k < data.superfamily.length; k++) {
-                            for (var x = 0; x < data.seg[k].length / 2; x++) {
-                                var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                                svg.appendChild(rect);
-                                rect.setAttribute("y", 5);
-                                rect.setAttribute("height", 20);
-                                rect.setAttribute("rx", 2);
-                                rect.setAttribute("ry", 2);
-
-                                //  cur: No. seq
-                                //  k: No. family
-                                //  data.seg[k].length / 2: the number of seg rects in current family
-                                //  x: No. seg rect in current family
-                                rect.setAttribute("id", "rect_family_" + cur + "_" + k + "_" + data.seg[k].length / 2 + "_" + x);
-                                rect.onmouseover = function () {
-                                    var tmpid = this.id.split("_");
-                                    var curid = parseInt(tmpid[2]);
-                                    var curk = parseInt(tmpid[3]);
-                                    var curtotal = parseInt(tmpid[4])
-                                    for (var l = 0; l < curtotal; l++) {
-                                        document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
-                                    }
-                                    document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
-                                }
-                                rect.onmouseleave = function () {
-                                    var tmpid = this.id.split("_");
-                                    var curid = parseInt(tmpid[2]);
-                                    var curk = parseInt(tmpid[3]);
-                                    var curtotal = parseInt(tmpid[4])
-                                    for (var l = 0; l < curtotal; l++) {
-                                        document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
-                                    }
-                                    document.getElementById("table_family_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
-                                }
-
-                                var start = data.seg[k][2 * x];
-                                var end = data.seg[k][2 * x + 1];
-                                var l = seqscanData.length;
-
-                                rect.setAttribute("x", start / l * svglength);
-                                rect.setAttribute("width", (end - start) / l * svglength);
-
-                                rect.setAttribute("style", "fill: rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");opacity: 0.8;");
-                            }
-                        }
-
-
-                        // Create the result table
-                        var table = document.createElement("table");
-                        table.classList.add("table");
-                        card.appendChild(table);
-
-                        var thead = document.createElement("thead");
-                        var theadtr = document.createElement("tr");
-                        var th1 = document.createElement("th");
-                        th1.setAttribute("scope", "col");
-                        th1.textContent = '#';
-                        theadtr.appendChild(th1);
-                        var th2 = document.createElement("th");
-                        th2.setAttribute("scope", "col");
-                        th2.textContent = 'Superfamily';
-                        theadtr.appendChild(th2);
-                        var th3 = document.createElement("th");
-                        th3.setAttribute("scope", "col");
-                        th3.textContent = 'E-value';
-                        theadtr.appendChild(th3);
-                        var th4 = document.createElement("th");
-                        th4.setAttribute("scope", "col");
-                        th4.textContent = 'Family';
-                        theadtr.appendChild(th4);
-                        var th5 = document.createElement("th");
-                        th5.setAttribute("scope", "col");
-                        th5.textContent = 'E-value';
-                        theadtr.appendChild(th5);
-                        var th6 = document.createElement("th");
-                        th6.setAttribute("scope", "col");
-                        th6.textContent = 'Segments';
-                        theadtr.appendChild(th6);
-                        thead.appendChild(theadtr);
-                        table.appendChild(thead);
-
-                        var tbody = document.createElement("tbody");
-                        table.appendChild(tbody);
-                        for (var k = 0; k < data.superfamily.length; k++) {
-                            var tbodytr = document.createElement("tr");
-                            tbody.appendChild(tbodytr);
-                            // cur: No. seq
-                            // k: No. family
-                            // data.seg[k].length / 2: the numbe of seg rects in current family
-                            tbodytr.setAttribute("id", "table_family_" + cur + "_" + k + "_" + data.seg[k].length / 2);
-                            tbodytr.onmouseover = function () {
-                                var tmpid = this.id.split("_");
-                                var curid = parseInt(tmpid[2]);
-                                var curk = parseInt(tmpid[3]);
-                                var curtotal = parseInt(tmpid[4])
-                                this.classList.add("table-hover");
-                                for (var x = 0; x < curtotal; x++) {
-                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
-                                }
-                            }
-                            tbodytr.onpointerleave = function () {
-                                var tmpid = this.id.split("_");
-                                var curid = parseInt(tmpid[2]);
-                                var curk = parseInt(tmpid[3]);
-                                var curtotal = parseInt(tmpid[4])
-                                this.classList.remove("table-hover");
-                                for (var x = 0; x < curtotal; x++) {
-                                    document.getElementById("rect_family_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.remove("rect-hover");
-                                }
-                            }
-
-
-                            var tbodyth = document.createElement("th");
-                            tbodytr.appendChild(tbodyth);
-                            tbodyth.setAttribute("scope", "row");
-
-                            var colorbox = document.createElement("span");
-                            tbodyth.appendChild(colorbox);
-                            colorbox.classList.add("color-box");
-                            colorbox.setAttribute("style", "background-color: " + "rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");");
-
-                            var td1 = document.createElement("td");
-                            tbodytr.appendChild(td1);
-                            td1.textContent = data.superfamily[k];
-                            var td2 = document.createElement("td");
-                            tbodytr.appendChild(td2);
-                            td2.textContent = data.supeval[k];
-                            var td3 = document.createElement("td");
-                            tbodytr.appendChild(td3);
-                            td3.textContent = data.family[k];
-                            var td4 = document.createElement("td");
-                            tbodytr.appendChild(td4);
-                            td4.textContent = data.fameval[k];
-                            var td5 = document.createElement("td");
-                            tbodytr.appendChild(td5);
-                            for (var x = 0; x < data.seg[k].length / 2; x++) {
-                                td5.textContent += data.seg[k][2 * x] + '~' + data.seg[k][2 * x + 1];
-                                if (x != data.seg[k].length / 2 - 1) td5.textContent += " | ";
-                            }
-                        }
+            var cathURL = "/process/cath/:" + jobId;
+            var cathData = { queryName: names[id], queryNo: id };
+            $.post(cathURL, cathData, function (data, status) {
+                // console.log(data);
+                var cur = data.numberId;
+                var card = document.getElementById("cath_content_" + cur);
+                if (data == undefined || data.id.length == 0) {
+                    card.classList.add("text-center");
+                    card.textContent = "No Result";
+                }
+                else {
+                    // -------------------------------------
+                    // Generate colors for different familys
+                    // -------------------------------------
+                    var r = [];
+                    var g = [];
+                    var b = [];
+                    for (var k = 0; k < data.id.length; k++) {
+                        r.push(Math.floor(Math.random() * 255));
+                        g.push(Math.floor(Math.random() * 255));
+                        b.push(Math.floor(Math.random() * 255));
                     }
 
-                });
-            };
-            btnSupfam.textContent = "Superfamily";
-            supfamBtnSet.appendChild(btnSupfam);
+                    // -----------------------
+                    // Create a svg line graph
+                    // -----------------------
+                    var svglength = mainContainer.clientWidth * 0.95;
 
-            // Add a button to show the superfamily result 
-            var btnFamily = document.createElement('button');
-            btnFamily.classList.add("btn");
-            btnFamily.classList.add("btn-secondary");
-            btnFamily.setAttribute("type", "button");
-            btnFamily.setAttribute("data-toggle", "collapse");
-            btnFamily.setAttribute("data-target", "#familyCollapse" + id);
-            btnFamily.setAttribute("id", "family" + id);
-            btnFamily.setAttribute("disabled", "");
-            btnFamily.textContent = "Show";
-            btnFamily.onclick = function () {
-                var cur = parseInt(this.id.substring(6));
-                var tmp = document.getElementById("family" + cur);
-                tmp.textContent = tmp.textContent == "Show" ? "Hide" : "Show";
-            }
-            supfamBtnSet.appendChild(btnFamily);
+                    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    card.appendChild(svg);
+                    svg.setAttribute("width", svglength);
+                    svg.setAttribute("height", "50");
 
+                    var line = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    svg.appendChild(line);
+                    line.setAttribute("x", 0);
+                    line.setAttribute("y", 15);
+                    line.setAttribute("width", svglength);
+                    line.setAttribute("height", 2);
+                    line.setAttribute("style", "fill: rgb(187, 187, 187);");
 
-            // Add a button to start hmmer scan in gene3D db
-            var btn3d = document.createElement('button');
-            btn3d.classList.add("btn");
-            btn3d.classList.add("btn-secondary");
-            btn3d.setAttribute("type", "button");
-            btn3d.setAttribute("id", "hmmscan_3d" + id);
-            btn3d.onclick = function () {
-                var cur = parseInt(this.id.substring(10));
-                var seqscanData = "";
-                for (var k = 0; k < score[cur].length; k++)
-                    if (seq[cur][k] !== '-')
-                        seqscanData += seq[cur][k];
-                const scanData = { seq: seqscanData, name: names[cur] + "_NUMBER_" + cur };
-                const scanURL = "/process/hmmscan/3d";
-
-                var tmpBtn = document.getElementById("hmmscan_3d" + cur);
-                tmpBtn.setAttribute("disabled", "");
-                tmpBtn.textContent = "";
-                var spinner = document.createElement("div");
-                tmpBtn.appendChild(spinner);
-                spinner.classList.add("spinner-grow");
-                spinner.classList.add("spinner-grow-sm");
-                var span = document.createElement("span");
-                spinner.appendChild(span);
-                span.classList.add("sr-only");
-
-                $.post(scanURL, scanData, function (data, status) {
-                    tmpBtn.textContent = "Gene3D";
-                    if (data.id.length == 0) {
-                        document.getElementById("gene_result" + cur).innerText = "No Result";
-                    }
-                    else if (data == undefined) {
-                        tmpBtn.removeAttribute("disabled");
-                        alert("Server is busy. Please try again in few seconds!");
-                    }
-                    else {
-                        document.getElementById("gene_result" + cur).removeAttribute("disabled");
-                        var card = document.getElementById("card3d" + cur);
-
-                        var h3 = document.createElement("h3");
-                        card.appendChild(h3);
-                        h3.textContent = "Gene3D"
-
-                        // Generate colors for different familys
-                        var r = [];
-                        var g = [];
-                        var b = [];
-                        for (var k = 0; k < data.id.length; k++) {
-                            r.push(Math.floor(Math.random() * 255));
-                            g.push(Math.floor(Math.random() * 255));
-                            b.push(Math.floor(Math.random() * 255));
-                        }
-
-
-                        // Create a svg line graph
-                        var svglength = mainContainer.clientWidth * 0.95;
-
-                        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                        card.appendChild(svg);
-                        svg.setAttribute("width", svglength);
-                        svg.setAttribute("height", "50");
-
-                        var line = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                        svg.appendChild(line);
-                        line.setAttribute("x", 0);
-                        line.setAttribute("y", 15);
-                        line.setAttribute("width", svglength);
-                        line.setAttribute("height", 2);
-                        line.setAttribute("style", "fill: rgb(187, 187, 187);");
-
-                        for (var k = 0; k < data.id.length; k++) {
+                    for (var k = 0; k < data.id.length; k++) {
+                        for (var x = 0; x < data.seg[k].length / 2; x++) {
                             var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                             svg.appendChild(rect);
                             rect.setAttribute("y", 5);
                             rect.setAttribute("height", 20);
                             rect.setAttribute("rx", 2);
                             rect.setAttribute("ry", 2);
-                            rect.setAttribute("id", "rect_gene3d_" + cur + "_" + k);
+
+                            //  cur: No. seq
+                            //  k: No. family
+                            //  data.seg[k].length / 2: the number of seg rects in current family
+                            //  x: No. seg rect in current family
+                            rect.setAttribute("id", "rect_cath_" + cur + "_" + k + "_" + data.seg[k].length / 2 + "_" + x);
                             rect.onmouseover = function () {
                                 var tmpid = this.id.split("_");
                                 var curid = parseInt(tmpid[2]);
                                 var curk = parseInt(tmpid[3]);
-                                this.classList.add("rect-hover");
-                                document.getElementById("table_gene3d_" + curid + "_" + curk).classList.add("table-hover");
+                                var curtotal = parseInt(tmpid[4])
+                                for (var l = 0; l < curtotal; l++) {
+                                    document.getElementById("rect_cath_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.add("rect-hover");
+                                }
+                                document.getElementById("table_cath_" + curid + "_" + curk + "_" + curtotal).classList.add("table-hover");
                             }
                             rect.onmouseleave = function () {
                                 var tmpid = this.id.split("_");
                                 var curid = parseInt(tmpid[2]);
                                 var curk = parseInt(tmpid[3]);
-                                this.classList.remove("rect-hover");
-                                document.getElementById("table_gene3d_" + curid + "_" + curk).classList.remove("table-hover");
+                                var curtotal = parseInt(tmpid[4])
+                                for (var l = 0; l < curtotal; l++) {
+                                    document.getElementById("rect_cath_" + curid + "_" + curk + "_" + curtotal + "_" + l).classList.remove("rect-hover");
+                                }
+                                document.getElementById("table_cath_" + curid + "_" + curk + "_" + curtotal).classList.remove("table-hover");
                             }
 
-                            var start = data.region[k][0];
-                            var end = data.region[k][1];
-                            var l = seqscanData.length;
+                            var start = data.seg[k][2 * x];
+                            var end = data.seg[k][2 * x + 1];
+                            var l = score[cur].length;
 
                             rect.setAttribute("x", start / l * svglength);
                             rect.setAttribute("width", (end - start) / l * svglength);
 
                             rect.setAttribute("style", "fill: rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");opacity: 0.8;");
                         }
-
-                        // Create the result table
-                        var table = document.createElement("table");
-                        table.classList.add("table");
-                        card.appendChild(table);
-
-                        var thead = document.createElement("thead");
-                        var theadtr = document.createElement("tr");
-                        var th1 = document.createElement("th");
-                        th1.setAttribute("scope", "col");
-                        th1.textContent = '#';
-                        theadtr.appendChild(th1);
-                        var th2 = document.createElement("th");
-                        th2.setAttribute("scope", "col");
-                        th2.textContent = 'Id';
-                        theadtr.appendChild(th2);
-                        var th3 = document.createElement("th");
-                        th3.setAttribute("scope", "col");
-                        th3.textContent = 'Accession';
-                        theadtr.appendChild(th3);
-                        var th4 = document.createElement("th");
-                        th4.setAttribute("scope", "col");
-                        th4.textContent = 'Description';
-                        theadtr.appendChild(th4);
-                        var th5 = document.createElement("th");
-                        th5.setAttribute("scope", "col");
-                        th5.textContent = 'Region';
-                        theadtr.appendChild(th5);
-                        var th6 = document.createElement("th");
-                        th6.setAttribute("scope", "col");
-                        th6.textContent = 'start';
-                        theadtr.appendChild(th6);
-                        var th7 = document.createElement("th");
-                        th7.setAttribute("scope", "col");
-                        th7.textContent = 'end';
-                        theadtr.appendChild(th7);
-                        var th8 = document.createElement("th");
-                        th8.setAttribute("scope", "col");
-                        th8.textContent = 'Ind. E-values';
-                        theadtr.appendChild(th8);
-                        var th9 = document.createElement("th");
-                        th9.setAttribute("scope", "col");
-                        th9.textContent = 'Cond. E-values';
-                        theadtr.appendChild(th9);
-
-                        thead.appendChild(theadtr);
-                        table.appendChild(thead);
-
-                        var tbody = document.createElement("tbody");
-                        table.appendChild(tbody);
-                        for (var k = 0; k < data.id.length; k++) {
-                            var tbodytr = document.createElement("tr");
-                            tbody.appendChild(tbodytr);
-                            tbodytr.setAttribute("id", "table_gene3d_" + cur + "_" + k);
-                            tbodytr.onmouseover = function () {
-                                var tmpid = this.id.split("_");
-                                var curid = parseInt(tmpid[2]);
-                                var curk = parseInt(tmpid[3]);
-                                this.classList.add("table-hover");
-                                document.getElementById("rect_gene3d_" + curid + "_" + curk).classList.add("rect-hover");
-                            }
-                            tbodytr.onpointerleave = function () {
-                                var tmpid = this.id.split("_");
-                                var curid = parseInt(tmpid[2]);
-                                var curk = parseInt(tmpid[3]);
-                                this.classList.remove("table-hover");
-                                document.getElementById("rect_gene3d_" + curid + "_" + curk).classList.remove("rect-hover");
-                            }
-
-                            var tbodyth = document.createElement("th");
-                            tbodytr.appendChild(tbodyth);
-                            tbodyth.setAttribute("scope", "row");
-
-                            var colorbox = document.createElement("span");
-                            tbodyth.appendChild(colorbox);
-                            colorbox.classList.add("color-box");
-                            colorbox.setAttribute("style", "background-color: " + "rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");");
-
-                            var td1 = document.createElement("td");
-                            tbodytr.appendChild(td1);
-                            td1.textContent = data.id[k];
-                            var td2 = document.createElement("td");
-                            tbodytr.appendChild(td2);
-                            td2.textContent = data.accession[k];
-                            var td3 = document.createElement("td");
-                            tbodytr.appendChild(td3);
-                            td3.textContent = data.desciption[k];
-                            var td4 = document.createElement("td");
-                            tbodytr.appendChild(td4);
-                            td4.textContent = data.region[k][0] + "~" + data.region[k][1];
-                            var td5 = document.createElement("td");
-                            tbodytr.appendChild(td5);
-                            td5.textContent = data.start[k];
-                            var td6 = document.createElement("td");
-                            tbodytr.appendChild(td6);
-                            td6.textContent = data.end[k];
-                            var td7 = document.createElement("td");
-                            tbodytr.appendChild(td7);
-                            td7.textContent = data.indeval[k];
-                            var td8 = document.createElement("td");
-                            tbodytr.appendChild(td8);
-                            td8.textContent = data.condval[k];
-                        }
                     }
-                });
-            }
-            btn3d.textContent = "Gene3D";
-            gene3dBtnSet.appendChild(btn3d);
 
-            // Add a button to show the 3d result 
-            var btn3dresult = document.createElement('button');
-            btn3dresult.classList.add("btn");
-            btn3dresult.classList.add("btn-secondary");
-            btn3dresult.setAttribute("type", "button");
-            btn3dresult.setAttribute("data-toggle", "collapse");
-            btn3dresult.setAttribute("data-target", "#geneCollapse" + id);
-            btn3dresult.setAttribute("id", "gene_result" + id);
-            btn3dresult.setAttribute("disabled", "");
-            btn3dresult.textContent = "Show";
-            btn3dresult.onclick = function () {
-                var cur = parseInt(this.id.substring(11));
-                var tmp = document.getElementById("gene_result" + cur);
-                tmp.textContent = tmp.textContent == "Show" ? "Hide" : "Show";
-            }
-            gene3dBtnSet.appendChild(btn3dresult);
+                    // -----------------------
+                    // Create the result table
+                    // -----------------------
+                    var table = document.createElement("table");
+                    table.classList.add("table");
+                    card.appendChild(table);
 
-            //////////////////////////////////////////////////
+                    var thead = document.createElement("thead");
+                    var theadtr = document.createElement("tr");
+                    var th1 = document.createElement("th");
+                    th1.setAttribute("scope", "col");
+                    th1.textContent = '#';
+                    theadtr.appendChild(th1);
+                    var th2 = document.createElement("th");
+                    th2.setAttribute("scope", "col");
+                    th2.textContent = 'Id';
+                    theadtr.appendChild(th2);
+                    var th3 = document.createElement("th");
+                    th3.setAttribute("scope", "col");
+                    th3.textContent = 'Accession';
+                    theadtr.appendChild(th3);
+                    var th4 = document.createElement("th");
+                    th4.setAttribute("scope", "col");
+                    th4.textContent = 'Description';
+                    theadtr.appendChild(th4);
+                    var th5 = document.createElement("th");
+                    th5.setAttribute("scope", "col");
+                    th5.textContent = 'Region';
+                    theadtr.appendChild(th5);
+                    var th8 = document.createElement("th");
+                    th8.setAttribute("scope", "col");
+                    th8.textContent = 'Ind. E-values';
+                    theadtr.appendChild(th8);
+                    var th9 = document.createElement("th");
+                    th9.setAttribute("scope", "col");
+                    th9.textContent = 'Cond. E-values';
+                    theadtr.appendChild(th9);
+
+                    thead.appendChild(theadtr);
+                    table.appendChild(thead);
+
+                    var tbody = document.createElement("tbody");
+                    table.appendChild(tbody);
+                    for (var k = 0; k < data.id.length; k++) {
+                        var tbodytr = document.createElement("tr");
+                        tbody.appendChild(tbodytr);
+                        // cur: No. seq
+                        // k: No. family
+                        // data.seg[k].length / 2: the numbe of seg rects in current family
+                        tbodytr.setAttribute("id", "table_cath_" + cur + "_" + k + "_" + data.seg[k].length / 2);
+                        tbodytr.onmouseover = function () {
+                            var tmpid = this.id.split("_");
+                            var curid = parseInt(tmpid[2]);
+                            var curk = parseInt(tmpid[3]);
+                            var curtotal = parseInt(tmpid[4])
+                            this.classList.add("table-hover");
+                            for (var x = 0; x < curtotal; x++) {
+                                document.getElementById("rect_cath_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.add("rect-hover");
+                            }
+                        }
+                        tbodytr.onpointerleave = function () {
+                            var tmpid = this.id.split("_");
+                            var curid = parseInt(tmpid[2]);
+                            var curk = parseInt(tmpid[3]);
+                            var curtotal = parseInt(tmpid[4])
+                            this.classList.remove("table-hover");
+                            for (var x = 0; x < curtotal; x++) {
+                                document.getElementById("rect_cath_" + curid + "_" + curk + "_" + curtotal + "_" + x).classList.remove("rect-hover");
+                            }
+                        }
+
+                        var tbodyth = document.createElement("th");
+                        tbodytr.appendChild(tbodyth);
+                        tbodyth.setAttribute("scope", "row");
+
+                        var colorbox = document.createElement("span");
+                        tbodyth.appendChild(colorbox);
+                        colorbox.classList.add("color-box");
+                        colorbox.setAttribute("style", "background-color: " + "rgb(" + r[k] + ", " + g[k] + ", " + b[k] + ");");
+
+                        var td1 = document.createElement("td");
+                        tbodytr.appendChild(td1);
+                        td1.textContent = data.id[k];
+                        var td2 = document.createElement("td");
+                        tbodytr.appendChild(td2);
+                        td2.textContent = data.accession[k];
+                        var td3 = document.createElement("td");
+                        tbodytr.appendChild(td3);
+                        td3.textContent = data.desciption[k];
+                        var td4 = document.createElement("td");
+                        tbodytr.appendChild(td4);
+                        for (var x = 0; x < data.seg[k].length / 2; x++) {
+                            td4.textContent += data.seg[k][2 * x] + '~' + data.seg[k][2 * x + 1];
+                            if (x != data.seg[k].length / 2 - 1) td4.textContent += " | ";
+                        }
+                        var td7 = document.createElement("td");
+                        tbodytr.appendChild(td7);
+                        td7.textContent = data.indeval[k];
+                        var td8 = document.createElement("td");
+                        tbodytr.appendChild(td8);
+                        td8.textContent = data.condval[k];
+                    }
+                }
+            })
+
+            // ===================================
+            // Create DEEPDOM Collapse Components
+            // ===================================
+            var deepdomCard = document.createElement("div");
+            container.appendChild(deepdomCard);
+            deepdomCard.classList.add("card");
+            deepdomCard.classList.add("mb-3");
+
+            var deepdomHeader = document.createElement("div");
+            deepdomCard.appendChild(deepdomHeader);
+            deepdomHeader.classList.add("card-header");
+            deepdomHeader.setAttribute("id", "deepdom_heading_" + id);
+
+            var deepdomHeaderH2 = document.createElement("h2");
+            deepdomHeader.appendChild(deepdomHeaderH2);
+            deepdomHeaderH2.classList.add("mb-0");
+
+            var deepdombutton = document.createElement("button");
+            deepdomHeaderH2.appendChild(deepdombutton);
+            deepdombutton.classList.add("btn");
+            deepdombutton.classList.add("btn-link");
+            deepdombutton.setAttribute("data-toggle", "collapse");
+            deepdombutton.setAttribute("data-target", "#deepdom_" + id);
+            deepdombutton.textContent = "DEEPDOM";
+
+            var deepdomContent = document.createElement("div");
+            deepdomCard.appendChild(deepdomContent);
+            deepdomContent.classList.add("collapse");
+            deepdomContent.setAttribute("id", "deepdom_" + id);
+
+            var deepdomContentBody = document.createElement("div");
+            deepdomContent.appendChild(deepdomContentBody);
+            deepdomContentBody.classList.add("card-body");
+            deepdomContentBody.setAttribute("id", "deepdom_content_" + id);
+
+            // ----------------------------------------------------
             //Add reset-zoom, pan-switch, drag-switch, print button
+            // ----------------------------------------------------
             var chartBtnSet = document.createElement('div');
+            deepdomContentBody.appendChild(chartBtnSet);
             chartBtnSet.classList.add("btn-group");
             chartBtnSet.classList.add("btn-group-sm");
             chartBtnSet.classList.add("float-right");
-            chartBtnSet.classList.add("mt-2");
+            chartBtnSet.classList.add("mb-2");
 
             var btnReset = document.createElement('button');
+            chartBtnSet.appendChild(btnReset);
             btnReset.classList.add("btn");
-            btnReset.classList.add("btn-secondary");
+            btnReset.classList.add("btn-primary");
             btnReset.setAttribute("type", "button");
             btnReset.setAttribute("id", "resetZoom" + id);
             btnReset.onclick = function () {
@@ -918,8 +677,9 @@
             btnReset.textContent = "Reset Zoom";
 
             var btnPan = document.createElement('button');
+            chartBtnSet.appendChild(btnPan);
             btnPan.classList.add("btn");
-            btnPan.classList.add("btn-secondary");
+            btnPan.classList.add("btn-primary");
             btnPan.setAttribute("type", "button");
             btnPan.setAttribute("id", "pan-switch" + id);
             btnPan.onclick = function () {
@@ -940,8 +700,9 @@
             btnPan.textContent = "Disable Pan";
 
             var btnDrag = document.createElement('button');
+            chartBtnSet.appendChild(btnDrag);
             btnDrag.classList.add("btn");
-            btnDrag.classList.add("btn-secondary");
+            btnDrag.classList.add("btn-primary");
             btnDrag.setAttribute("type", "button");
             btnDrag.setAttribute("id", "drag-switch" + id);
             btnDrag.onclick = function () {
@@ -962,8 +723,9 @@
             btnDrag.textContent = "Enable drag mode";
 
             var btnShot = document.createElement('button');
+            chartBtnSet.appendChild(btnShot);
             btnShot.classList.add("btn");
-            btnShot.classList.add("btn-secondary");
+            btnShot.classList.add("btn-primary");
             btnShot.setAttribute("type", "button");
             btnShot.setAttribute("id", "screenShot" + id);
             btnShot.onclick = function () {
@@ -976,53 +738,16 @@
             };
             btnShot.textContent = "Print";
 
-            chartBtnSet.appendChild(btnReset);
-            chartBtnSet.appendChild(btnPan);
-            chartBtnSet.appendChild(btnDrag);
-            chartBtnSet.appendChild(btnShot);
-
-            container.appendChild(chartBtnSet);
-
-            //////////////////////////////////////////////////
-
+            // -----------
             // draw chart
-            var div = document.createElement("div");
-            div.classList.add('chart-container');
+            // -----------
+            var chartContainer = document.createElement("div");
+            deepdomContentBody.appendChild(chartContainer);
+            chartContainer.classList.add('chart-container');
 
-            var canvas = document.createElement("canvas");
-            div.appendChild(canvas);
-            container.appendChild(div);
+            var chartCanvas = document.createElement("canvas");
+            chartContainer.appendChild(chartCanvas);
 
-            var collapseDiv = document.createElement("div");
-            collapseDiv.classList.add("collapse");
-            collapseDiv.classList.add("multi-collapse");
-            collapseDiv.classList.add("mb-4");
-            collapseDiv.setAttribute("id", "familyCollapse" + id);
-            var cardfamily = document.createElement("div");
-            cardfamily.classList.add("card");
-            cardfamily.classList.add("card-body");
-            cardfamily.setAttribute("id", "cardfamily" + id);
-            collapseDiv.appendChild(cardfamily);
-            container.appendChild(collapseDiv);
-
-            var collapseDiv2 = document.createElement("div");
-            collapseDiv2.classList.add("collapse");
-            collapseDiv2.classList.add("multi-collapse");
-            collapseDiv2.classList.add("mb-4");
-            collapseDiv2.setAttribute("id", "geneCollapse" + id);
-            var card3d = document.createElement("div");
-            card3d.classList.add("card");
-            card3d.classList.add("card-body");
-            card3d.setAttribute("id", "card3d" + id);
-            collapseDiv2.appendChild(card3d);
-            container.appendChild(collapseDiv2);
-
-            var hr = document.createElement("hr");
-            if (i < idList.length - 1) container.appendChild(hr);
-
-            mainContainer.appendChild(container);
-
-            ///////////////////////////////////////////////////
             var xAxis = [];
             for (var j = 0; j <= score[id].length; j++) xAxis[j] = j + " : " + seq[id][j];
             // for (var j = 0; j <= score[this.id].length; j++) xAxis[j] = j;
@@ -1067,14 +792,14 @@
                 }]
             }
 
-            var ctx = canvas.getContext('2d');
+            var ctx = chartCanvas.getContext('2d');
             window.myline[id] = new Chart(ctx, {
                 type: 'line',
                 data: chartData,
                 options: {
                     responsive: true,
                     title: {
-                        display: true,
+                        display: false,
                         text: names[id]
                     },
                     legend: {
@@ -1150,11 +875,15 @@
             panOptions.pan.enabled = !panOptions.pan.enabled;
             chart.update();
         }
-        // enable each popover
-        $('[data-toggle="popover"]').popover();
 
+        $('[data-toggle="popover"]').popover(); // enable each popover
 
-        //Add list to side bar
+        // ++++++++++++++++++++++++++
+        // ++++++++++++++++++++++++++
+        // Update a list to side nav bar
+        // ++++++++++++++++++++++++++
+        // ++++++++++++++++++++++++++
+
         var listGroup = document.getElementById("barList");
         for (var i = 0; i < idList.length; i++) {
             var id = idList[i];
@@ -1163,12 +892,12 @@
             a.textContent = names[id];
             a.classList.add("list-group-item");
             a.classList.add("list-group-item-action");
-            a.classList.add("list-group-item-secondary");
+            a.classList.add("list-group-item-primary");
             a.setAttribute("style", "font-size: 10px;");
             a.setAttribute("id", "goto" + id);
             a.onclick = function () {
                 var cur = parseInt(this.id.substring(4));
-                var element = document.querySelector("#resetZoom" + cur);
+                var element = document.querySelector("#query_header_" + cur);
                 var actualTop = element.offsetTop;
                 var current = element.offsetParent;
                 while (current !== null) {
@@ -1176,7 +905,7 @@
                     current = current.offsetParent;
                 }
                 window.scrollTo({
-                    top: actualTop - document.documentElement.clientHeight / 4,
+                    top: actualTop - document.documentElement.clientHeight / 6,
                     behavior: "smooth"
                 });
             };
@@ -1191,11 +920,6 @@
             document.getElementById("mySidenav").style.width = '0';
         }
     });
-
-    // $('.reset-select').click(function () {
-    //     $('.selectpicker').selectpicker('deselectAll');
-    //     $('.selectpicker').selectpicker('refresh');
-    // });
 
     window.onscroll = function () { scrollFunction() };
 
@@ -1246,7 +970,7 @@
         width: 50px;
         text-align: center;
         padding-top: 20px;
-        background-color: #6c757d;
+        background-color: blue;
         border-radius: 20%;
         overflow: hidden;
     }
@@ -1292,7 +1016,7 @@
         text-align: center;
         padding-top: 15px;
         padding-right: 10px;
-        background-color: #6c757d;
+        background-color: blue;
         border-radius: 20%;
         overflow: hidden;
     }
@@ -1314,7 +1038,7 @@
         z-index: 1;
         top: 0;
         left: 0;
-        background-color: #6c757d;
+        background-color: #b8daff;
         overflow-x: hidden;
         transition: 0.5s;
         padding-top: 60px;
@@ -1337,8 +1061,8 @@
     .sidenav .closebtn {
         position: absolute;
         top: 0;
-        right: 25px;
-        font-size: 36px;
+        right: 15px;
+        font-size: 30px;
         margin-left: 50px;
     }
 
@@ -1366,11 +1090,6 @@
     .table-hover {
         background: rgb(231, 209, 209);
         opacity: 0.8;
-    }
-
-    hr {
-        size: 3;
-        color: blue;
     }
 </style>
 
