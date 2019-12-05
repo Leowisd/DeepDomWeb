@@ -155,10 +155,14 @@ schedule.scheduleJob(rule, function () {
 
 							workprecessor4.on('exit', function (code) {
 								// copy the result to CATH results file
-								var cdata = fs.readFileSync('data/tmp/' + job.id + '.crh.csv');
+								var cdata = fs.readFileSync('data/tmp/' + job.id + '.csv');
 								fs.writeFileSync('data/CATH/' + job.id + '_CATH.csv', cdata);
 								// clean tmp files
 								fs.unlink('data/tmp/' + job.id + '.crh', function (err) {
+									if (err)
+										console.error(err);
+								});
+								fs.unlink('data/tmp/' + job.id + '.csv', function (err) {
 									if (err)
 										console.error(err);
 								});

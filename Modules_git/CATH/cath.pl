@@ -26,3 +26,6 @@ system "./Modules/CATH/cath-resolve-hits --min-dc-hmm-coverage=80 --worst-permis
 
 print "Assign CATH superfamilies to the output file\n";
 system "python Modules/CATH/assign_cath_superfamilies.py data/tmp/$file.crh";
+
+print "Add des in csv\n";
+system "python Modules/CATH/des_addon.py data/tmp/$file.crh.csv Modules/CATH/cath_release/CathNames.txt";

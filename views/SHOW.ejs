@@ -212,7 +212,7 @@
                 // console.log(data);
                 var cur = data.numberId;
                 var card = document.getElementById("scop_content_" + cur);
-                if (data == undefined || data.superfamily[0] == '-') {
+                if (data.superfamily == undefined || data.superfamily[0] == '-') {
                     card.classList.add("text-center");
                     card.textContent = "No Result";
                 }
@@ -378,7 +378,7 @@
                         var sp_a = document.createElement("a");
                         td1.appendChild(sp_a);
                         sp_a.setAttribute("href", "http://supfam.org/SUPERFAMILY/cgi-bin/scop.cgi?sunid=" + data.scopspfamID[k]);
-                        sp_a.setAttribute("target", "scop_superfamily");
+                        sp_a.setAttribute("target", "scop_superfamily_" + cur + '_' + k);
                         sp_a.textContent = data.spfamName[k];
 
                         var td2 = document.createElement("td");
@@ -391,7 +391,7 @@
                         var fam_a = document.createElement("a");
                         td3.appendChild(fam_a);
                         fam_a.setAttribute("href", "http://supfam.org/SUPERFAMILY/cgi-bin/scop.cgi?sunid=" + data.family[k]);
-                        fam_a.setAttribute("target", "scop_family");
+                        fam_a.setAttribute("target", "scop_family_" + cur + '_' + k);
                         fam_a.textContent = data.famName[k];
 
                         var td4 = document.createElement("td");
@@ -410,7 +410,7 @@
                         var close_a = document.createElement("a");
                         td6.appendChild(close_a);
                         close_a.setAttribute("href", "http://supfam.org/SUPERFAMILY/cgi-bin/scop.cgi?sunid=" + data.closeID[k]);
-                        close_a.setAttribute("target", "scop_close_structure");
+                        close_a.setAttribute("target", "scop_close_structure_" + cur + '_' + k);
                         close_a.textContent = data.closeName[k];
                     }
                 }
@@ -453,7 +453,10 @@
             cathContentBody.setAttribute("id", "cath_content_" + id);
 
             var cathURL = "/process/cath/:" + jobId;
-            var cathData = { queryName: names[id], queryNo: id };
+            var cathData = { 
+                queryName: names[id], 
+                queryNo: id 
+            };
             $.post(cathURL, cathData, function (data, status) {
                 // console.log(data);
                 var cur = data.numberId;
@@ -554,11 +557,11 @@
                     theadtr.appendChild(th1);
                     var th2 = document.createElement("th");
                     th2.setAttribute("scope", "col");
-                    th2.textContent = 'Family ID';
+                    th2.textContent = 'Fam. ID';
                     theadtr.appendChild(th2);
                     var th3 = document.createElement("th");
                     th3.setAttribute("scope", "col");
-                    th3.textContent = 'Family Accession';
+                    th3.textContent = 'Fam. Accession';
                     theadtr.appendChild(th3);
                     var th4 = document.createElement("th");
                     th4.setAttribute("scope", "col");
@@ -570,11 +573,11 @@
                     theadtr.appendChild(th5);
                     var th8 = document.createElement("th");
                     th8.setAttribute("scope", "col");
-                    th8.textContent = 'Domain Ind. E-values';
+                    th8.textContent = 'Dom. Ind. E-values';
                     theadtr.appendChild(th8);
                     var th9 = document.createElement("th");
                     th9.setAttribute("scope", "col");
-                    th9.textContent = 'Domain Cond. E-values';
+                    th9.textContent = 'Dom. Cond. E-values';
                     theadtr.appendChild(th9);
 
                     thead.appendChild(theadtr);
@@ -621,10 +624,22 @@
 
                         var td1 = document.createElement("td");
                         tbodytr.appendChild(td1);
-                        td1.textContent = data.id[k];
+                        var fam_a = document.createElement("a");
+                        td1.appendChild(fam_a);
+                        fam_a.setAttribute("href", "http://www.cathdb.info/version/latest/domain/" + data.id[k]);
+                        fam_a.setAttribute("target", "CATH_family_" + cur + '_' + k);
+                        fam_a.textContent = data.id[k];
+
                         var td2 = document.createElement("td");
                         tbodytr.appendChild(td2);
-                        td2.textContent = data.accession[k];
+                        // td2.textContent = data.accession[k];
+                        var ass_a = document.createElement("a");
+                        td2.appendChild(ass_a);
+                        ass_a.setAttribute("href", "http://www.cathdb.info/version/v4_2_0/superfamily/" + data.accession[k]);
+                        ass_a.setAttribute("target", "CATH_superfamily_" + cur + '_' + k);
+                        ass_a.textContent = data.accession[k];
+
+
                         var td3 = document.createElement("td");
                         tbodytr.appendChild(td3);
                         td3.textContent = data.desciption[k];
@@ -899,6 +914,28 @@
             var panOptions = chart.options.plugins.zoom;
             panOptions.pan.enabled = !panOptions.pan.enabled;
             chart.update();
+
+
+            // =======================================
+            // Calculate which method is more accurate
+            // =======================================
+            var calData ={
+                queryName: names[id], 
+                queryNo: id
+            }
+            var calURL = "/process/comparison/:" + jobId;
+            $.post(calURL, calData, function(data, status){
+                if (data.method == 'scop'){
+                    $('#scop_' + data.id).collapse('show');
+                }
+                else if (data.method == 'cath'){
+                    $('#cath_' + data.id).collapse('show');
+                }
+                else if (data.method == 'deepdom'){
+                    $('#deepdom_' + data.id).collapse('show');
+                }
+            })
+            
         }
 
         $('[data-toggle="popover"]').popover(); // enable each popover

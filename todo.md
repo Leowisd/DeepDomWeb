@@ -83,9 +83,12 @@ todo: ~~解决两个子进程的顺序问题~~
 * ~~SCOP 完成~~
 * ~~CATH 完成~~
 * ~~DEEPDOM 完成~~
+* ~~自动显示结果最佳匹配~~
 
 ### sciprts plugins
-* ~~增加SCOP~~和CATH结果domain ID对应的名称，同时添加外联接
+* ~~增加SCOP和CATH结果domain ID对应的名称，同时添加外联接~~
+* 
+* ~~new script CATH/des_addon.py~~
 
 
 ### ADD USER MAP AND STATISTIC ON INDEX PAGE
