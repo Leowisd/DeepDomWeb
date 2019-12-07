@@ -92,6 +92,8 @@ todo: ~~解决两个子进程的顺序问题~~
 
 
 ### ADD USER MAP AND STATISTIC ON INDEX PAGE
+* ~~在首页设置map，控制点呼吸~~
+* 根据用户ip自动转换成坐标，于首页显示
 
 ### ADD PAGE INSTRUCTION FUNCTION ON EACH PAGE
 

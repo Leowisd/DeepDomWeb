@@ -1,8 +1,30 @@
 <% include partials/header %>
 
+<style>
+  html {
+    height: 100%;
+  }
+
+  body {
+    height: 100%;
+  }
+
+  #map {
+    position: absolute;
+    height: 90%;
+    width: 100%;
+  }
+
+
+  #welcomeCard {
+    position: relative;
+    z-index: 1;
+    top: 25%;
+  }
+</style>
+
 <nav class="navbar navbar-expand-md navbar-dark bg-primary">
   <div class="container col-12 col-lg-8">
-
     <a class="navbar-brand" href="">DeepDom</a>
     <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,27 +46,82 @@
   </div>
 </nav>
 
-<div class="container border shadow-lg">
+<div id="map"></div>
+
+<div class="container border shadow-lg col-lg-4" id="welcomeCard">
   <div class="row">
     <div class="col-lg-12">
       <div class="content text-center">
-        <h1 class="display-2">DeepDom</h1>
-        <p>Protein domain boundary prediction is usually an early step to understand protein function and structure.
-          Most of the current computational domain boundary prediction methods suffer from low accuracy and limitation
-          in handling multi-domain types, or even cannot be applied on certain targets such as proteins with
-          discontinuous domain. We developed an ab-initio protein domain predictor using a stacked bidirectional LSTM
-          model in deep learning. Our model is trained by a large amount of protein sequences without using feature
-          engineering such as sequence profiles. Hence, the predictions using our method is much faster than others, and
-          the trained model can be applied to any type of target proteins without constraint. We evaluated DeepDom by a
-          10-fold cross validation and also by applying it on targets in different categories from CASP 8 and CASP 9.
-          The comparison with other methods has shown that DeepDom outperforms most of the current ab-initio methods and
-          even achieves better results than the top-level template-based method in certain cases.</p>
+        <h1 class="display-4">DeepDomEX</h1>
+        <p>
+            An ab-initio method for protein domain boundary prediction
+        </p>
         <hr>
-        <a href="/upload" class="btn btn-secondary btn-lg mb-3" role="button" aria-pressed="true"><i
+        <a href="/upload" class="btn btn-primary btn-lg mb-3" role="button" aria-pressed="true"><i
             class="fa fa-paw fa-fw"></i>Get Prediction!</a>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  var map = new Datamap({
+    element: document.getElementById("map"),
+    geographyConfig: {
+      popupOnHover: false,
+      highlightOnHover: false
+    },
+    fills: {
+      defaultFill: '#ccc',
+      B: 'blue'
+    }
+  })
+  bubbles_list = [
+    {
+      name: 1,
+      fillKey: 'B',
+      latitude: 31.883356,
+      longitude: 118.936904
+    },
+    {
+      name: 2,
+      fillKey: 'B',
+      latitude: 38.620151,
+      longitude: -121.352639
+    },
+    {
+      name: 3,
+      fillKey: 'B',
+      latitude: 36.705057,
+      longitude: -76.052632
+    },
+    {
+      name: 4,
+      fillKey: 'B',
+      latitude: 38.917621,
+      longitude: -92.309236
+    }
+  ];
+
+  map.addPlugin("fadingBubbles", fadingBubbles);
+
+  drawBubbles = function (data) {
+    data.forEach(function (datum, index) {
+
+      setTimeout(function () {
+
+        map.fadingBubbles([datum]);
+
+      }, index * 100);
+
+    });
+  }
+
+  drawBubbles(bubbles_list);
+  var sleep = (bubbles_list.length - 1) * 1000;
+  setInterval(function () {
+    drawBubbles(bubbles_list);
+  }, sleep);
+</script>
 
 <% include partials/footer %>
