@@ -23,6 +23,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs/example"><i class="fas fa-envelope-open-text"></i> Example </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -83,7 +86,7 @@
     // Analysis deepdom results' data
     // ++++++++++++++++++++++++++++++++++
     // ++++++++++++++++++++++++++++++++++
-    
+
     var tmpScore = "<%= scores %>";
     score = tmpScore.split(',');
     for (var i = 0; i < score.length; i++) {
@@ -95,6 +98,7 @@
     // console.log(score);
 
     var tmpNames = "<%= names %>";
+    // console.log(tmpNames);
     var names = tmpNames.split(',');
     for (var i = 0; i < names.length; i++) {
         names[i] = '>' + names[i].substring(4);
@@ -327,7 +331,7 @@
                     th6.textContent = 'Segments';
                     theadtr.appendChild(th6);
                     var th7 = document.createElement("th");
-                    th7.setAttribute("scop","col");
+                    th7.setAttribute("scop", "col");
                     th7.textContent = 'Close Structure'
                     theadtr.appendChild(th7);
                     thead.appendChild(theadtr);
@@ -453,9 +457,9 @@
             cathContentBody.setAttribute("id", "cath_content_" + id);
 
             var cathURL = "/process/cath/:" + jobId;
-            var cathData = { 
-                queryName: names[id], 
-                queryNo: id 
+            var cathData = {
+                queryName: names[id],
+                queryNo: id
             };
             $.post(cathURL, cathData, function (data, status) {
                 // console.log(data);
@@ -919,23 +923,23 @@
             // =======================================
             // Calculate which method is more accurate
             // =======================================
-            var calData ={
-                queryName: names[id], 
+            var calData = {
+                queryName: names[id],
                 queryNo: id
             }
             var calURL = "/process/comparison/:" + jobId;
-            $.post(calURL, calData, function(data, status){
-                if (data.method == 'scop'){
+            $.post(calURL, calData, function (data, status) {
+                if (data.method == 'scop') {
                     $('#scop_' + data.id).collapse('show');
                 }
-                else if (data.method == 'cath'){
+                else if (data.method == 'cath') {
                     $('#cath_' + data.id).collapse('show');
                 }
-                else if (data.method == 'deepdom'){
+                else if (data.method == 'deepdom') {
                     $('#deepdom_' + data.id).collapse('show');
                 }
             })
-            
+
         }
 
         $('[data-toggle="popover"]').popover(); // enable each popover

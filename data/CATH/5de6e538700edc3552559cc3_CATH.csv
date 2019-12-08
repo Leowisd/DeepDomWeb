@@ -1,2 +1,0 @@
-#domain_id,cath-superfamily,query-id,match-id,score,boundaries,resolved,aligned-regions,cond-evalue,indp-evalue,description
-3t5qG01,1.10.150.550,T0529_2_7-339,3t5qG01-i2,72.3,9-86,9-86,"1-19,9-27;23-44,28-49;45-78,52-85",2.4e-24,2.4e-17,"Arenavirus nucleocapsid protein, head domain"

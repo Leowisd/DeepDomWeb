@@ -28,12 +28,16 @@ router.get("/upload/:id", function (req, res) {
 	jobId = jobId.substr(1); // delete the ':'
 
 	var flag = 0;
+	var number = taskList.length;
 	jobInfo.find({ _id: jobId }, function (err, docs) {
 		if (docs.length > 0)
 			if (docs[0].status === 'Done') {
 				flag = 1;
 			}
-		res.render("JOBINFO", { jobId: jobId, flag: flag });
+			else if (docs[0].status === 'Processing'){
+				flag = -1;
+			}
+		res.render("JOBINFO", { jobId: jobId, flag: flag, number: number });
 	});
 });
 
@@ -47,7 +51,7 @@ router.post("/upload/sequence", function (req, res) {
 		nickName: nickName,
 		sequence: sequence,
 		email: email,
-		status: "uploaded",
+		status: "queued",
 		// submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
 		submittedTime: moment().utcOffset("-06:00").format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)
@@ -169,7 +173,7 @@ router.post("/upload/file", function (req, res) {
 	var job = new jobInfo({
 		nickName: nickName,
 		email: email,
-		status: "uploaded",
+		status: "queued",
 		// submittedTime: sd.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
 		submittedTime: moment().utcOffset("-06:00").format('YYYY-MM-DD HH:mm:ss'),
 		ipAddress: get_client_ip(req)

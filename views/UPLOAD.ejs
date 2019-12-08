@@ -21,8 +21,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jobs/example"><i class="fas fa-envelope-open-text"></i> Example </a>
+                </li>
             </ul>
         </div>
+        <button class="btn btn-sm btn-outline-light my-2 my-sm-0" href="javascript:void(0);"
+            onclick="javascript:introJs().start();">HELP</button>
     </div>
 </nav>
 
@@ -39,11 +44,11 @@
 
 <div class="container border rounded shadow-lg">
     <ul class="nav nav-pills mb-3 pt-3" id="pills-tab" role="tablist">
-        <li class="nav-item">
+        <li class="nav-item" data-step="1" data-intro="Paste your sequences here to predict.">
             <a class="nav-link active" id="pills-Sequence-tab" data-toggle="pill" href="#pills-Sequence" role="tab"
                 aria-controls="pills-Sequence" aria-selected="true">Sequence</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-step="2" data-intro="Upload your sequences file to predict">
             <a class="nav-link" id="pills-File-tab" data-toggle="pill" href="#pills-File" role="tab"
                 aria-controls="pills-File" aria-selected="false">File</a>
         </li>
@@ -72,13 +77,14 @@
                         <label for="emailInput1"> Email address</label>
                         <input type="email" class="form-control" id="emailInput1" name="emailInput1"
                             aria-describedby="emailHelp1" placeholder="Enter email">
-                        <small id="emailHelp1" class="form-text text-muted">Optional (We'll never share your email with anyone
+                        <small id="emailHelp1" class="form-text text-muted">Optional (We'll never share your email with
+                            anyone
                             else)</small>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary submitBtn">Submit</button>
                 <button type="reset" class="btn btn-secondary">Reset</button>
-                <input type="button" id="sample" class="btn btn-secondary" value="Sample"/>
+                <input type="button" id="sample" class="btn btn-secondary" value="Sample" />
             </form>
         </div>
 
@@ -110,8 +116,9 @@
                         <label for="emailInput2">Email address</label>
                         <input type="email" class="form-control" id="emailInput2" name="emailInput2"
                             aria-describedby="emailHelp2" placeholder="Enter email">
-                        <small id="emailHelp2" class="form-text text-muted">Optional (We'll never share your email with anyone
-                                else)</small>
+                        <small id="emailHelp2" class="form-text text-muted">Optional (We'll never share your email with
+                            anyone
+                            else)</small>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary submitBtn">Submit</button>
@@ -140,8 +147,8 @@
         $('#fileLabel').text('Choose file');
     })
 
-    $('#sample').click(function(){
-        $('#sequenceInput').val('>T0529_2_7-339 364-561\nMSASKEIKSFLWTQSLRRELSGYCSNIKLQVVKDAQALLHGLDFSEVSNVQRLMRKERRDDNDLKRLRDLNQAVNNLVELKSTQQKSILRVGTLTSDDLLILAADLEKLKSKVIRTERPLSAGVYMGNLSSQQLDQRRALLNMIGMSGGNQGARAGRDGVVRVWDVKNAELLNNQFGTMPSLTLACLTKQGQVDLNDAVQALTDLGLIYTAKYPNTSDLDRLTQSHPILNMIDTKKSSLNISGYNFSLGAAVKAGACMLDGGNMLETIKVSPQTMDGILKSILKVKKALGMFISDTPGERNPYENILYKICLSGDGWPYIASRTSITGRAWENTVVDLESDGKPQKADSNNSSKSLQSAGFTAGLTYSQLMTLKDAMLQLDPNAKTWMDIEGRPEDPVEIALYQPSSGCYIHFFREPTDLKQFKQDAKYSHGIDVTDLFATQPGLTSAVIDALPRNMVITCQGSDDIRKLLESQGRKDIKLIDIALSKTDSRKYENAVWDQYKDLCHMHTGVVVEKKKRGGKEEITPHCALMDCIMFDAAVSGGLNTSVLRAVLPRDMVFRTSTPRVVL');
+    $('#sample').click(function () {
+        $('#sequenceInput').val('>T0487_4_1-175\nMNHLGKTEVFLNRFALRPLNPEELRPWRLEVVLDPPPGREEVYPLLAQVARRAGGVTVRMGDGLASWSPPEVLVLEGTLARMGQTYAYRLYPKGRRPLDPKDPGERSVLSALARRLLQERLRRLEGVWVEGLAVYRREHARGPGWRVLGGAVLDLWVSDSGAFLLEVDPAYRILCEMSLEAWLAQGHPLPKRVRNAYDRRTWELLRLGEEDPKELPLPGGLSLLDYHASKGRLQGREGGRVAWVADPKDPRKPIPHLTGLLVPVLTLEDLHEEEGSLALSLPWEERRRRTREIASWIGRRLGLGTPEAVRAQAYRLSIPKLMGRRAVSKPADALRVGFYRAQETALALLRLDGAQGWPEFLRRALLRAFGASGASLRLHTLHAHPSQGLAFREALRKAKEEGVQAVLVLTPPMAWEDRNRLKALLLREGLPSQILNVPLREEERHRWENALLGLLAKAGLQVVALSGAYPAELAVGFDAGGRESFRFGGAACAVGGDGGHLLWTLPEAQAGERIPQEVVWDLLEETLWAFRRKAGRLPSRVLLLRDGRVPQDEFALALEALAREGIAYDLVSVRKSGGGRVYPVQGRLADGLYVPLEDKTFLLLTVHRDFRGTPRPLKLVHEAGDTPLEALAHQIFHLTRLYPASGFAFPRLPAPLHLADRLVKEVGRLGIRHLKEVDREKLFFV');
         $('#nickName1').val('Example Case');
         $('#emailInput1').val('examplecase@deepdom.com');
     })

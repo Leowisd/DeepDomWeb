@@ -35,6 +35,14 @@ schedule.scheduleJob(rule, function () {
 			if (err)
 				console.error(err);
 			else {
+				var updates = { $set: { status: 'Processing' } };
+				jobInfo.updateOne({ _id: job.id }, updates, function (err, job) {
+					if (err) {
+						console.log(err);
+					}
+					else console.log("Job status changed...");
+				});
+
 				// run the convert file script
 				console.log("Data convert ready...");
 				var arg1 = 'data/upload/' + job.file;
