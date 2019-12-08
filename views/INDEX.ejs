@@ -54,7 +54,7 @@
       <div class="content text-center">
         <h1 class="display-4">DeepDomEX</h1>
         <p>
-            An ab-initio method for protein domain boundary prediction
+          An ab-initio method for protein domain boundary prediction
         </p>
         <hr>
         <a href="/upload" class="btn btn-primary btn-lg mb-3" role="button" aria-pressed="true"><i
@@ -76,32 +76,6 @@
       B: 'blue'
     }
   })
-  bubbles_list = [
-    {
-      name: 1,
-      fillKey: 'B',
-      latitude: 31.883356,
-      longitude: 118.936904
-    },
-    {
-      name: 2,
-      fillKey: 'B',
-      latitude: 38.620151,
-      longitude: -121.352639
-    },
-    {
-      name: 3,
-      fillKey: 'B',
-      latitude: 36.705057,
-      longitude: -76.052632
-    },
-    {
-      name: 4,
-      fillKey: 'B',
-      latitude: 38.917621,
-      longitude: -92.309236
-    }
-  ];
 
   map.addPlugin("fadingBubbles", fadingBubbles);
 
@@ -117,11 +91,14 @@
     });
   }
 
-  drawBubbles(bubbles_list);
-  var sleep = (bubbles_list.length - 1) * 1000;
-  setInterval(function () {
+  var bubblesURL = "/process/location/"
+  $.get(bubblesURL, function (bubbles_list, status) {
     drawBubbles(bubbles_list);
-  }, sleep);
+    var sleep = (bubbles_list.length - 1) * 1000;
+    setInterval(function () {
+      drawBubbles(bubbles_list);
+    }, sleep);
+  })
 </script>
 
 <% include partials/footer %>

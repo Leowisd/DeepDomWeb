@@ -93,7 +93,7 @@ todo: ~~解决两个子进程的顺序问题~~
 
 ### ADD USER MAP AND STATISTIC ON INDEX PAGE
 * ~~在首页设置map，控制点呼吸~~
-* 根据用户ip自动转换成坐标，于首页显示
+* ~~根据用户ip自动转换成坐标，于首页显示(新用户使用时自动添加坐标信息到数据库，首页直接读取数据库内容再显示)~~
 
 ### ADD PAGE INSTRUCTION FUNCTION ON EACH PAGE
 
@@ -141,5 +141,7 @@ var jobInfoSchema = new mongoose.Schema({
 
 var userInfoSchema = new mongoose.Schema({
 	ipAddress: String,
-	capacity: Number
+	capacity: Number,
+	lat: Number,
+	lon: Number
 });

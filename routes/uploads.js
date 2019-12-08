@@ -81,6 +81,7 @@ router.post("/upload/sequence", function (req, res) {
 				ipAddress: get_client_ip(req),
 				capacity: fileSize
 			});
+
 			if (user.capacity > maxCapacity) {
 				user.capacity = 0;
 				isEnough = 0;
@@ -93,6 +94,14 @@ router.post("/upload/sequence", function (req, res) {
 					console.log("======================================");
 				}
 			})
+			// ------------------
+			// get user location
+			// ------------------
+			var locURL = "/process/location/";
+			var locData = {ip: get_client_ip(req)};
+			$.post(locURL, locData, function(data, status){
+				console.log("get user location");
+			});
 		}
 		else {
 			if (doc.capacity + fileSize <= maxCapacity) {
@@ -216,6 +225,14 @@ router.post("/upload/file", function (req, res) {
 					console.log("======================================");
 				}
 			})
+			// ------------------
+			// get user location
+			// ------------------
+			var locURL = "/process/location/";
+			var locData = {ip: get_client_ip(req)};
+			$.post(locURL, locData, function(data, status){
+				console.log("get user location");
+			});
 		}
 		else {
 			if (doc.capacity + fileSize <= maxCapacity) {

@@ -1,7 +1,10 @@
 var express = require("express");
 var router = express.Router();
 var fs = require("fs"),
-    csv = require("csvjson");
+    csv = require("csvjson"),
+    request = require('request');
+
+var userInfo = require("../models/userInfo");
 
 router.post("/process/scop/:id", function (req, res) {
     var jobId = req.params.id;
@@ -249,13 +252,13 @@ router.post("/process/cath/:id", function (req, res) {
     }
 })
 
-router.post("/process/comparison/:id", function(req, res){
+router.post("/process/comparison/:id", function (req, res) {
     var jobId = req.params.id;
     jobId = jobId.substr(1);
 
     var id = req.body.queryNo;
     var name = req.body.queryName.substr(1).split(' ')[0];
-    
+
 
     const scopCsvPath = 'data/SCOP/' + jobId + '_SCOP.csv';
     var scopdata = fs.readFileSync(scopCsvPath, { encoding: 'utf8' });
@@ -292,7 +295,7 @@ router.post("/process/comparison/:id", function(req, res){
 
                 sfevalue = [];
                 famevalue = [];
-                
+
                 sfevalue.push(jsonObj[i].evalue);
                 famevalue.push(jsonObj[i].famEvalue);
             }
@@ -303,19 +306,19 @@ router.post("/process/comparison/:id", function(req, res){
         }
     }
 
-    if (isFind == false){
+    if (isFind == false) {
         var jsonTmp = {
             supeval: sfevalue,
             fameval: famevalue,
         }
         scopRes.push(jsonTmp);
     }
-    var scopSupFamVal = scopRes[scopRes.length -1].supeval;
+    var scopSupFamVal = scopRes[scopRes.length - 1].supeval;
     var scopFamVal = scopRes[scopRes.length - 1].fameval;
 
     var scop = 0;
-    if (scopSupFamVal != undefined){
-        for (var i = 0; i < scopSupFamVal.length; i++){
+    if (scopSupFamVal != undefined) {
+        for (var i = 0; i < scopSupFamVal.length; i++) {
             scop += new Number(scopSupFamVal[i]);
         }
         scop /= scopSupFamVal.length;
@@ -373,7 +376,7 @@ router.post("/process/comparison/:id", function(req, res){
         }
     }
 
-    if (isGot == false){
+    if (isGot == false) {
         var jsonTmp = {
             queryID: queryID,
             indeval: indeval,
@@ -384,8 +387,8 @@ router.post("/process/comparison/:id", function(req, res){
     var cathIndVal = cathRes[cathRes.length - 1].indeval;
 
     var cath = 0;
-    if (cathIndVal != undefined){
-        for (var i = 0; i < cathIndVal.length; i++){
+    if (cathIndVal != undefined) {
+        for (var i = 0; i < cathIndVal.length; i++) {
             cath += new Number(cathIndVal[i]);
         }
         cath /= cathIndVal.length;
@@ -396,7 +399,7 @@ router.post("/process/comparison/:id", function(req, res){
     // --------------
     var re = {
         id: id,
-        method : ""
+        method: ""
     }
 
     if (scop > 1e-14 && cath > 1e-14) re.method = 'deepdom';
@@ -404,6 +407,49 @@ router.post("/process/comparison/:id", function(req, res){
     else re.method = 'cath';
     res.send(re);
 })
+
+router.post("/process/location/", function (req, res) {
+    ip = req.body.ip;
+
+    request("http://ip-api.com/json/" + ip + "?lang=EN", { json: true }, (err, res, body) => {
+        if (err) { return console.log(err); }
+        var update = { $set: { lat: body.lat, lon: body.lon } };
+        userInfo.updateOne({ 'ipAddress': body.query }, update, function (err, u) {
+            if (err)
+                console.log(err);
+            else {
+                console.log("User info was updated!");
+                console.log("User location: " + body.lat + ", " + body.lon);
+                console.log("======================================");
+            }
+        });
+    });
+
+});
+
+router.get("/process/location/", function (req, res) {
+    userInfo.find({}, function (err, docs) {
+        if (err) return console.log(err);
+
+        var data = [];
+        if (docs != undefined) {
+            for (var i = 0; i < docs.length; i++) {
+                if (docs[i].lat != undefined) {
+                    var tmp = {
+                        latitude: docs[i].lat,
+                        longitude: docs[i].lon,
+                        name: i,
+                        fillKey: 'B'
+                    }
+                    data.push(tmp);
+                }
+
+            }
+        }
+
+        res.send(data);
+    })
+});
 
 module.exports = router;
 

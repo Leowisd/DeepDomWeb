@@ -32,6 +32,14 @@ router.get("/jobs/all", function (req, res) {
 						console.log("======================================");
 					}
 				})
+				// ------------------
+				// get user location
+				// ------------------
+				var locURL = "/process/location/";
+				var locData = {ip: get_client_ip(req)};
+				$.post(locURL, locData, function (data, status) {
+					console.log("get user location");
+				});
 				res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: 0 });
 			}
 			else res.render("JOBSLIST", { docs: docs, ip: get_client_ip(req), capacity: doc.capacity });
@@ -99,7 +107,7 @@ router.get("/jobs/:id", function (req, res) {
 			scores.length--;
 			// console.log(scores);
 
-			res.render("SHOW", { names: names, scores: scores, seq: seq, file: jobId + '.res', jobId: jobId});
+			res.render("SHOW", { names: names, scores: scores, seq: seq, file: jobId + '.res', jobId: jobId });
 			// fs.readFile('data/results/' + file, function (err, data) {
 			// 	if (err) {
 			// 		return console.log(err);
