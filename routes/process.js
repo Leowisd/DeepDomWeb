@@ -5,6 +5,7 @@ var fs = require("fs"),
     request = require('request');
 
 var userInfo = require("../models/userInfo");
+var jobInfo = require("../models/jobInfo");
 
 router.post("/process/scop/:id", function (req, res) {
     var jobId = req.params.id;
@@ -450,6 +451,26 @@ router.get("/process/location/", function (req, res) {
         res.send(data);
     })
 });
+
+router.get("/process/statistic/users", function (req, res) {
+    userInfo.countDocuments({}, function (err, count) {
+        if (err) console.log(err);
+        var data = {
+            user: count
+        }
+        res.send(data);
+    })
+})
+
+router.get("/process/statistic/querys", function (req, res) {
+    jobInfo.countDocuments({}, function (err, count) {
+        if (err) console.log(err);
+        var data = {
+            querys: count
+        }
+        res.send(data);
+    })
+})
 
 module.exports = router;
 

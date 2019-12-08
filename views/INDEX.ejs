@@ -1,6 +1,10 @@
 <% include partials/header %>
 
 <style>
+  * {
+    font-family: 'Open Sans', sans-serif;
+  }
+
   html {
     height: 100%;
   }
@@ -11,7 +15,7 @@
 
   #map {
     position: absolute;
-    height: 90%;
+    height: 85%;
     width: 100%;
   }
 
@@ -45,6 +49,20 @@
     </div>
   </div>
 </nav>
+
+<div id="carouselExampleSlidesOnly" class="carousel slide carousel-fade" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item">
+      <p class="text-center" id="userNumber"></p>
+    </div>
+    <div class="carousel-item">
+      <p class="text-center" id="queryNumber"></p>
+    </div>
+    <div class="carousel-item active">
+      <p class="text-center"> Welcome to DeepDomEX</p>
+    </div>
+  </div>
+</div>
 
 <div id="map"></div>
 
@@ -99,6 +117,19 @@
       drawBubbles(bubbles_list);
     }, sleep);
   })
+
+
+  var statisticUserURL = '/process/statistic/users';
+  $.get(statisticUserURL, function(data, status){
+    var userNumber = document.getElementById("userNumber");
+    userNumber.textContent = "The number of total user is: " + data.user;
+  });
+
+  var statisticQueryURL = '/process/statistic/querys';
+  $.get(statisticQueryURL, function(data, status){
+    var queryNumber = document.getElementById("queryNumber");
+    queryNumber.textContent = "The number of total querys is: " + data.querys;
+  });
 </script>
 
 <% include partials/footer %>

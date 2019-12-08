@@ -94,6 +94,7 @@ todo: ~~解决两个子进程的顺序问题~~
 ### ADD USER MAP AND STATISTIC ON INDEX PAGE
 * ~~在首页设置map，控制点呼吸~~
 * ~~根据用户ip自动转换成坐标，于首页显示(新用户使用时自动添加坐标信息到数据库，首页直接读取数据库内容再显示)~~
+* ~~首页添加用户信息与查询信息~~
 
 ### ADD PAGE INSTRUCTION FUNCTION ON EACH PAGE
 
@@ -107,26 +108,30 @@ todo: ~~解决两个子进程的顺序问题~~
 
 RESTFUL ROUTES
 
-name                 url                  verb            desc.
+name                 url                  	    verb            desc.
 ==========================================================================
-INDEX               /                     GET         show the landing page
-UPLOAD              /upload               GET         show the upload page
-SEQPROCESS          /upload/sequence      POST        deal with sequence, then redirect
-FILEPROCESS         /upload/file          POST        deal with uploaded file, then redirect
-JOBINFO             /upload/:id           GET         show the current job info to user
+INDEX               /                     		GET         show the landing page
+UPLOAD              /upload               		GET         show the upload page
+SEQPROCESS          /upload/sequence      		POST        deal with sequence, then redirect
+FILEPROCESS         /upload/file          		POST        deal with uploaded file, then redirect
+JOBINFO             /upload/:id           		GET         show the current job info to user
 
-RESULT1             /result/id            POST        get job from database by id, then rediredct to result page
-RESULT2             /result/name          POST        get job from database by nick name, then rediredct to result list
-RESULT3             /result/seq           POST        get job from database by sequence, then rediredct to result list
+RESULT1             /result/id            		POST        get job from database by id, then rediredct to result page
+RESULT2             /result/name          		POST        get job from database by nick name, then rediredct to result list
+RESULT3             /result/seq           		POST        get job from database by sequence, then rediredct to result list
 
-SEARCH              /jobs                 GET         show the page to search jobs
-SHOW                /jobs/:id             GET         show the result
-JOBSLIST            /jobs/all             GET         show all tasks info
-DOWNLOAD			/jobs/download/:id    GET	      download the result file
-DELETE				/jobs/delete/:id	  POST		  delete the selected job
+SEARCH              /jobs                 		GET         show the page to search jobs
+SHOW                /jobs/:id             		GET         show the result
+JOBSLIST            /jobs/all             		GET         show all tasks info
+DOWNLOAD			/jobs/download/:id    		GET	      	download the result file
+DELETE				/jobs/delete/:id	  		POST		delete the selected job
 
-SCOP				/process/scop/:id	  POST		  get current job scop result
-CATH				/process/cath/:id	  POST		  do the gene3D hmmscan of post seq
+SCOP				/process/scop/:id	  		POST		get current job scop result
+CATH				/process/cath/:id	  		POST		do the gene3D hmmscan of post seq
+LOCATION			/process/location/	  		POST		analysis user's location and save in DB
+LOCATION			/process/location/	  		GET		  	return users' locations to index page
+USER_NUMBER			/process/statistic/users	GET			return the number of users
+QUERYS_NUMBER		/process/statistic/querys	GET			return the number of jobs
 
 
 var jobInfoSchema = new mongoose.Schema({
