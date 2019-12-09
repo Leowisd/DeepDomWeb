@@ -12,76 +12,79 @@
     }
 </style>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-primary">
-    <div class="container col-12 col-lg-8">
+<div class="wrapper">
 
-        <a class="navbar-brand" href="/">DeepDom</a>
-        <button class="navbar-toggler ml-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/upload"><i class="fas fa-upload"></i> Upload </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/jobs/example"><i class="fas fa-envelope-open-text"></i> Example </a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+        <div class="container col-12 col-lg-8">
+
+            <a class="navbar-brand" href="/">DeepDom</a>
+            <button class="navbar-toggler ml-3" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload"><i class="fas fa-upload"></i> Upload </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/jobs"><i class="fas fa-search"></i> Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/jobs/all"><i class="fas fa-list"></i> Status </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/jobs/example"><i class="fas fa-envelope-open-text"></i> Example </a>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-sm btn-outline-light my-2 my-sm-0" href="javascript:void(0);"
+                onclick="javascript:introJs().start();">HELP</button>
         </div>
-        <button class="btn btn-sm btn-outline-light my-2 my-sm-0" href="javascript:void(0);"
-            onclick="javascript:introJs().start();">HELP</button>
-    </div>
-</nav>
+    </nav>
 
-<!-- <div class="container"> -->
-<div class="jumbotron jumbotron-fluid text-center">
-    <div class="container">
-        <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
-        <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+    <!-- <div class="container"> -->
+    <div class="jumbotron jumbotron-fluid text-center">
+        <div class="container">
+            <h1 class="display-4"><span class="border-bottom border-dark p-1">DeepDom</span></h1>
+            <p class="lead d-none d-sm-block">An ab-initio method for protein domain boundary prediction</p>
+        </div>
     </div>
-</div>
-<!-- </div> -->
+    <!-- </div> -->
 
-<div class="container" data-step="1" data-intro="Show your current job's status.">
+    <div class="container" data-step="1" data-intro="Show your current job's status.">
 
-    <div class="progress mb-1">
-        <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
-            aria-valuemin="0" aria-valuemax="100"> Uploading </div>
-        <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
-            aria-valuemin="0" aria-valuemax="100"> Queued </div>
-        <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
-            aria-valuemin="0" aria-valuemax="100"> Predicting </div>
-        <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
-            aria-valuemin="0" aria-valuemax="100"> Done </div>
-    </div>
-    <% if (flag == 0){%>
-    <div class="progress">
-        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;"
-            aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    <h1 class="display-4 text-center mt-3"> Queued... </h1>
-    <h5 class="text-center mt-3"> You are the No.<%= number %> in the waiting queue.</h5>
-    <%} else if (flag == 1){%>
-    <div class="progress">
-        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;"
-            aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    <h1 class="display-4 text-center mt-3"> Completed! </h1>
-    <%} else if (flag == -1){%>
-    <div class="progress">
-        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%;"
-            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    <h1 class="display-4 text-center mt-3"> Predicting... </h1>
-    <%}%>
+        <div class="progress mb-1">
+            <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
+                aria-valuemin="0" aria-valuemax="100"> Uploading </div>
+            <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
+                aria-valuemin="0" aria-valuemax="100"> Queued </div>
+            <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
+                aria-valuemin="0" aria-valuemax="100"> Predicting </div>
+            <div class="progress-bar bg-light seperate-bar" role="progressbar" style="width: 25%" aria-valuenow="25"
+                aria-valuemin="0" aria-valuemax="100"> Done </div>
+        </div>
+        <% if (flag == 0){%>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%;"
+                aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <h1 class="display-4 text-center mt-3"> Queued... </h1>
+        <h5 class="text-center mt-3"> You are the No.<%= number %> in the waiting queue.</h5>
+        <%} else if (flag == 1){%>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;"
+                aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <h1 class="display-4 text-center mt-3"> Completed! </h1>
+        <%} else if (flag == -1){%>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%;"
+                aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <h1 class="display-4 text-center mt-3"> Predicting... </h1>
+        <%}%>
 
 </div>
 
@@ -90,13 +93,13 @@
         The job ID is:
     </h5>
     <% if (flag == 0 || flag == -1){%>
-    <center><button class="btn btn-primary btn" id="jobIDOutput" disabled data-step="2"
-            data-intro="If your job has completed, you can click the ID button to jump to result page."><%= jobId %></button>
-    </center>
-    <%} else if (flag == 1){%>
-    <center><a class="btn btn-primary btn" href="/jobs/:<%= jobId %>" id="jobIDOutput" data-step="2"
-            data-intro="Click the ID button to jump to result page."> <%= jobId %></a></center>
-    <%}%>
+        <center><button class="btn btn-primary btn" id="jobIDOutput" disabled data-step="2"
+                data-intro="If your job has completed, you can click the ID button to jump to result page."><%= jobId %></button>
+        </center>
+        <%} else if (flag == 1){%>
+        <center><a class="btn btn-primary btn" href="/jobs/:<%= jobId %>" id="jobIDOutput" data-step="2"
+                data-intro="Click the ID button to jump to result page."> <%= jobId %></a></center>
+        <%}%>
     <center><button class="btn btn-primary btn-sm mt-2 mb-3" id="copyBtn" data-step="3" data-intro="Copy the job ID."> Copy </button></center>
 </div>
 
@@ -126,4 +129,4 @@
     })
 </script>
 
-    <% include partials/footer %>
+<% include partials/footer %>
