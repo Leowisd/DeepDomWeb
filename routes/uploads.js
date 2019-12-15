@@ -101,10 +101,20 @@ router.post("/upload/sequence", function (req, res) {
 			// ------------------
 			// get user location
 			// ------------------
-			var locURL = "/process/location/";
-			var locData = {ip: get_client_ip(req)};
-			$.post(locURL, locData, function(data, status){
-				console.log("get user location");
+			// var locURL = "/process/location/";
+			// var locData = {ip: get_client_ip(req)};
+			request("http://ip-api.com/json/" + get_client_ip(req) + "?lang=EN", { json: true }, (err, res, body) => {
+				if (err) { return console.log(err); }
+				var update = { $set: { lat: body.lat, lon: body.lon } };
+				userInfo.updateOne({ 'ipAddress': body.query }, update, function (err, u) {
+					if (err)
+						console.log(err);
+					else {
+						console.log("User info was updated!");
+						console.log("User location: " + body.lat + ", " + body.lon);
+						console.log("======================================");
+					}
+				});
 			});
 		}
 		else {
@@ -232,10 +242,20 @@ router.post("/upload/file", function (req, res) {
 			// ------------------
 			// get user location
 			// ------------------
-			var locURL = "/process/location/";
-			var locData = {ip: get_client_ip(req)};
-			$.post(locURL, locData, function(data, status){
-				console.log("get user location");
+			// var locURL = "/process/location/";
+			// var locData = {ip: get_client_ip(req)};
+			request("http://ip-api.com/json/" + get_client_ip(req) + "?lang=EN", { json: true }, (err, res, body) => {
+				if (err) { return console.log(err); }
+				var update = { $set: { lat: body.lat, lon: body.lon } };
+				userInfo.updateOne({ 'ipAddress': body.query }, update, function (err, u) {
+					if (err)
+						console.log(err);
+					else {
+						console.log("User info was updated!");
+						console.log("User location: " + body.lat + ", " + body.lon);
+						console.log("======================================");
+					}
+				});
 			});
 		}
 		else {

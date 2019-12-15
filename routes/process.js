@@ -409,24 +409,26 @@ router.post("/process/comparison/:id", function (req, res) {
     res.send(re);
 })
 
-router.post("/process/location/", function (req, res) {
-    ip = req.body.ip;
+// router.post("/process/location/:id", function (req, res) {
+//     // ip = req.body.ip;
+//     var ip = req.params.id;
+// 	ip = ip.substr(1);
+//     console.log("here!");
+//     request("http://ip-api.com/json/" + ip + "?lang=EN", { json: true }, (err, res, body) => {
+//         if (err) { return console.log(err); }
+//         var update = { $set: { lat: body.lat, lon: body.lon } };
+//         userInfo.updateOne({ 'ipAddress': body.query }, update, function (err, u) {
+//             if (err)
+//                 console.log(err);
+//             else {
+//                 console.log("User info was updated!");
+//                 console.log("User location: " + body.lat + ", " + body.lon);
+//                 console.log("======================================");
+//             }
+//         });
+//     });
 
-    request("http://ip-api.com/json/" + ip + "?lang=EN", { json: true }, (err, res, body) => {
-        if (err) { return console.log(err); }
-        var update = { $set: { lat: body.lat, lon: body.lon } };
-        userInfo.updateOne({ 'ipAddress': body.query }, update, function (err, u) {
-            if (err)
-                console.log(err);
-            else {
-                console.log("User info was updated!");
-                console.log("User location: " + body.lat + ", " + body.lon);
-                console.log("======================================");
-            }
-        });
-    });
-
-});
+// });
 
 router.get("/process/location/", function (req, res) {
     userInfo.find({}, function (err, docs) {
