@@ -203,7 +203,8 @@ schedule.scheduleJob(rule, function () {
 										from: 'DeepDom<deepdom.service@gmail.com>',
 										subject: 'DeepDom: Job Infomation',
 										to: job.email,
-										text: 'Your job: ' + job.id + ' has completed!'
+										text: 'Your job: ' + job.id + ' has completed!',
+										html: '<h3>DeepDomEX</h3><br><p> Your job :' + job.id + "has completed!</p>"
 									};
 									transporter.sendMail(mail, function (error, info) {
 										if (error) return console.log(error);

@@ -1,5 +1,5 @@
 var express = require("express");
-var router = express.Router({mergeParams: true});
+var router = express.Router({ mergeParams: true });
 var sd = require("silly-datetime"),
 	fs = require("fs"),
 	moment = require("moment"),
@@ -34,7 +34,7 @@ router.get("/upload/:id", function (req, res) {
 			if (docs[0].status === 'Done') {
 				flag = 1;
 			}
-			else if (docs[0].status === 'Processing'){
+			else if (docs[0].status === 'Processing') {
 				flag = -1;
 			}
 		res.render("JOBINFO", { jobId: jobId, flag: flag, number: number });
@@ -152,9 +152,10 @@ router.post("/upload/sequence", function (req, res) {
 		if (job.email !== "") {
 			var mail = {
 				from: 'DeepDom<deepdom.service@gmail.com>',
-				subject: 'DeepDom: Job Infomation',
+				subject: 'DeepDomEX: Job Infomation',
 				to: email,
-				text: 'Your job ID is:' + job.id
+				text: 'Your job ID is:' + job.id,
+				html: '<h3>DeepDomEX</h3><br><p> Your job ID is:</p>' + job.id
 			};
 			transporter.sendMail(mail, function (error, info) {
 				if (error) return console.log(error);
@@ -295,7 +296,8 @@ router.post("/upload/file", function (req, res) {
 				from: 'DeepDom<deepdom.service@gmail.com>',
 				subject: 'DeepDom: Job Infomation',
 				to: email,
-				text: 'Your job ID is:' + job.id
+				text: 'Your job ID is:' + job.id,
+				html: '<h3>DeepDomEX</h3><br><p> Your job ID is:</p>' + job.id
 			};
 			transporter.sendMail(mail, function (error, info) {
 				if (error) return console.log(error);
