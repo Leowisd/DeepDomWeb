@@ -22,7 +22,7 @@
     "chartjs-plugin-zoom": "^0.7.4",
     "csvjson": "^5.1.0",
     "ejs": "^2.7.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "html2canvas": "^1.0.0-rc.5",
     "moment": "^2.24.0",
     "mongoose": "^5.7.1",
